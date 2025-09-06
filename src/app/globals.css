@@ -1,0 +1,295 @@
+/* stylelint-disable at-rule-no-unknown */
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --primary: #3b82f6;
+  --secondary: #22c55e;
+  --accent: transparent;
+  --border: #e5e7eb;
+  --muted: #6b7280;
+  --card: #ffffff;
+  --card-foreground: #171717;
+}
+
+/* Dark mode variables */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary: #b8e6fe;
+    --accent: #b8e6fe;
+    --background: #0a0a0a;
+    --foreground: #ededed;
+    --border: #374151;
+    --muted: #9ca3af;
+    --card: #1f2937;
+    --card-foreground: #f9fafb;
+  }
+}
+
+h1 {
+  @apply text-3xl md:text-4xl font-light mb-8 mt-12;
+  font-family: var(--font-poppins), serif;
+  color: var(--foreground);
+}
+
+h2 {
+  @apply text-xl md:text-2xl mb-4 mt-8 font-bold;
+  font-family: var(--font-poppins), serif;
+  color: var(--foreground);
+}
+
+h3, .logo {
+  @apply text-lg md:text-xl font-bold mb-2 mt-6;
+  font-family: var(--font-poppins), serif;
+  color: var(--foreground);
+}
+
+h4 {
+  @apply md:text-lg font-bold mb-4 mt-4;
+  font-family: var(--font-poppins), serif;
+  color: var(--foreground);
+}
+
+table {
+  @apply w-full border-collapse mb-20;
+  border-color: var(--border);
+}
+
+th,
+td {
+  @apply border-b p-2 min-w-40;
+  border-color: var(--border);
+  color: var(--foreground);
+}
+
+th {
+  @apply text-left border-b;
+  border-color: var(--border);
+  color: var(--foreground);
+}
+
+a {
+  @apply border-b-2 hover:border-b-2;
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+a:hover {
+  border-color: var(--accent);
+  text-decoration: none;
+}
+
+ol {
+  @apply list-decimal pl-12 mb-4;
+  color: var(--foreground);
+}
+
+ul {
+  @apply list-disc pl-12 mb-4;
+  color: var(--foreground);
+}
+
+p {
+  @apply mb-4;
+  color: var(--foreground);
+}
+
+li {
+  color: var(--foreground);
+}
+
+blockquote {
+  @apply border-l-8 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600 p-4 pb-2 mb-4;
+}
+
+.syllabus-page, .assignment-page {
+  li {
+    @apply mb-2;
+  }
+  table li {
+    @apply mb-0;
+  } 
+}
+
+/* stylelint-disable-next-line */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* Global base styles */
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.6;
+}
+
+/* Custom global styles */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--muted);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--foreground);
+}
+
+/* Custom utility classes that can't be done with Tailwind */
+.text-gradient {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* .hover-lift {
+  transition: transform 0.2s ease-in-out;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+} */
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    font-size: 12pt;
+    line-height: 1.4;
+  }
+}
+
+/* Resources layout overrides */
+[data-resources-layout] {
+  max-width: none !important;
+}
+
+code {
+  @apply bg-gray-100 dark:bg-gray-800 p-1 rounded-md;
+}
+
+/* Syntax highlighting styles */
+.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 0.5em;
+  background: #f6f8fa;
+  border-radius: 6px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 14px;
+  line-height: 1.45;
+  margin: 1em 0;
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: #6a737d;
+  font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-subst {
+  color: #d73a49;
+}
+
+.hljs-number,
+.hljs-literal,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag .hljs-attr {
+  color: #005cc5;
+}
+
+.hljs-string,
+.hljs-doctag {
+  color: #032f62;
+}
+
+.hljs-title,
+.hljs-section,
+.hljs-selector-id {
+  color: #6f42c1;
+  font-weight: bold;
+}
+
+.hljs-subst {
+  font-weight: normal;
+}
+
+.hljs-type,
+.hljs-class .hljs-title {
+  color: #6f42c1;
+  font-weight: bold;
+}
+
+.hljs-tag,
+.hljs-name,
+.hljs-attribute {
+  color: #22863a;
+  font-weight: normal;
+}
+
+.hljs-regexp,
+.hljs-link {
+  color: #032f62;
+}
+
+.hljs-symbol,
+.hljs-bullet {
+  color: #e36209;
+}
+
+.hljs-built_in,
+.hljs-builtin-name {
+  color: #e36209;
+}
+
+.hljs-meta {
+  color: #6a737d;
+  font-weight: bold;
+}
+
+.hljs-deletion {
+  background: #ffeef0;
+}
+
+.hljs-addition {
+  background: #f0fff4;
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: bold;
+}
+
+.codepen-frame {
+  width: 100%;
+  height: 500px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  overflow: hidden;
+}
