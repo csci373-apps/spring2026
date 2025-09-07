@@ -16,79 +16,78 @@ const topics = [
     },
     {
       id: 2,
-      title: "Development Workflow & System Architecture",
-      description: "Working with clients; software development lifecycle; goals for the semester; etc.",
+      title: "UX / UI Design",
+      description: "Usability principles (Norman/Neilson), user research, prototyping, wireframing, Figma, design systems, etc.",
       meetings: [
         {
           date: "Tu, Jan 20",
-          topic: "Intro to our system architecture",
+          topic: "Intro to user-centered design",
         },
         {
           date: "Th, Jan 22",
-          topic: "Docker setup",
+          topic: "Lab: Low-fidelity prototyping",
         },
         {
           date: "Tu, Jan 27",
-          topic: "Linting, formatting, testing, workflow rules."
+          topic: "Intro to Figma"
         },
         {
           date: "Th, Jan 29",
-          topic: "Continuous integration and deployment"
+          topic: "Lab: Figma + Relume (Design System) + Generative AI in Design"
         },
         {
           date: "Tu, Feb 3",
-          topic: "Cloud deployments (Supabase, AWS, etc.)",
+          topic: "Working with design systems",
         },
       ]
     },
     {
       id: 3,
-      title: "UX / UI Design",
+      title: "Development Workflow & System Architecture",
       description: "Usability principles (Norman/Neilson), wireframing and prototyping, etc.",
       meetings: [
         {
           date: "Th, Feb 5",
-          topic: "TBD",
+          topic: "Intro to our system architecture",
         },
         {
           date: "Tu, Feb 10",
-          topic: "TBD",
-          
+          topic: "Docker setup",
         },
         {
           date: "Th, Feb 12",
-          topic: "TBD",
+          topic: "Linting, formatting, testing, workflow rules."
         },
         {
           date: "Tu, Feb 17",
-          topic: "TBD",          
+          topic: "Continuous integration and deployment"
+        },
+        {
+          date: "Th, Feb 19",
+          topic: "Cloud deployments (Supabase, AWS, etc.)",
         },
       ]
     },
     {
       id: 4,
-      title: "Mobile App Development",
-      description: "React Native, Expo, Hooks, components, state variables, design systems, etc.",
+      title: "Front-End Development with React Native",
+      description: "React Native, Expo, Hooks, components, state variables, design system integration, etc.",
       meetings: [ 
         {
-          date: "Th, Feb 19",
-          topic: "TBD",
-        },
-        {
           date: "Tu, Feb 24",
-          topic: "TBD",
+          topic: "React I: Overview of the Framework; Make your first component",
         },
         {
           date: "Th, Feb 26",
-          topic: "TBD",
+          topic: "React II: Hooks, State Management, & Navigation",
         },
         {
           date: "Tu, Mar 3",
-          topic: "TBD",
+          topic: "React III: Interacting with APIs",
         },
         {
           date: "Th, Mar 5",
-          topic: "TBD",
+          topic: "React IV: Testing & Deployment",
         },
         {
           date: "Tu, Mar 10",
@@ -106,24 +105,24 @@ const topics = [
     },
     {
       id: 5,
-      title: "PostgreSQL, ORM, and FastAPI",
+      title: "Back-End Development with FastAPI",
       description: "TBD",
       meetings: [
         {
           date: "Tu, Mar 17",
-          topic: "TBD"
+          topic: "FastAPI I: Overview of the Framework"
         },
         {
           date: "Th, Mar 19",
-          topic: "TBD",
+          topic: "FastAPI II: Interfacing with the Database via SQLAlchemy",
         },
         {
           date: "Tu, Mar 24",
-          topic: "TBD",
+          topic: "FastAPI III: Make your first CRUD API endpoint",
         },
         {
           date: "Th, Mar 26",
-          topic: "TBD",
+          topic: "FastAPI IV: JSON Web Tokens & Authentication",
         },
         {
           date: "Tu, Mar 31",
