@@ -13,8 +13,8 @@ export default function TableOfContents() {
   const [activeId, setActiveId] = useState<string>('');
 
   useEffect(() => {
-    // Find all h2 and h3 elements
-    const headings = document.querySelectorAll('h2, h3');
+    // Find all h2 elements only
+    const headings = document.querySelectorAll('h2');
     const items: TocItem[] = [];
     const usedIds = new Set<string>();
 
@@ -78,17 +78,28 @@ export default function TableOfContents() {
   return (
     <nav className="sticky top-20 w-64 flex-shrink-0">
       <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-        <ul className="!list-none !p-0 !m-0">
+        <ul className="!list-none !p-0 !m-0 space-y-0.5">
           {tocItems.map((item) => (
             <li key={item.id}>
               <a
                 href={`#${item.id}`}
-                className={`block py-1 px-2 text-sm transition-colors whitespace-nowrap overflow-hidden !border-0 text-ellipsis ${
+                onClick={(e) => {
+                  e.preventDefault();
+                  const element = document.getElementById(item.id);
+                  if (element) {
+                    const headerOffset = 80; // Account for fixed header (64px) + some padding
+                    const elementPosition = element.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                    window.scrollTo({
+                      top: offsetPosition,
+                      behavior: 'smooth'
+                    });
+                  }
+                }}
+                className={`block py-0.5 px-2 text-sm transition-colors whitespace-nowrap overflow-hidden !border-0 text-ellipsis ${
                   activeId === item.id
                     ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-bold'
                     : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
-                } ${
-                  item.level === 3 ? '!pl-8' : ''
                 }`}
                 title={item.text}
               >
