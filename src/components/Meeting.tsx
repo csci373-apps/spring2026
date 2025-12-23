@@ -24,7 +24,7 @@ interface Assignment {
 export interface MeetingData {
   date: string;
   topic: string;
-  description?: string;
+  description?: string | React.ReactElement;
   activities?: Activity[];
   readings?: Reading[];
   optionalReadings?: Reading[];
@@ -51,10 +51,17 @@ export default function Meeting({
   const hasDiscussionQuestions = 'discussionQuestions' in meeting && meeting.discussionQuestions;
   const isHoliday = 'holiday' in meeting && meeting.holiday;
 
-  function toggleDetails() {
+  function toggleDetails(e: React.MouseEvent<HTMLElement>) {
+    
+    // Don't toggle if clicking on a link or button within the clickable div:
+    const target = e.target as HTMLElement;
+    if (target.closest('a')) {
+      return;
+    }
+    
     const newState = !showDetails;
     setShowDetails(newState);
-    localStorage.setItem(meetingKey, JSON.stringify(newState));
+    localStorage.setItem(meetingKey, JSON.stringify(newState));  
   }
 
   function renderActivity(activity: Activity) {
@@ -162,14 +169,15 @@ export default function Meeting({
             'flex-col': showDetails,
             'md:flex-row': showDetails
         })}>
-            <span className={clsx("w-[100px] flex-shrink-0 transition-all duration-300 ease-in-out", {
+            <span className={clsx("w-[100px] flex-shrink-0 transition-all duration-300 ease-in-out cursor-pointer", {
                 'font-bold': true
-            })}>{meeting.date}</span>
+            })} onClick={toggleDetails}>{meeting.date}</span>
             <div className="w-full">
                 <p className={clsx({
                     '!mb-3': !showDetails,
-                    '!mb-0': showDetails
-                  })}><span className={clsx("transition-all duration-300 ease-in-out", {
+                    '!mb-0': showDetails,
+                    'cursor-pointer': 'pointer',
+                  })} onClick={toggleDetails}><span className={clsx("transition-all duration-300 ease-in-out", {
                     'font-bold': showDetails,
                     'text-black dark:text-white': showDetails,
                     // 'uppercase': showDetails
@@ -180,7 +188,9 @@ export default function Meeting({
                     'max-h-[1000px] opacity-100': showDetails
                 })}>
                     { meeting.description && (
-                        <p>{meeting.description}</p>
+                        typeof meeting.description === 'string' 
+                          ? <p>{meeting.description}</p>
+                          : meeting.description
                     )}
                     {renderActivities()}
                     {hasReadings ? renderReadings({title: 'Required Readings', readings: meeting.readings || []}) : ``}
