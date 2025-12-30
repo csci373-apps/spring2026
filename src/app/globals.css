@@ -130,14 +130,15 @@ blockquote {
   }
   h4 {
     @apply border-b pb-2;
-    border-color: #CCC;
+    border-color: #ccc;
   }
   ul li::marker,
   ol li::marker {
     color: var(--primary);
   }
   ol > li > p:has(+ ol),
-  ol > li > p:has(+ p)  {
+  ol > li > p:has(+ ul),
+  ol > li > p:has(+ p) {
     @apply mb-1;
   }
   ol ul {
@@ -145,6 +146,10 @@ blockquote {
   }
   ol ul li {
     @apply !my-0;
+  }
+  blockquote {
+    @apply bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 p-4 mb-4;
+    border-width: 1px;
   }
 }
 
@@ -247,7 +252,7 @@ blockquote {
   }
 
   /* Horizontal rule - 2px line, 80% width, centered */
-  h2::after {
+  /* h2::after {
     content: "";
     position: absolute;
     left: 50%;
@@ -256,7 +261,7 @@ blockquote {
     width: 100%;
     height: 2px;
     background: var(--border);
-  }
+  } */
 
   /* Better spacing for sections */
   h2 + p,

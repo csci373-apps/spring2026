@@ -18,10 +18,9 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Slides", url: "#" },
+          { title: "Slides", url: "https://docs.google.com/presentation/d/1OZNO79sDQ3uI1sypTpXfwVLs0MCQUp-x/edit?usp=sharing&ouid=113376576186080604800&rtpof=true&sd=true" },
           { title: "Syllabus", url: "/syllabus/" },
-          { title: "Course Arc Overview", url: "/activities/course-arc/" },
-          { title: "Trace-a-Request Activity", url: "/activities/trace-request/" },
+          { title: "Day 1: Course Intro", url: "/activities/day01-course-intro/" },
         ],
         readings: [
           {
@@ -31,7 +30,7 @@ const topics = [
                 (Ch. 1: A Pragmatic Philosophy — selected)
               </>
             ),
-            url: "#",
+            url: "https://www.oreilly.com/library/view/the-pragmatic-programmer/9780135956977/f_0017.xhtml",
           },
           {
             citation: (
@@ -57,9 +56,7 @@ const topics = [
         ),
         activities: [
           { title: "Slides", url: "#" },
-          { title: "Team Working Agreement (Phase 1)", url: "/activities/team-contract-phase1/" },
-          { title: "Dev Environment Setup", url: "/activities/dev-setup/" },
-          { title: "Git + PR Workflow Overview", url: "/activities/pr-workflow/" },
+          { title: "Day 2: Team Formation + Dev Setup", url: "/activities/day02-team-formation-dev-setup/" },
         ],
         assigned: {
           titleShort: "HW0",
@@ -90,8 +87,7 @@ const topics = [
         ),
         activities: [
           { title: "Slides", url: "#" },
-          { title: "Codebase Scavenger Hunt (Backend)", url: "/activities/codebase-scavenger-backend/" },
-          { title: "Behavior Contract Worksheet", url: "/activities/behavior-contract/" },
+          { title: "Day 3: Backend Deep Dive", url: "/activities/day03-backend-deep-dive/" },
         ],
         readings: [
           {
@@ -126,8 +122,7 @@ const topics = [
         ),
         activities: [
           { title: "Slides", url: "#" },
-          { title: "Pytest Workshop", url: "/activities/pytest-workshop/" },
-          { title: "Live Review Protocol", url: "/activities/live-code-review/" },
+          { title: "Day 4: Pytest Workshop", url: "/activities/day04-pytest-workshop/" },
         ],
         readings: [
           {
@@ -169,8 +164,7 @@ const topics = [
         ),
         activities: [
           { title: "Slides", url: "#" },
-          { title: "Domain Modeling Activity", url: "/activities/domain-modeling/" },
-          { title: "Test Plan Mini-Template", url: "/activities/test-plan/" },
+          { title: "Day 5: Domain Modeling", url: "/activities/day05-domain-modeling/" },
         ],
         readings: [
           {
@@ -204,8 +198,7 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "PR Template (Required)", url: "/activities/pr-template/" },
-          { title: "Code Review Activity (Guided)", url: "/activities/code-review-guided/" },
+          { title: "Day 6: Implementation Studio", url: "/activities/day06-implementation-studio/" },
         ],
         assigned: {
           titleShort: "HW2",
@@ -236,8 +229,7 @@ const topics = [
         ),
         activities: [
           { title: "Slides", url: "#" },
-          { title: "Refactor-with-Tests Studio", url: "/activities/refactor-with-tests/" },
-          { title: "Design Principles Checklist", url: "/activities/design-principles-checklist/" },
+          { title: "Day 7: Design Principles", url: "/activities/day07-design-principles/" },
         ],
         readings: [
           {
@@ -272,8 +264,7 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Code Review Focus: Design", url: "/activities/review-focus-design/" },
-          { title: "Live Review Protocol", url: "/activities/live-code-review/" },
+          { title: "Day 8: Refactoring Studio", url: "/activities/day08-refactoring-studio/" },
         ],
         assigned: {
           titleShort: "HW3",
@@ -304,8 +295,7 @@ const topics = [
         ),
         activities: [
           { title: "Slides", url: "#" },
-          { title: "State Ownership Activity", url: "/activities/state-ownership/" },
-          { title: "User Flow → UI States Worksheet", url: "/activities/ui-states/" },
+          { title: "Day 9: React Architecture", url: "/activities/day09-react-architecture/" },
         ],
         readings: [
           {
@@ -339,8 +329,7 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Integration Studio", url: "/activities/integration-studio/" },
-          { title: "Code Review Focus: Frontend Boundaries", url: "/activities/review-focus-frontend/" },
+          { title: "Day 10: TypeScript, Contexts, Hooks", url: "/activities/day10-typescript-contexts-hooks/" },
         ],
         assigned: {
           titleShort: "HW4",
@@ -354,68 +343,59 @@ const topics = [
 
   {
     id: 6,
-    title: "Frontend Testing + Dependencies + UI Consistency",
+    title: "Mobile - React Native and Expo",
     description:
-      "Add client-side tests for one critical user flow; introduce dependency management and design systems as stability mechanisms. SDLC concept: risk reduction and quality assurance.",
+      "Build mobile UI using React Native and Expo. Connect mobile app to backend API. SDLC concept: platform considerations and mobile-specific patterns.",
     meetings: [
       {
         date: "Tu, Feb 17",
-        topic: "Client-side testing workshop (one critical flow)",
+        topic: "React Native architecture + Expo setup",
         description: (
           <>
             <ul>
-              <li>Client-side testing workshop (vitest/testing-library or course standard)</li>
-              <li>Identify one critical user flow and write a test plan</li>
-              <li>Emphasis: test behavior, not implementation details</li>
+              <li>React Native vs React: similarities and differences</li>
+              <li>Expo: what it is, why we use it</li>
+              <li>Team activity: set up Expo project, understand structure</li>
+              <li>Discussion: "How is mobile different from web? What's the same?"</li>
             </ul>
           </>
         ),
         activities: [
           { title: "Slides", url: "#" },
-          { title: "Client-Side Testing Workshop", url: "/activities/frontend-testing-workshop/" },
-          { title: "Critical Flow Selection", url: "/activities/critical-flow/" },
+          { title: "Day 11: React Native + Expo", url: "/activities/day11-react-native-expo/" },
         ],
         readings: [
           {
             citation: (
               <>
-                Short reading: <em>Testing Pyramid (Frontend Perspective)</em>
+                Expo Documentation. <em>Getting Started</em>
               </>
             ),
-            url: "/readings/testing-pyramid-frontend/",
+            url: "https://docs.expo.dev/",
           },
         ],
       },
       {
         date: "Th, Feb 19",
-        topic: "Stability mechanisms: dependencies + design systems + test reviews",
+        topic: "Mobile UI + navigation + backend integration",
         description: (
           <>
             <ul>
-              <li>Mini-lecture: dependencies and UI consistency (design systems as constraints)</li>
-              <li>Studio: implement client-side tests and tighten UI consistency where needed</li>
-              <li>Review focus: test clarity and failure modes</li>
+              <li>Mobile UI patterns: navigation, screens, components</li>
+              <li>Team studio: build mobile UI for existing backend feature</li>
+              <li>Connect mobile app to same backend API</li>
+              <li>Pair programming: one codes, one reviews, then switch</li>
+              <li>Reflection: "What's hard about mobile? What's easier than web?"</li>
             </ul>
           </>
         ),
         activities: [
-          { title: "Design Systems Primer", url: "/activities/design-systems-primer/" },
-          { title: "Code Review Focus: Testing", url: "/activities/review-focus-testing/" },
-        ],
-        readings: [
-          {
-            citation: (
-              <>
-                Kholmatova, A. <em>Design Systems</em>. (Ch. 1–2 — selected) (optional if access varies)
-              </>
-            ),
-            url: "#",
-          },
+          { title: "Day 12: Mobile UI Integration", url: "/activities/day12-mobile-ui-integration/" },
         ],
         assigned: {
           titleShort: "HW5",
-          title: "Client-Side Test PR (One Flow) + 1 Peer Review (Testing Focus)",
-          url: "/assignments/hw05-frontend-tests/",
+          title: "Mobile Integration PR + Peer Review + Reflection",
+          url: "/assignments/hw05-mobile-integration/",
           draft: 0,
         },
       },
@@ -559,108 +539,237 @@ const topics = [
   },
   {
     id: 10,
-    title: "Phase Transition & Agile",
-    description: "Move from team autonomy to shared ownership and delivery.",
+    title: "Phase 2: Agile and Vertical Features",
+    description: "Introduction to Agile. Form vertical teams. Begin feature development in shared repo.",
     meetings: [
       {
-        date: "Tu, Mar 17",
-        topic: "Agile",
-        description:
-          "Introduction to Agile methodologies and the Phase 2 transition. We'll form new teams and shift from parallel exploration to collaborative integration.",
-        activities: [{ title: "Slides", url: "#" }],
+        date: "Week 10, Day 1",
+        topic: "Agile introduction + vertical team formation",
+        description: (
+          <>
+            <ul>
+              <li>Agile principles: iterations, user stories, sprints</li>
+              <li>Form vertical teams: backend + web + mobile developers</li>
+              <li>Team working agreement for Phase 2 (collaboration, communication)</li>
+              <li>Discussion: "How is Phase 2 different? What skills do we need?"</li>
+            </ul>
+          </>
+        ),
+        activities: [
+          { title: "Agile Primer", url: "/activities/agile-primer/" },
+          { title: "Vertical Team Formation", url: "/activities/vertical-teams/" },
+          { title: "Phase 2 Working Agreement", url: "/activities/working-agreement-phase2/" },
+        ],
         readings: [
           {
-            citation: (
-              <>
-                Schwaber, K., & Sutherland, J. <em>The Scrum Guide</em>. scrum.org.
-              </>
-            ),
+            citation: "Schwaber, K., & Sutherland, J. The Scrum Guide.",
             url: "https://scrumguides.org/scrum-guide.html",
           },
-          {
-            citation: (
-              <>
-                Beck, K., et al. (2001). <em>Manifesto for Agile Software Development</em>.
-                agilemanifesto.org.
-              </>
-            ),
-            url: "https://agilemanifesto.org/",
-          },
         ],
       },
       {
-        date: "Th, Mar 19",
-        topic: "Integration",
-        description:
-          "Shared repo onboarding, PR workflow, and slice ownership. Working collaboratively requires clear processes and communication.",
-        activities: [{ title: "Slides", url: "#" }],
+        date: "Week 10, Day 2",
+        topic: "Sprint 1 planning + feature assignment",
+        description: (
+          <>
+            <ul>
+              <li>Review shared repo structure and workflow</li>
+              <li>Assign features to vertical teams</li>
+              <li>Sprint 1 planning: break features into user stories and tasks</li>
+              <li>Define API contracts (shared types)</li>
+              <li>Set up feature branches</li>
+              <li>Team reflection: "What are our goals? What are we worried about?"</li>
+            </ul>
+          </>
+        ),
+        activities: [
+          { title: "Feature Assignment", url: "/activities/feature-assignment/" },
+          { title: "Sprint Planning Workshop", url: "/activities/sprint-planning-workshop/" },
+          { title: "API Contract Definition", url: "/activities/api-contracts/" },
+        ],
       },
     ],
   },
+
   {
     id: 11,
-    title: "Feature Development, Integration, and Refinement",
-    description:
-      "Build differentiated features collaboratively in a shared codebase. (Details intentionally flexible; driven by client needs and sprint planning.)",
-    meetings: [],
-  },
-  {
-    id: 12,
-    title: "Final Delivery & Reflection",
-    description: "Communicate technical work and reflect on growth.",
+    title: "Feature Development Sprint 1",
+    description: "Build first vertical feature. Practice daily standups, PRs, code review across teams. Reflect on collaboration challenges.",
     meetings: [
       {
-        date: "Tu, Apr 14",
-        topic: "Delivery",
-        description:
-          "Integration testing and polish. Ensuring everything works together and meets quality standards before delivery.",
-        activities: [{ title: "Slides", url: "#" }],
+        date: "Week 11, Day 1",
+        topic: "Feature development kickoff + daily standup protocol",
+        description: (
+          <>
+            <ul>
+              <li>Teams begin feature work</li>
+              <li>Daily standup protocol: what did you do, what will you do, blockers</li>
+              <li>Pair programming: backend + frontend developers work together</li>
+              <li>Discussion: "How do we coordinate? What's hard about shared codebase?"</li>
+            </ul>
+          </>
+        ),
+        activities: [
+          { title: "Daily Standup Protocol", url: "/activities/standup-protocol/" },
+          { title: "Feature Development Guide", url: "/activities/feature-development/" },
+          { title: "Cross-Team Collaboration", url: "/activities/cross-team-collab/" },
+        ],
       },
       {
-        date: "Th, Apr 16",
-        topic: "Reflection",
-        description:
-          "Retrospective and course wrap-up. Reflecting on what we've learned and how we've grown as software developers.",
-        activities: [{ title: "Slides", url: "#" }],
-        readings: [
-          {
-            citation: (
-              <>
-                Martin, R. C. (2011). <em>The Clean Coder</em>. (Ch. 12–13 — selected)
-              </>
-            ),
-            url: "https://www.oreilly.com/library/view/the-clean-coder/9780132542913/",
-          },
-          {
-            citation: (
-              <>
-                Dweck, C. S. (2006). <em>Mindset</em>. (Ch. 7 — selected)
-              </>
-            ),
-            url: "https://www.penguinrandomhouse.com/books/44330/mindset-by-carol-s-dweck-phd/",
-          },
+        date: "Week 11, Day 2",
+        topic: "Feature work + PR workflow + code review",
+        description: (
+          <>
+            <ul>
+              <li>Teams continue feature work</li>
+              <li>Open PRs, practice code review across teams</li>
+              <li>Resolve merge conflicts, coordinate API changes</li>
+              <li>Team reflection: "What's working? What's challenging? How are we communicating?"</li>
+            </ul>
+          </>
+        ),
+        activities: [
+          { title: "PR Workflow (Shared Repo)", url: "/activities/pr-workflow-shared/" },
+          { title: "Code Review Across Teams", url: "/activities/cross-team-review/" },
+          { title: "Conflict Resolution", url: "/activities/conflict-resolution/" },
         ],
       },
     ],
   },
+
   {
-    id: 13,
-    title: "Final UX Package & Client Presentation",
-    description: "Final deliverables and client presentation.",
+    id: 12,
+    title: "Feature Development Sprint 2",
+    description: "Continue feature development. Sprint review and retrospective. Plan next sprint.",
     meetings: [
       {
-        date: "Th, Apr 30",
-        topic: "Final deliverable",
-        description:
-          "Final UX/UI package delivery including clickable prototypes, design system documentation, and steering committee sign-off. This represents the culmination of our design and development work.",
-        activities: [{ title: "Slides", url: "#" }],
+        date: "Week 12, Day 1",
+        topic: "Sprint 1 review + sprint 2 planning",
+        description: (
+          <>
+            <ul>
+              <li>Sprint 1 demos: teams show what they built</li>
+              <li>Sprint retrospective: what worked, what didn't, what to improve</li>
+              <li>Sprint 2 planning: next features, user stories, tasks</li>
+              <li>Reflection: "How did Sprint 1 go? What did we learn about teamwork?"</li>
+            </ul>
+          </>
+        ),
+        activities: [
+          { title: "Sprint Review Format", url: "/activities/sprint-review/" },
+          { title: "Sprint Retrospective", url: "/activities/sprint-retro/" },
+          { title: "Sprint Planning", url: "/activities/sprint-planning/" },
+        ],
       },
       {
-        date: "Tu, May 5",
-        topic: "Client",
-        description:
-          "Final client presentation (if scheduled). Showcasing our completed work and demonstrating the value we've delivered throughout the semester.",
-        activities: [{ title: "Slides", url: "#" }],
+        date: "Week 12, Day 2",
+        topic: "Sprint 2 feature development",
+        description: (
+          <>
+            <ul>
+              <li>Teams begin Sprint 2 features</li>
+              <li>Continue daily standups</li>
+              <li>Practice cross-team coordination</li>
+              <li>Team reflection: "How are we improving? What's still hard?"</li>
+            </ul>
+          </>
+        ),
+        activities: [
+          { title: "Feature Development", url: "/activities/feature-development/" },
+          { title: "Team Check-in", url: "/activities/team-checkin/" },
+        ],
+      },
+    ],
+  },
+
+  {
+    id: 13,
+    title: "Feature Development Sprint 3",
+    description: "Final feature sprint. Integration testing. Polish and refinement.",
+    meetings: [
+      {
+        date: "Week 13, Day 1",
+        topic: "Sprint 2 review + final sprint planning",
+        description: (
+          <>
+            <ul>
+              <li>Sprint 2 demos</li>
+              <li>Sprint retrospective</li>
+              <li>Final sprint planning: polish, integration, testing</li>
+              <li>Discussion: "What features are complete? What needs polish?"</li>
+            </ul>
+          </>
+        ),
+        activities: [
+          { title: "Sprint Review", url: "/activities/sprint-review/" },
+          { title: "Integration Testing Guide", url: "/activities/integration-testing/" },
+        ],
+      },
+      {
+        date: "Week 13, Day 2",
+        topic: "Final feature work + integration",
+        description: (
+          <>
+            <ul>
+              <li>Teams polish features, fix bugs, write integration tests</li>
+              <li>Cross-team integration: ensure features work together</li>
+              <li>Team reflection: "What are we proud of? What would we do differently?"</li>
+            </ul>
+          </>
+        ),
+        activities: [
+          { title: "Integration Testing", url: "/activities/integration-testing/" },
+          { title: "Bug Triage", url: "/activities/bug-triage/" },
+        ],
+      },
+    ],
+  },
+
+  {
+    id: 14,
+    title: "Final Delivery and Reflection",
+    description: "Final integration, testing, and polish. Course reflection and celebration.",
+    meetings: [
+      {
+        date: "Week 14, Day 1",
+        topic: "Final integration and testing",
+        description: (
+          <>
+            <ul>
+              <li>Final integration testing: all features work together</li>
+              <li>Bug fixes and polish</li>
+              <li>Prepare for final demo</li>
+              <li>Team reflection: "What did we accomplish? What are we proud of?"</li>
+            </ul>
+          </>
+        ),
+        activities: [
+          { title: "Final Testing Checklist", url: "/activities/final-testing/" },
+          { title: "Demo Preparation", url: "/activities/demo-prep/" },
+        ],
+      },
+      {
+        date: "Week 14, Day 2",
+        topic: "Final demos + course reflection",
+        description: (
+          <>
+            <ul>
+              <li>Final team demos: showcase completed features</li>
+              <li>Course reflection: "How did we grow? What did we learn?"</li>
+              <li>Celebration and wrap-up</li>
+            </ul>
+          </>
+        ),
+        activities: [
+          { title: "Final Demo Format", url: "/activities/final-demo/" },
+          { title: "Course Reflection", url: "/activities/course-reflection/" },
+        ],
+        readings: [
+          {
+            citation: "Martin, R. C. (2011). The Clean Coder. (Ch. 12-13)",
+            url: "#",
+          },
+        ],
       },
     ],
   },
