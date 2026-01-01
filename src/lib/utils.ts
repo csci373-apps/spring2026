@@ -8,8 +8,8 @@ function formatDate(dateString: string): string {
   }
   
   function getWeek(dateString: string): string {
-    // Calculate weeks since August 18, 2025
-    const startDate = new Date('2025-08-18T00:00:00');
+    // Calculate weeks since January 12, 2026 (first day of semester)
+    const startDate = new Date('2026-01-12T00:00:00');
     const currentDate = new Date(dateString + 'T00:00:00');
     const timeDiff = currentDate.getTime() - startDate.getTime();
     const weeksDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24 * 7)) + 1;

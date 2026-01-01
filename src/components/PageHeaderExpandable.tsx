@@ -54,7 +54,7 @@ export default function PageHeader({ title, excerpt, type, group, setMeetingStat
       <div className="flex flex-row justify-between items-center">
         <h1 className="font-bold text-gray-900 dark:text-gray-100">
           {type && type === 'activity' ? (<><Link href="/" className={className}>Schedule</Link> &gt; </>) : ''}
-          {type && ['homework', 'lab'].includes(type) ? (<><Link href="/assignments" className={className}>Assignments</Link> &gt; </>) : ''}
+          {type && ['homework', 'lab', 'assignment'].includes(type) ? (<><Link href="/assignments" className={className}>Assignments</Link> &gt; </>) : ''}
           {group ? `${group} ` : ''} {title}
         </h1>
         <button

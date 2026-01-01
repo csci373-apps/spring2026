@@ -422,8 +422,7 @@ const topics = [
         ),
         activities: [
           { title: "Slides", url: "#" },
-          { title: "Low-Fi Prototyping Studio", url: "/activities/lowfi-prototyping/" },
-          { title: "Critique Protocol (Design)", url: "/activities/critique-protocol-design/" },
+          { title: "Day 13: Human-Centered Design + Low-Fi Prototyping", url: "/activities/day13-hcd-lowfi-prototyping/" },
         ],
         readings: [
           {
@@ -456,12 +455,11 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Prototype → Implementation Mapping", url: "/activities/prototype-to-implementation/" },
-          { title: "Review Focus: UX Assumptions", url: "/activities/review-focus-ux/" },
+          { title: "Day 14: High-Fidelity Prototyping + Implementation", url: "/activities/day14-hifi-prototyping-implementation/" },
         ],
         assigned: {
           titleShort: "HW6",
-          title: "Low-Fi Prototype + Short Reflection (Assumption Change)",
+          title: "Low-Fi + Hi-Fi Prototypes + UX Implementation",
           url: "/assignments/hw06-lowfi-prototype/",
           draft: 0,
         },
@@ -487,9 +485,7 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Hi-Fi Prototyping Studio", url: "/activities/hifi-prototyping/" },
-          { title: "Demo Prep Checklist", url: "/activities/demo-prep/" },
-          { title: "Rebase + Linear History Clinic", url: "/activities/rebase-clinic/" },
+          { title: "Day 15: Demo Prep + Phase 1 Reflection", url: "/activities/day15-demo-prep/" },
         ],
         readings: [
           {
@@ -514,12 +510,11 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Sprint 1 Demo Format", url: "/activities/sprint-demo-format/" },
-          { title: "Retrospective Activity", url: "/activities/retrospective/" },
+          { title: "Day 16: Sprint 1 Demos + Phase 1 Retrospective", url: "/activities/day16-sprint-demos-retrospective/" },
         ],
         assigned: {
           titleShort: "HW7",
-          title: "Sprint 1 Demo Artifacts + Phase 1 Reflection",
+          title: "Phase 1 Reflection + Phase 2 Preparation",
           url: "/assignments/hw07-phase1-reflection/",
           draft: 0,
         },
@@ -533,8 +528,8 @@ const topics = [
     title: "Spring Break",
     description: "No class",
     meetings: [
-      { date: "Tu, Mar 11", topic: "Spring Break - No class", holiday: true },
-      { date: "Th, Mar 13", topic: "Spring Break - No class", holiday: true },
+      { date: "Tu, Mar 10", topic: "Spring Break - No class", holiday: true },
+      { date: "Th, Mar 12", topic: "Spring Break - No class", holiday: true },
     ],
   },
   {
@@ -543,7 +538,7 @@ const topics = [
     description: "Introduction to Agile. Form vertical teams. Begin feature development in shared repo.",
     meetings: [
       {
-        date: "Week 10, Day 1",
+        date: "Tu, Mar 17",
         topic: "Agile introduction + vertical team formation",
         description: (
           <>
@@ -568,7 +563,7 @@ const topics = [
         ],
       },
       {
-        date: "Week 10, Day 2",
+        date: "Th, Mar 19",
         topic: "Sprint 1 planning + feature assignment",
         description: (
           <>
@@ -597,7 +592,7 @@ const topics = [
     description: "Build first vertical feature. Practice daily standups, PRs, code review across teams. Reflect on collaboration challenges.",
     meetings: [
       {
-        date: "Week 11, Day 1",
+        date: "Tu, Mar 24",
         topic: "Feature development kickoff + daily standup protocol",
         description: (
           <>
@@ -616,7 +611,7 @@ const topics = [
         ],
       },
       {
-        date: "Week 11, Day 2",
+        date: "Th, Mar 26",
         topic: "Feature work + PR workflow + code review",
         description: (
           <>
@@ -634,6 +629,42 @@ const topics = [
           { title: "Conflict Resolution", url: "/activities/conflict-resolution/" },
         ],
       },
+      {
+        date: "Tu, Mar 31",
+        topic: "Sprint 1 continued: feature development",
+        description: (
+          <>
+            <ul>
+              <li>Teams continue Sprint 1 feature work</li>
+              <li>Daily standups</li>
+              <li>Pair programming and collaboration</li>
+              <li>Team check-in: "What progress have we made? What blockers do we have?"</li>
+            </ul>
+          </>
+        ),
+        activities: [
+          { title: "Feature Development", url: "/activities/feature-development/" },
+          { title: "Team Check-in", url: "/activities/team-checkin/" },
+        ],
+      },
+      {
+        date: "Th, Apr 2",
+        topic: "Sprint 1 continued: integration and testing",
+        description: (
+          <>
+            <ul>
+              <li>Teams continue feature work</li>
+              <li>Integration testing across components</li>
+              <li>Code review and PR refinement</li>
+              <li>Team reflection: "What's working well? What needs improvement?"</li>
+            </ul>
+          </>
+        ),
+        activities: [
+          { title: "Integration Testing", url: "/activities/integration-testing/" },
+          { title: "Code Review Across Teams", url: "/activities/cross-team-review/" },
+        ],
+      },
     ],
   },
 
@@ -643,7 +674,7 @@ const topics = [
     description: "Continue feature development. Sprint review and retrospective. Plan next sprint.",
     meetings: [
       {
-        date: "Week 12, Day 1",
+        date: "Tu, Apr 7",
         topic: "Sprint 1 review + sprint 2 planning",
         description: (
           <>
@@ -662,8 +693,8 @@ const topics = [
         ],
       },
       {
-        date: "Week 12, Day 2",
-        topic: "Sprint 2 feature development",
+        date: "Th, Apr 9",
+        topic: "Sprint 2 feature development kickoff",
         description: (
           <>
             <ul>
@@ -679,6 +710,42 @@ const topics = [
           { title: "Team Check-in", url: "/activities/team-checkin/" },
         ],
       },
+      {
+        date: "Tu, Apr 14",
+        topic: "Sprint 2 continued: feature development",
+        description: (
+          <>
+            <ul>
+              <li>Teams continue Sprint 2 feature work</li>
+              <li>Daily standups</li>
+              <li>Integration and testing</li>
+              <li>Team check-in: "What progress have we made?"</li>
+            </ul>
+          </>
+        ),
+        activities: [
+          { title: "Feature Development", url: "/activities/feature-development/" },
+          { title: "Integration Testing", url: "/activities/integration-testing/" },
+        ],
+      },
+      {
+        date: "Th, Apr 16",
+        topic: "Sprint 2 continued: refinement and testing",
+        description: (
+          <>
+            <ul>
+              <li>Teams continue feature work</li>
+              <li>Code review and PR refinement</li>
+              <li>Integration testing</li>
+              <li>Team reflection: "What's working? What needs improvement?"</li>
+            </ul>
+          </>
+        ),
+        activities: [
+          { title: "Code Review Across Teams", url: "/activities/cross-team-review/" },
+          { title: "Integration Testing", url: "/activities/integration-testing/" },
+        ],
+      },
     ],
   },
 
@@ -688,7 +755,7 @@ const topics = [
     description: "Final feature sprint. Integration testing. Polish and refinement.",
     meetings: [
       {
-        date: "Week 13, Day 1",
+        date: "Tu, Apr 21",
         topic: "Sprint 2 review + final sprint planning",
         description: (
           <>
@@ -706,20 +773,57 @@ const topics = [
         ],
       },
       {
-        date: "Week 13, Day 2",
-        topic: "Final feature work + integration",
+        date: "Th, Apr 23",
+        topic: "Sprint 3 feature development kickoff",
         description: (
           <>
             <ul>
-              <li>Teams polish features, fix bugs, write integration tests</li>
+              <li>Teams begin final sprint features</li>
+              <li>Polish existing features, fix bugs</li>
+              <li>Write integration tests</li>
+              <li>Team reflection: "What are we proud of? What needs work?"</li>
+            </ul>
+          </>
+        ),
+        activities: [
+          { title: "Feature Development", url: "/activities/feature-development/" },
+          { title: "Integration Testing", url: "/activities/integration-testing/" },
+        ],
+      },
+      {
+        date: "Tu, Apr 28",
+        topic: "Sprint 3 continued: integration and polish",
+        description: (
+          <>
+            <ul>
+              <li>Teams continue final sprint work</li>
               <li>Cross-team integration: ensure features work together</li>
-              <li>Team reflection: "What are we proud of? What would we do differently?"</li>
+              <li>Bug fixes and polish</li>
+              <li>Team check-in: "What's left to do?"</li>
             </ul>
           </>
         ),
         activities: [
           { title: "Integration Testing", url: "/activities/integration-testing/" },
           { title: "Bug Triage", url: "/activities/bug-triage/" },
+        ],
+      },
+      {
+        date: "Th, Apr 30",
+        topic: "Sprint 3 continued: final refinement",
+        description: (
+          <>
+            <ul>
+              <li>Teams finalize features</li>
+              <li>Final integration testing</li>
+              <li>Code review and PR refinement</li>
+              <li>Team reflection: "What are we proud of? What would we do differently?"</li>
+            </ul>
+          </>
+        ),
+        activities: [
+          { title: "Integration Testing", url: "/activities/integration-testing/" },
+          { title: "Final Testing Checklist", url: "/activities/final-testing/" },
         ],
       },
     ],
@@ -731,7 +835,7 @@ const topics = [
     description: "Final integration, testing, and polish. Course reflection and celebration.",
     meetings: [
       {
-        date: "Week 14, Day 1",
+        date: "Tu, May 3",
         topic: "Final integration and testing",
         description: (
           <>
@@ -747,9 +851,15 @@ const topics = [
           { title: "Final Testing Checklist", url: "/activities/final-testing/" },
           { title: "Demo Preparation", url: "/activities/demo-prep/" },
         ],
+        readings: [
+          {
+            citation: "Martin, R. C. (2011). The Clean Coder. (Ch. 12-13)",
+            url: "#",
+          },
+        ],
       },
       {
-        date: "Week 14, Day 2",
+        date: "Th, May 5",
         topic: "Final demos + course reflection",
         description: (
           <>
@@ -763,12 +873,6 @@ const topics = [
         activities: [
           { title: "Final Demo Format", url: "/activities/final-demo/" },
           { title: "Course Reflection", url: "/activities/course-reflection/" },
-        ],
-        readings: [
-          {
-            citation: "Martin, R. C. (2011). The Clean Coder. (Ch. 12-13)",
-            url: "#",
-          },
         ],
       },
     ],

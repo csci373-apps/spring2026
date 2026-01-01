@@ -1,0 +1,626 @@
+---
+title: "Frontend Integration"
+date: "2026-02-12"
+type: "assignment"
+num: "4"
+due_date: "2026-02-17"
+---
+
+## Overview
+
+This assignment has three parts:
+1. **Build React UI** - Your team builds a React UI that connects to an existing backend feature
+2. **Peer Review** - You review another team's frontend PR
+3. **Individual Reflection** - Reflect on what's different about frontend, what clicked, and what's confusing
+
+This assignment builds on React architecture, TypeScript, Contexts, and Hooks from class. You'll practice building frontend features and connecting them to backend APIs.
+
+
+## Part 1: Build React UI (60 points)
+
+### Instructions
+
+Your team will build a React UI that connects to an existing backend feature. You'll use TypeScript, React Contexts, and Hooks to create a functional frontend interface.
+
+### Requirements
+
+#### 1. Choose a Backend Feature (5 points)
+
+**Select an existing backend feature to build a UI for:**
+
+**Options:**
+- **Groups:** List groups, view group details, create group
+- **Courses:** List courses, view course details, create course
+- **Modules:** List modules in a course, view module details
+- **Posts:** List posts in a module, view post details
+- **Or another feature** (check with instructor first)
+
+**Requirements:**
+- Feature must have existing backend API endpoints
+- Feature should have at least 2-3 endpoints (GET list, GET one, POST/PATCH)
+- Feature should be meaningful (not too simple, not too complex)
+
+**Documentation:**
+In your PR description, list the feature you chose and which endpoints you're using.
+
+#### 2. Design UI Flow (10 points)
+
+**Before coding, design your UI:**
+
+1. **Map backend to frontend:**
+   - What pages do you need?
+   - What components do you need?
+   - What state do you need? (local vs global)
+   - How does data flow?
+
+2. **Identify UI states:**
+   - Loading states
+   - Error states
+   - Empty states
+   - Success states
+
+3. **Identify edge cases:**
+   - What if API is slow?
+   - What if network fails?
+   - What if data is empty?
+   - What if user is unauthorized?
+
+**Submission:**
+Include your UI flow design in your PR description or as a file in the PR.
+
+**Template:**
+```markdown
+## UI Flow Design
+
+### Pages
+- `/feature` - List view
+- `/feature/new` - Create form
+- `/feature/{id}` - Detail view
+
+### Components
+- `FeatureList` - Displays list
+- `FeatureCard` - Displays one item
+- `FeatureForm` - Form for creating/editing
+- `FeatureDetail` - Shows details
+
+### State
+- **Local:**
+  - Form inputs (in FeatureForm)
+  - Loading states (in pages)
+- **Global:**
+  - User authentication (from AuthContext)
+
+### UI States
+- Loading: Fetching data
+- Error: API error, network error
+- Empty: No data exists
+- Success: Data loaded
+
+### Edge Cases
+- User has no items (empty state)
+- API returns 401 (unauthorized - redirect to login)
+- Network timeout (show error, retry button)
+```
+
+#### 3. Implement Pages (20 points)
+
+**Create React page components:**
+
+1. **List Page:**
+   - Fetch and display list of items
+   - Handle loading, error, and empty states
+   - Navigate to detail pages
+   - Use TypeScript types
+
+2. **Detail Page (optional but recommended):**
+   - Fetch and display one item
+   - Handle loading and error states
+   - Show related data if applicable
+
+3. **Create/Edit Page (optional but recommended):**
+   - Form for creating/editing items
+   - Form validation
+   - Submit to backend API
+   - Handle success and error states
+
+**Requirements:**
+- Pages use TypeScript (proper types)
+- Pages handle all UI states (loading, error, empty, success)
+- Pages use React Hooks (useState, useEffect)
+- Pages connect to backend API correctly
+- Pages use AuthContext for authentication
+
+**Example structure:**
+```typescript
+import { useState, useEffect } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
+import { Group } from '../../types/api';
+
+export default function GroupsPage() {
+  const { API_URL, isAuthenticated } = useAuth();
+  const [groups, setGroups] = useState<Group[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchGroups() {
+      try {
+        setLoading(true);
+        const response = await fetch(`${API_URL}/api/groups`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        if (!response.ok) throw new Error('Failed to fetch');
+        const data = await response.json();
+        setGroups(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Unknown error');
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchGroups();
+  }, [API_URL]);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+  if (groups.length === 0) return <div>No groups found</div>;
+
+  return (
+    <div>
+      <h1>Groups</h1>
+      {groups.map(group => (
+        <div key={group.id}>{group.name}</div>
+      ))}
+    </div>
+  );
+}
+```
+
+#### 4. Create Components (10 points)
+
+**Create reusable React components:**
+
+1. **List Component:**
+   - Displays list of items
+   - Receives data via props
+   - Handles item selection/navigation
+
+2. **Card/Item Component:**
+   - Displays one item
+   - Receives item data via props
+   - Handles click events
+
+3. **Form Component (if applicable):**
+   - Form inputs
+   - Form validation
+   - Submit handler
+
+**Requirements:**
+- Components use TypeScript (proper prop types)
+- Components are reusable
+- Components focus on presentation (receive data via props)
+- Components are well-named and clear
+
+**Example:**
+```typescript
+interface GroupCardProps {
+  group: Group;
+  onSelect: (id: number) => void;
+}
+
+export function GroupCard({ group, onSelect }: GroupCardProps) {
+  return (
+    <div onClick={() => onSelect(group.id)}>
+      <h3>{group.name}</h3>
+      <p>{group.description}</p>
+    </div>
+  );
+}
+```
+
+#### 5. Use Contexts and Hooks (10 points)
+
+**Use React Contexts and Hooks appropriately:**
+
+1. **AuthContext:**
+   - Use for authentication state
+   - Use for API_URL
+   - Check authentication before rendering
+
+2. **useState:**
+   - Local component state
+   - Form inputs, loading states, error states
+
+3. **useEffect:**
+   - Fetch data on component mount
+   - Handle side effects
+   - Clean up if needed
+
+4. **Custom Hooks (optional but recommended):**
+   - Extract reusable logic
+   - Example: `useGroups()`, `useFeature()`
+
+**Requirements:**
+- Contexts used for global state (auth, API config)
+- useState used for local state
+- useEffect used for data fetching
+- Hooks used correctly (dependencies, cleanup)
+
+**Example custom hook:**
+```typescript
+export function useGroups() {
+  const { API_URL } = useAuth();
+  const [groups, setGroups] = useState<Group[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchGroups() {
+      try {
+        setLoading(true);
+        const response = await fetch(`${API_URL}/api/groups`);
+        if (!response.ok) throw new Error('Failed to fetch');
+        const data = await response.json();
+        setGroups(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Unknown error');
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchGroups();
+  }, [API_URL]);
+
+  return { groups, loading, error };
+}
+```
+
+#### 6. Handle UI States and Edge Cases (5 points)
+
+**Handle all UI states and edge cases:**
+
+1. **Loading states:**
+   - Show loading indicator while fetching
+   - Prevent multiple simultaneous requests
+
+2. **Error states:**
+   - Display error messages
+   - Provide retry functionality
+   - Handle network errors gracefully
+
+3. **Empty states:**
+   - Show message when no data exists
+   - Provide actions (create new item)
+
+4. **Success states:**
+   - Display data correctly
+   - Handle navigation after actions
+
+**Requirements:**
+- All UI states handled
+- Edge cases considered
+- User-friendly error messages
+- Appropriate loading indicators
+
+### PR Requirements
+
+#### Create Pull Request
+
+1. **Create feature branch:**
+   ```bash
+   git checkout -b feature/[feature-name]-ui
+   ```
+
+2. **Commit your work:**
+   ```bash
+   git add ui/src/pages/[feature]/
+   git add ui/src/components/[feature]/
+   git commit -m "Add [feature] UI: pages, components, and API integration"
+   ```
+
+3. **Push and create PR:**
+   ```bash
+   git push origin feature/[feature-name]-ui
+   ```
+
+4. **PR Description Template:**
+   ```markdown
+   ## Feature: [Feature Name] UI
+
+   ### Backend Feature
+   - What backend feature did you build UI for?
+   - Which endpoints are you using?
+
+   ### UI Flow Design
+   - What pages did you create?
+   - What components did you create?
+   - What state management did you use?
+
+   ### Implementation
+   - Pages: `ui/src/pages/[feature]/`
+   - Components: `ui/src/components/[feature]/`
+   - Hooks: `ui/src/hooks/use[Feature].ts` (if applicable)
+
+   ### UI States Handled
+   - Loading: [How did you handle loading?]
+   - Error: [How did you handle errors?]
+   - Empty: [How did you handle empty states?]
+   - Success: [How did you display data?]
+
+   ### Edge Cases
+   - [What edge cases did you handle?]
+
+   ### Testing
+   - Did you test manually?
+   - What scenarios did you test?
+   - Any known issues?
+
+   ### Questions
+   - What questions do you have?
+   - What would you like feedback on?
+   ```
+
+
+## Part 2: Peer Review (25 points)
+
+### Instructions
+
+Review **one PR from another team** (focus on frontend concerns). Provide substantive, constructive feedback.
+
+### Requirements
+
+#### 1. Find a PR to Review (5 points)
+
+**Choose ONE PR from another team:**
+- Not your own team's PR
+- PR that implements frontend UI
+- PR that needs review (not already reviewed by 2+ people)
+
+**How to find PRs:**
+- Check team repositories (each team has their own fork)
+- Look for PRs with "HW4" in the title
+- Ask in class or Slack if you can't find any
+
+#### 2. Review the Frontend Implementation (15 points)
+
+**Focus on frontend concerns:**
+
+1. **Component Structure:**
+   - Are pages and components well-organized?
+   - Are components reusable?
+   - Are responsibilities clear?
+
+2. **State Management:**
+   - Is state in the right place? (local vs global)
+   - Are Hooks used correctly?
+   - Is Context used appropriately?
+
+3. **TypeScript:**
+   - Are types defined correctly?
+   - Are props typed?
+   - Are API responses typed?
+
+4. **UI States:**
+   - Are loading states handled?
+   - Are error states handled?
+   - Are empty states handled?
+
+5. **User Experience:**
+   - Is the UI clear and usable?
+   - Are error messages helpful?
+   - Is navigation intuitive?
+
+**Provide feedback:**
+- What's good about the implementation?
+- What could be improved?
+- What frontend patterns could be applied?
+- What questions do you have?
+
+#### 3. Review Code Quality (5 points)
+
+**Focus on code quality:**
+
+1. **Code Organization:**
+   - Is code well-structured?
+   - Are files organized logically?
+   - Are components appropriately sized?
+
+2. **Code Clarity:**
+   - Are names clear?
+   - Is code readable?
+   - Are comments helpful (if any)?
+
+**Provide feedback:**
+- What's good about the code quality?
+- What could be improved?
+
+### Review Guidelines
+
+**Be constructive:**
+- ✅ "This component structure makes sense because..."
+- ✅ "Consider using a custom hook here to extract this logic"
+- ✅ "The error handling is good, but consider adding a retry button"
+- ❌ "This is wrong" (be specific about what and why)
+- ❌ "Needs more work" (specify what and how)
+
+**Be specific:**
+- Point to specific files or functions
+- Explain why something is good or could be improved
+- Suggest alternatives when appropriate
+
+**Be kind:**
+- Remember: everyone is learning
+- Focus on the code, not the person
+- Ask questions to understand decisions
+
+### Submission
+
+- **Format:** Comments on GitHub PR
+- **Location:** Another team's PR
+- **Individual submission:** Each team member reviews one PR
+- **Team coordination:** Try to ensure all PRs get reviewed (distribute reviews among team members)
+
+
+## Part 3: Individual Reflection (15 points)
+
+### Instructions
+
+Reflect on your frontend development experience, what's different about frontend, what clicked, and what's confusing.
+
+### Reflection Questions
+
+**Answer these questions (2-3 paragraphs each):**
+
+1. **What's Different About Frontend?**
+   - How is frontend development different from backend?
+   - What's easier? What's harder?
+   - What skills transferred from backend?
+   - What new skills did you need to learn?
+
+2. **What Clicked?**
+   - What React concepts make sense now?
+   - What patterns do you understand?
+   - What feels natural?
+   - What was the "aha!" moment?
+
+3. **What's Confusing?**
+   - What concepts are still unclear?
+   - What patterns are confusing?
+   - What questions do you have?
+   - What would help you understand better?
+
+4. **State Management:**
+   - How did you decide what state to use? (local vs global)
+   - What was hard about state management?
+   - What would you do differently next time?
+
+5. **TypeScript:**
+   - How did TypeScript help you?
+   - What was hard about TypeScript?
+   - What would you do differently next time?
+
+6. **Code Review Learning:**
+   - What feedback did you receive on your PR?
+   - Was the feedback helpful? Why or why not?
+   - What did you learn from reviewing another team's PR?
+   - How has your understanding of frontend improved?
+
+### Submission
+
+- **Format:** Written reflection (500-750 words total)
+- **Location:** Submit via course platform
+- **Individual submission:** Each team member submits their own reflection
+
+
+## Grading Rubric
+
+| Criteria | Points | Description |
+|----------|--------|-------------|
+| UI Flow Design | 10 | Well-designed UI flow with pages, components, and state |
+| Pages Implementation | 20 | Working pages with proper TypeScript, Hooks, and API integration |
+| Components | 10 | Reusable components with proper TypeScript types |
+| Contexts and Hooks | 10 | Proper use of Contexts, useState, useEffect, and custom hooks |
+| UI States & Edge Cases | 5 | All UI states handled (loading, error, empty, success) |
+| Feature Selection | 5 | Appropriate backend feature chosen |
+| PR Quality | 5 | Clear PR description, well-documented |
+| Review Selection | 5 | Appropriate PR chosen for review |
+| Frontend Review | 15 | Substantive feedback on frontend implementation |
+| Code Quality Review | 5 | Substantive feedback on code quality |
+| Reflection Quality | 15 | Thoughtful reflection on frontend experience |
+| **Total** | **100** | |
+
+
+## Submission Checklist
+
+### Team Submission:
+- [ ] GitHub PR created with React UI
+  - [ ] UI flow designed and documented
+  - [ ] Pages implemented with TypeScript
+  - [ ] Components created and reusable
+  - [ ] Contexts and Hooks used appropriately
+  - [ ] UI states handled (loading, error, empty, success)
+  - [ ] Edge cases considered
+  - [ ] PR description includes design and implementation details
+  - [ ] UI works correctly (tested manually)
+
+### Individual Submission:
+- [ ] Peer review completed
+  - [ ] Reviewed another team's PR (not your own work)
+  - [ ] Provided substantive feedback on frontend implementation
+  - [ ] Provided substantive feedback on code quality
+  - [ ] Approved or requested changes
+- [ ] Individual reflection submitted
+  - [ ] Answered all reflection questions
+  - [ ] 500-750 words total
+  - [ ] Thoughtful and specific
+
+
+## Tips for Success
+
+### Design Phase
+- **Map backend to frontend:** Think about pages, components, and state
+- **Consider UI states:** Loading, error, empty, success
+- **Think about edge cases:** What can go wrong?
+- **Ask questions:** If unsure, ask instructor or teammates
+
+### Implementation Phase
+- **Start with pages:** Get basic pages working first
+- **Add components:** Extract reusable components as you go
+- **Use TypeScript:** Define types for all data structures
+- **Handle states:** Don't forget loading, error, and empty states
+- **Test as you go:** Test manually in browser
+
+### Review Phase
+- **Be constructive:** Focus on helping, not criticizing
+- **Be specific:** Point to specific code, explain why
+- **Ask questions:** Understand decisions before suggesting changes
+- **Learn from feedback:** Consider suggestions, ask for clarification
+
+### Reflection Phase
+- **Be honest:** What was hard? What did you learn?
+- **Be specific:** Give examples from your experience
+- **Think critically:** What would you do differently? Why?
+
+
+## Common Issues and Solutions
+
+### Issue: API calls failing
+**Solution:** Check API_URL, ensure auth tokens are included, check network, verify endpoint URLs
+
+### Issue: TypeScript errors
+**Solution:** Define types for API responses, check prop types, use type inference when possible
+
+### Issue: State not updating
+**Solution:** Check useState usage, ensure setState is called correctly, check dependencies in useEffect
+
+### Issue: Components not rendering
+**Solution:** Check imports, ensure components are exported correctly, check browser console for errors
+
+### Issue: Context not working
+**Solution:** Ensure component is wrapped in Provider, check useContext usage, verify context value
+
+### Issue: UI states not handled
+**Solution:** Add loading states, error handling, empty state checks, test all scenarios
+
+
+## Resources
+
+- **React Documentation:** https://react.dev/
+- **TypeScript Handbook:** https://www.typescriptlang.org/docs/
+- **React Context:** https://react.dev/reference/react/createContext
+- **React Hooks:** https://react.dev/reference/react
+- **Thinking in React:** https://react.dev/learn/thinking-in-react
+
+
+## Next Steps
+
+After completing this assignment, you'll:
+- Understand how to build React UIs
+- Be comfortable with TypeScript, Contexts, and Hooks
+- Have practice connecting frontend to backend
+- Be ready for mobile development (Week 6)
+
+Good luck!
+

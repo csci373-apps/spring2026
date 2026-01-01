@@ -69,6 +69,10 @@ export default async function AssignmentsPage() {
   }
 
   function titleCase(str: string): string {
+    // Map "assignment" to "Homework" for display
+    if (str.toLowerCase() === 'assignment') {
+      return 'Homework';
+    }
     return str.replace(/\b\w/g, (char) => char.toUpperCase());
   }
 

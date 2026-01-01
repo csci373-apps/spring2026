@@ -14,8 +14,8 @@ function formatDate(dateString: string): string {
 }
 
 function getWeekNumber(dateString: string): number {
-  // Semester starts January 13, 2026 (Tuesday)
-  const semesterStart = new Date(2026, 0, 13); // Month is 0-indexed
+  // Semester starts January 12, 2026 (Monday)
+  const semesterStart = new Date(2026, 0, 12); // Month is 0-indexed
   const [year, month, day] = dateString.split('-').map(Number);
   const date = new Date(year, month - 1, day);
   

@@ -1,14 +1,2 @@
 [
-  {
-    "id": "project-proposal",
-    "num": "1",
-    "title": "Project Proposal",
-    "excerpt": "Define your project topic, audience, and data sources so you have a clear direction.",
-    "date": "2025-09-30",
-    "due_date": "2025-10-21",
-    "type": "project",
-    "assigned": "2025-09-30",
-    "external_url": "https://docs.google.com/document/d/1vCuVCCrtyVF_QkFgvaH_E50qrTGxqnOLQn47mVmkTvY/edit?usp=sharing",
-    "external_type": "google_doc"
-  }
 ]

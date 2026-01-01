@@ -9,13 +9,15 @@ draft: 1
 
 | Topic | Platform |
 |------|--------|
-| Cloud Tools | [AWS App Runner](deployment-aws-apprunner) | 
-| Cloud Tools | [AWS S3 Buckets](deployment-aws-s3) | 
-| Cloud Tools | [Supabase](deployment-supabase) | 
-| Front-End | [Expo](frontend-expo) | 
-| Front-End | [React Native](frontend-react) | 
-| Backend | FastAPI | 
+| Getting Started | [Starter Code Overview](starter-code) | 
+| Backend | [Intro to FastAPI](backend-fastapi-intro) | 
+| Backend | [SQLAlchemy Models and Queries](backend-sqlalchemy) | 
+| Backend | [Pydantic Schemas](backend-pydantic) | 
+| Backend | [Decorators and Dependency Injection](backend-dependencies) | 
+| Backend | [Testing API Endpoints](backend-testing) | 
+| Front-End | [React + TypeScript](frontend-react-mantine) | 
+| Front-End | [Mantine UI Components](mantine) | 
+| Front-End | [React Native + Expo + Paper](mobile-expo-paper) | 
 | Backend | JSON Web Tokens & Authentication | 
 | Backend | PostgreSQL | 
-| Backend | SQLAlchemy & Object-Relational Mappings | 
 
