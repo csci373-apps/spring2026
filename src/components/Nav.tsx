@@ -17,7 +17,7 @@ export default function Navigation() {
     { href: "/syllabus", label: "Syllabus" },
     { href: "/assignments", label: "Assignments" },
     { href: "/activities", label: "Activities" },
-    { href: "/resources/overview", label: "Resources" },
+    { href: "/resources", label: "Resources" },
   ];
 
   // Only run on client side to prevent hydration mismatch

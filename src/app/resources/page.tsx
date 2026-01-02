@@ -1,18 +1,107 @@
-import { getPostData } from '@/lib/markdown';
+import { getAllPosts, PostData } from '@/lib/markdown';
 import PageHeader from '@/components/PageHeader';
+import Link from 'next/link';
+
+interface ResourceItem {
+  id: string;
+  title: string;
+  order: number;
+}
+
+interface Chapter {
+  name: string;
+  group_order: number;
+  items: ResourceItem[];
+}
 
 export default async function ResourcesPage() {
-  const postData = await getPostData('overview', 'resources');
-  const { title, excerpt, group } = postData;
+  const resourcePosts = getAllPosts('resources');
   
+  // Filter out draft posts and overview
+  const resources = resourcePosts
+    .filter(post => post.draft !== 1 && post.id !== 'overview')
+    .map(post => ({
+      id: post.id,
+      title: post.title || post.id.charAt(0).toUpperCase() + post.id.slice(1).replace(/-/g, ' '),
+      group: (post as PostData & { group?: string }).group || 'Other',
+      group_order: (post as PostData & { group_order?: number }).group_order || 999,
+      order: (post as PostData & { order?: number }).order || 999
+    }))
+    .sort((a, b) => {
+      if (a.group_order !== b.group_order) {
+        return a.group_order - b.group_order;
+      }
+      return a.order - b.order;
+    });
+
+  // Group resources by chapter (group)
+  const chaptersMap = new Map<string, Chapter>();
+  
+  resources.forEach(resource => {
+    const chapterName = resource.group || 'Other';
+    
+    if (!chaptersMap.has(chapterName)) {
+      chaptersMap.set(chapterName, {
+        name: chapterName,
+        group_order: resource.group_order,
+        items: []
+      });
+    }
+    
+    chaptersMap.get(chapterName)!.items.push({
+      id: resource.id,
+      title: resource.title,
+      order: resource.order
+    });
+  });
+
+  // Convert to array and sort by group_order
+  const chapters = Array.from(chaptersMap.values()).sort((a, b) => a.group_order - b.group_order);
+
+  // Get chapter number based on group_order
+  const getChapterNumber = (groupOrder: number) => {
+    const uniqueOrders = [...new Set(chapters.map(c => c.group_order))].sort((a, b) => a - b);
+    return uniqueOrders.indexOf(groupOrder) + 1;
+  };
+
   return (
     <div className="space-y-6">
-      <PageHeader title={title} excerpt={excerpt} group={group} />
-      
-      <div 
-        className="prose prose-lg max-w-none prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-table:border-collapse prose-table:border prose-table:border-gray-300 prose-th:border prose-th:border-gray-300 prose-th:bg-gray-50 prose-th:p-3 prose-td:border prose-td:border-gray-300 prose-td:p-3"
-        dangerouslySetInnerHTML={{ __html: postData.content }}
+      <PageHeader 
+        title="Course How To Guides" 
+        excerpt="Technical guides and documentation for the course technologies"
       />
+      
+      <div className="space-y-8">
+        {chapters.map((chapter) => (
+          <div 
+            key={chapter.name} 
+            className="group bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden relative"
+          >
+            
+            <div className="p-6 pl-8">
+              {/* Chapter header with badge */}
+              <div className="flex items-center gap-3 mb-5">
+                <h2 className="text-2xl font-bold text-gray-900 m-0">
+                  {chapter.name}
+                </h2>
+              </div>
+              
+              {/* Resource links */}
+              <ul className="list-none pl-0 space-y-3">
+                {chapter.items.map((item) => (
+                  <li key={item.id} className="pl-0">
+                    <Link 
+                      href={`/resources/${item.id}`}
+                    >
+                      <span className="flex-1">{item.title}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
