@@ -3,6 +3,7 @@ title: "Mobile Integration"
 date: "2026-02-19"
 type: "assignment"
 num: "5"
+draft: 1
 due_date: "2026-02-24"
 ---
 

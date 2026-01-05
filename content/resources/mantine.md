@@ -1,7 +1,7 @@
 ---
 title: "Mantine UI Components"
 group: "Front-End"
-group_order: 2
+group_order: 4
 order: 2
 ---
 

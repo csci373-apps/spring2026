@@ -11,7 +11,8 @@ const topics = [
         description: (
           <>
             <ul>
-              <li>Course expectations, studio norms, and the course arc (two loops: technical + product/SDLC)</li>
+              <li>Course expectations, studio norms, and the course structure</li>
+              <li>Introduction to the software development lifecycle (SDLC)</li>
               <li>High-level walkthrough of the starter system: backend layers, frontend structure, and where tests will live</li>
               <li>Activity: trace a request end-to-end (login → API → DB → response)</li>
             </ul>
@@ -21,26 +22,7 @@ const topics = [
           { title: "Slides", url: "https://docs.google.com/presentation/d/1OZNO79sDQ3uI1sypTpXfwVLs0MCQUp-x/edit?usp=sharing&ouid=113376576186080604800&rtpof=true&sd=true" },
           { title: "Syllabus", url: "/syllabus/" },
           { title: "Day 1: Course Intro", url: "/activities/day01-course-intro/" },
-        ],
-        readings: [
-          {
-            citation: (
-              <>
-                Hunt, A., & Thomas, D. (1999). <em>The Pragmatic Programmer</em>.
-                (Ch. 1: A Pragmatic Philosophy — selected)
-              </>
-            ),
-            url: "https://www.oreilly.com/library/view/the-pragmatic-programmer/9780135956977/f_0017.xhtml",
-          },
-          {
-            citation: (
-              <>
-                Short handout: <em>SDLC as Iteration</em> (spiral / iterative framing)
-              </>
-            ),
-            url: "/readings/sdlc-iteration/",
-          },
-        ],
+        ]
       },
       {
         date: "Th, Jan 15",
@@ -57,6 +39,29 @@ const topics = [
         activities: [
           { title: "Slides", url: "#" },
           { title: "Day 2: Team Formation + Dev Setup", url: "/activities/day02-team-formation-dev-setup/" },
+        ],
+        readings: [
+          {
+            citation: (
+              <>
+                Hunt, A., & Thomas, D. (1999). <em>The Pragmatic Programmer</em>. <a href="https://www.oreilly.com/library/view/the-pragmatic-programmer/9780135956977/f_0017.xhtml" target="_blank">Ch. 1: A Pragmatic Philosophy</a>
+              </>
+            ),
+          },
+          {
+            citation: (
+              <>
+                Rasmusson, J. (2010). <em>The Agile Samurai</em>. <a href="https://learning.oreilly.com/library/view/the-agile-samurai/9781680500066/f_0011.html" target="_blank">Ch. 1: Agile in a Nutshell</a>
+              </>
+            ),
+          },
+          {
+            citation: (
+              <>
+                Rasmusson, J. (2010). <em>The Agile Samurai</em>. <a href="https://learning.oreilly.com/library/view/the-agile-samurai/9781680500066/f_0016.html" target="_blank">Ch. 2: Meet Your Agile Team</a>
+              </>
+            ),
+          },
         ],
         assigned: {
           titleShort: "HW0",
@@ -101,7 +106,7 @@ const topics = [
           {
             citation: (
               <>
-                Beck, K. (2002). <em>Test-Driven Development</em>. (Ch. 1–2 — selected)
+                Beck, K. (2002). <em>Test-Driven Development</em>. (Ch. 1-2 – selected)
               </>
             ),
             url: "#",
@@ -138,7 +143,7 @@ const topics = [
           titleShort: "HW1",
           title: "Backend Contract Tests for Existing Endpoints + 1 Peer Review",
           url: "/assignments/hw01-backend-tests/",
-          draft: 0,
+          draft: 1,
         },
       },
     ],
@@ -170,7 +175,7 @@ const topics = [
           {
             citation: (
               <>
-                Martin, R. C. (2009). <em>Clean Code</em>. (Ch. 2–3 — selected)
+                Martin, R. C. (2009). <em>Clean Code</em>. (Ch. 2–3 -- selected)
               </>
             ),
             url: "https://www.oreilly.com/library/view/clean-code/9780136083238/",
@@ -204,7 +209,7 @@ const topics = [
           titleShort: "HW2",
           title: "New Model + API + Tests (PR) + 1 Substantive Peer Review",
           url: "/assignments/hw02-new-model-api/",
-          draft: 0,
+          draft: 1,
         },
       },
     ],
@@ -270,7 +275,7 @@ const topics = [
           titleShort: "HW3",
           title: "Refactor/Extension PR + Tests + 1 Peer Review (Design Focus)",
           url: "/assignments/hw03-refactor-extension/",
-          draft: 0,
+          draft: 1,
         },
       },
     ],
@@ -335,7 +340,7 @@ const topics = [
           titleShort: "HW4",
           title: "Frontend Integration PR + 1 Peer Review (Frontend Focus)",
           url: "/assignments/hw04-frontend-integration/",
-          draft: 0,
+          draft: 1,
         },
       },
     ],
@@ -396,7 +401,7 @@ const topics = [
           titleShort: "HW5",
           title: "Mobile Integration PR + Peer Review + Reflection",
           url: "/assignments/hw05-mobile-integration/",
-          draft: 0,
+          draft: 1,
         },
       },
     ],
@@ -428,7 +433,7 @@ const topics = [
           {
             citation: (
               <>
-                Krug, S. (2014). <em>Don’t Make Me Think</em>. (Ch. 1–2 — selected)
+                Krug, S. (2014). <em>Don’t Make Me Think</em>. (Ch. 1–2 -- selected)
               </>
             ),
             url: "https://www.sensible.com/dmmt.html",
@@ -461,7 +466,7 @@ const topics = [
           titleShort: "HW6",
           title: "Low-Fi + Hi-Fi Prototypes + UX Implementation",
           url: "/assignments/hw06-lowfi-prototype/",
-          draft: 0,
+          draft: 1,
         },
       },
     ],
@@ -516,7 +521,7 @@ const topics = [
           titleShort: "HW7",
           title: "Phase 1 Reflection + Phase 2 Preparation",
           url: "/assignments/hw07-phase1-reflection/",
-          draft: 0,
+          draft: 1,
         },
       },
     ],

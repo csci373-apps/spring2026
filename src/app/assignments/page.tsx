@@ -1,4 +1,4 @@
-import { getAllPostIds, getPostData, PostData } from '@/lib/markdown';
+import { getAllPostIds, getPostData } from '@/lib/markdown';
 import { formatDate, getWeek } from '@/lib/utils';
 import PageHeader from '@/components/PageHeader';
 import Link from 'next/link';

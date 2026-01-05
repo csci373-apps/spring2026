@@ -8,13 +8,34 @@ interface TocItem {
   level: number;
 }
 
-export default function TableOfContents() {
+interface TableOfContentsProps {
+  maxLevel?: number;
+}
+
+export default function TableOfContents({ maxLevel = 2 }: TableOfContentsProps) {
   const [tocItems, setTocItems] = useState<TocItem[]>([]);
   const [activeId, setActiveId] = useState<string>('');
 
   useEffect(() => {
-    // Find all h2 and h3 elements
-    const headings = document.querySelectorAll('h2, h3');
+    // Build selector based on maxLevel (e.g., maxLevel 2 = "h2", maxLevel 3 = "h2, h3")
+    const headingSelectors = [];
+    for (let i = 2; i <= maxLevel; i++) {
+      headingSelectors.push(`h${i}`);
+    }
+    const selector = headingSelectors.join(', ');
+    
+    // Find all heading elements up to maxLevel, but exclude those inside instructor notes sections
+    const allHeadings = document.querySelectorAll(selector);
+    const headings: Element[] = [];
+    
+    // Filter out headings that are inside instructor notes sections
+    allHeadings.forEach((heading) => {
+      const instructorNotesSection = heading.closest('[data-instructor-notes="true"]');
+      if (!instructorNotesSection) {
+        headings.push(heading);
+      }
+    });
+    
     const items: TocItem[] = [];
     const usedIds = new Set<string>();
 
@@ -40,11 +61,14 @@ export default function TableOfContents() {
       
       usedIds.add(id);
 
-      items.push({
-        id: heading.id,
-        text: heading.textContent || '',
-        level: parseInt(heading.tagName.charAt(1))
-      });
+      const level = parseInt(heading.tagName.charAt(1));
+      if (level <= maxLevel) {
+        items.push({
+          id: heading.id,
+          text: heading.textContent || '',
+          level: level
+        });
+      }
     });
 
     setTocItems(items);
@@ -69,7 +93,7 @@ export default function TableOfContents() {
     return () => {
       headings.forEach((heading) => observer.unobserve(heading));
     };
-  }, []);
+  }, [maxLevel]);
 
   if (tocItems.length === 0) {
     return null;
@@ -79,10 +103,17 @@ export default function TableOfContents() {
     <nav className="sticky top-20 w-64 flex-shrink-0">
       <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
         <ul className="!list-none !p-0 !m-0 space-y-0.5">
-          {tocItems.map((item) => (
+          {tocItems.map((item) => {
+            // Calculate indentation based on level (h2 = 0, h3 = 4, h4 = 8, etc.)
+            const indentClass = item.level === 3 ? 'ml-4' : 
+                               item.level === 4 ? 'ml-8' : 
+                               item.level === 5 ? 'ml-12' : 
+                               item.level === 6 ? 'ml-16' : '';
+            
+            return (
             <li 
               key={item.id}
-              className={item.level === 3 ? 'ml-4' : ''}
+              className={indentClass}
             >
               <a
                 href={`#${item.id}`}
@@ -100,8 +131,6 @@ export default function TableOfContents() {
                   }
                 }}
                 className={`block py-0.5 px-2 text-sm transition-colors whitespace-nowrap overflow-hidden !border-0 text-ellipsis ${
-                  item.level === 3 ? 'text-xs' : ''
-                } ${
                   activeId === item.id
                     ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-bold'
                     : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -111,7 +140,8 @@ export default function TableOfContents() {
                 {item.text}
               </a>
             </li>
-          ))}
+            );
+          })}
         </ul>
       </div>
     </nav>

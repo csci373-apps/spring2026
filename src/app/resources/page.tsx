@@ -58,11 +58,6 @@ export default async function ResourcesPage() {
   // Convert to array and sort by group_order
   const chapters = Array.from(chaptersMap.values()).sort((a, b) => a.group_order - b.group_order);
 
-  // Get chapter number based on group_order
-  const getChapterNumber = (groupOrder: number) => {
-    const uniqueOrders = [...new Set(chapters.map(c => c.group_order))].sort((a, b) => a - b);
-    return uniqueOrders.indexOf(groupOrder) + 1;
-  };
 
   return (
     <div className="space-y-6">
@@ -71,37 +66,27 @@ export default async function ResourcesPage() {
         excerpt="Technical guides and documentation for the course technologies"
       />
       
-      <div className="space-y-8">
-        {chapters.map((chapter) => (
-          <div 
-            key={chapter.name} 
-            className="group bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden relative"
-          >
-            
-            <div className="p-6 pl-8">
-              {/* Chapter header with badge */}
-              <div className="flex items-center gap-3 mb-5">
-                <h2 className="text-2xl font-bold text-gray-900 m-0">
-                  {chapter.name}
-                </h2>
-              </div>
-              
-              {/* Resource links */}
-              <ul className="list-none pl-0 space-y-3">
-                {chapter.items.map((item) => (
-                  <li key={item.id} className="pl-0">
-                    <Link 
-                      href={`/resources/${item.id}`}
-                    >
-                      <span className="flex-1">{item.title}</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        ))}
-      </div>
+      {chapters.map((chapter) => (
+        <div key={chapter.name} className="mb-8">
+          {/* Chapter header */}
+          <h2 className="text-2xl font-bold text-gray-900 m-0 mb-4">
+            {chapter.name}
+          </h2>
+          
+          {/* Resource links */}
+          <ul className="list-none pl-0 space-y-3">
+            {chapter.items.map((item) => (
+              <li key={item.id} className="pl-0">
+                <Link 
+                  href={`/resources/${item.id}`}
+                >
+                  <span className="flex-1">{item.title}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
     </div>
   );
 }

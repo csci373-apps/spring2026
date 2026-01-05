@@ -6,39 +6,39 @@ type: "activity"
 
 ## Learning Objectives
 
-By the end of this session, students will:
+By the end of this session, you will:
 - Understand course expectations and studio norms
 - Be familiar with the two-phase course structure
-- Have traced a request through the stripped-down starter app
+- Have traced a request through the starter app
 - Understand reflection as a core practice in this course
 
+## Agenda
 
+| Step | Time | Activity | Description |
+|------|------|----------|-------------|
+| 1 | 15mins | Welcome & Course Overview | Introductions, course structure, expectations |
+| 2 | 15mins | Starter App Walkthrough | High-level architecture tour |
+| 3 | 30mins | Trace-a-Request Activity | Hands-on request tracing |
+| 4 | 15mins | Reflection Introduction | What is reflection? Why do we do it? |
+| 5 | 15mins | Q&A & Wrap-up | Questions, next steps, homework preview |
 
-## Agenda (90 minutes)
+## Part 1: Welcome & Course Overview
 
-| Time | Activity | Description |
-|------|----------|-------------|
-| 0:00-0:15 | Welcome & Course Overview | Introductions, course structure, expectations |
-| 0:15-0:30 | Starter App Walkthrough | High-level architecture tour |
-| 0:30-0:60 | Trace-a-Request Activity | Hands-on request tracing |
-| 0:60-0:75 | Reflection Introduction | What is reflection? Why do we do it? |
-| 0:75-0:90 | Q&A & Wrap-up | Questions, next steps, homework preview |
+- Quick introductions (name, programming experience, what you're excited/nervous about)
+- Overview of the two-phase course structure
+- Introduction to key practices: reflection, teamwork, code review, design thinking
 
+## Instructor Notes
 
-
-## Detailed Instructions
-
-### Part 1: Welcome & Course Overview (15 minutes)
-
-#### Opening (5 minutes)
-1. **Welcome students** and introduce yourself
+### Opening (5 minutes)
+1. **Welcome students** and introductions
 2. **Quick introductions:** Have students share:
    - Name
    - Programming experience (beginner/intermediate/advanced)
    - What they're most excited about
    - What they're most nervous about
 
-#### Course Structure Overview (10 minutes)
+### Course Structure Overview (10 minutes)
 **Use slides or whiteboard to explain:**
 
 1. **Two-Phase Structure:**
@@ -65,16 +65,23 @@ By the end of this session, students will:
 
 **Transition:** "Now let's look at what we'll be working with..."
 
+## Part 2: Starter App Walkthrough
 
+Starter app code walkthrough: Pay attention to how the backend, web frontend, and mobile app are organized and how they communicate, including:
 
-### Part 2: Starter App Walkthrough (15 minutes)
+- Directory structure (backend, ui, mobile)
+- How models, schemas, and routes work in the backend
+- How the frontend connects to the backend
+- How mobile and web share the same backend API
 
-#### Setup (2 minutes)
+## Instructor Notes
+
+### Setup (2 minutes)
 1. **Open the starter app repository** (projected on screen)
 2. **Navigate to the root directory**
 3. **Explain:** "This is a stripped-down version of a health education app. We've removed complexity so you can focus on learning."
 
-#### High-Level Architecture Tour (13 minutes)
+### High-Level Architecture Tour (13 minutes)
 
 **1. Directory Structure (3 minutes)**
 ```
@@ -135,64 +142,79 @@ Navigate to `mobile/app/` and show:
 
 **Transition:** "Now let's trace a request from start to finish..."
 
+## Part 3: Trace-a-Request Activity
 
+Try tracing a login request from the frontend, through the backend, to the database, and back. Consider the following questions:
+- How is a request initiated in the browser?
+- Where is it handled by the backend code?
+- How is the database queried?
+- How does the response comes back?
+- How does the frontend handles the response?
 
-### Part 3: Trace-a-Request Activity (30 minutes)
+**Pro tips:**
+- Use the Network tab in browser DevTools
+- Check out the backend code on GitHub
+- Consider how data flows through each layer
 
-#### Setup (2 minutes)
-1. **Start the backend server** (if not already running)
-   ```bash
-   cd backend
-   poetry run uvicorn server:app --reload
-   ```
-2. **Open browser** to `http://localhost:8000/docs` (FastAPI docs)
+## Instructor Notes
+
+### Setup (5 minutes)
+1. **Share the GitHub repository link** with students
+   - "You can view the code on GitHub - no need to clone it yet"
+   - "We'll set up your local environment on Thursday"
+2. **Open the live running website** (projected on screen)
+   - Provide the URL to the deployed application
 3. **Open browser DevTools** (Network tab)
+   - "We'll use the browser's developer tools to see what's happening"
 
-#### Activity: Trace a Login Request (28 minutes)
+### Activity: Trace a Login Request (25 minutes)
 
 **Step 1: Frontend Initiates Request (5 minutes)**
-1. **Open the web app** in browser
+1. **Open the live web app** in browser (projected on screen)
 2. **Navigate to login page**
-3. **Open DevTools → Network tab**
-4. **Enter credentials and click "Login"**
-5. **Point out:**
+3. **Open DevTools → Network tab** (show this on screen)
+4. **Enter test credentials and click "Login"**
+   - Use demo/test credentials provided
+5. **Point out in Network tab:**
    - Request appears in Network tab
    - Method: POST
-   - URL: `http://localhost:8000/api/auth/login`
+   - URL: `https://[your-domain]/api/auth/login` (or whatever the live URL is)
    - Request body: `{"username": "...", "password": "..."}`
 
 **Instructor asks:** "What just happened? Where did this request come from?"
 
 **Step 2: Request Reaches Backend (10 minutes)**
-1. **Navigate to `backend/routes/auth.py`**
-2. **Find the login endpoint:**
+1. **Open GitHub repository** in browser (projected on screen)
+2. **Navigate to `backend/routes/auth.py`** on GitHub
+3. **Find the login endpoint:**
    ```python
    @router.post("/login")
    async def login(...):
    ```
-3. **Walk through the code:**
+4. **Walk through the code (reading it on GitHub):**
    - "The request arrives here"
    - "We validate the request body using Pydantic schema"
    - "We query the database using the model"
    - "We check the password"
    - "We return a token"
 
-4. **Show the database query:**
-   - Navigate to where `User` model is queried
+5. **Show the database query:**
+   - Navigate to where `User` model is queried (on GitHub)
    - Explain: "This is SQLAlchemy - it translates Python to SQL"
 
-5. **Show the response:**
+6. **Back to Network tab, show the response:**
    - "We return a JSON response with a token"
-   - Point to response in Network tab
+   - Point to response in Network tab showing the token
 
 **Instructor asks:** "What happens if the password is wrong? What about if the user doesn't exist?"
 
-**Step 3: Response Returns to Frontend (8 minutes)**
-1. **Back in the browser, show the response:**
+**Step 3: Response Returns to Frontend (5 minutes)**
+1. **Back in the browser Network tab, show the response:**
    - Status: 200 OK
    - Response body: `{"access_token": "...", "token_type": "bearer"}`
 
-2. **Navigate to frontend code that handles this:**
+2. **Navigate to frontend code on GitHub:**
+   - Show `ui/src/pages/auth/LoginPage.tsx` (or similar)
    - Show where the fetch/axios call is made
    - Show where the token is stored (localStorage)
    - Show where the user is redirected
@@ -205,51 +227,59 @@ Navigate to `mobile/app/` and show:
 
 **Step 4: Future Requests (5 minutes)**
 1. **Show how subsequent requests include the token:**
+   - Navigate to another page in the live app (e.g., dashboard)
    - Open Network tab
    - Show `Authorization: Bearer <token>` header
    - Explain: "Every request includes this token"
 
-2. **Navigate to a protected endpoint:**
+2. **Navigate to backend code on GitHub:**
    - Show how backend checks the token
-   - Show the `get_current_user` dependency
+   - Show the `get_current_user` dependency in `backend/auth.py`
 
 **Key Takeaways:**
 - Frontend → Backend → Database → Backend → Frontend
 - Each layer has a specific responsibility
 - Data flows through the system in a predictable way
+- You can explore code on GitHub without running it locally
 
 **Transition:** "This is the foundation. Now let's talk about reflection..."
 
+## Part 4: Reflection Introduction
+Reflection is a core practice in this course. It's not just "what did I do?" but "what did I learn?" and "what questions do I have?"
 
+**Reflection template:**
+- What did I do?
+- What did I learn?
+- What was hard?
+- What questions do I have?
+- How does this connect to what I already know?
 
-### Part 4: Reflection Introduction (15 minutes)
+**Why it matters:**
+- Helps solidify what you're learning
+- Identifies gaps in understanding
+- Connects new knowledge to what you already know
+- Part of your grade (not just code)
 
-#### What is Reflection? (5 minutes)
+We'll practice reflection together today and use it throughout the course.
+
+## Instructor Notes
+
+### What is Reflection? (5 minutes)
 
 **Instructor explains:**
 - Reflection is thinking about what you're learning
 - It's not just "what did I do?" but "what did I learn?"
 - It helps solidify knowledge and identify gaps
 
-**Show reflection template:**
-```markdown
-## What did I do?
-[Describe the activity/task]
+**Reflection template:**
 
-## What did I learn?
-[What new concepts or skills did you gain?]
+1. **What did I do?** -- Describe the activity/task
+2. **What did I learn?** -- What new concepts or skills did you gain?
+3. **What was hard?** -- What was confusing or challenging?
+4. **What questions do I have?** -- What do you still want to know?
+5. **How does this connect to what I already know?** -- Make connections to previous learning
 
-## What was hard?
-[What was confusing or challenging?]
-
-## What questions do I have?
-[What do you still want to know?]
-
-## How does this connect to what I already know?
-[Make connections to previous learning]
-```
-
-#### Why Reflection Matters (5 minutes)
+### Why Reflection Matters (5 minutes)
 
 **Discuss:**
 1. **Learning Science:**
@@ -266,7 +296,7 @@ Navigate to `mobile/app/` and show:
    - We'll reflect as individuals and as teams
    - Reflection is part of your grade (not just code)
 
-#### First Reflection Practice (5 minutes)
+### First Reflection Practice (5 minutes)
 
 **Activity:** "Let's practice reflection right now"
 
@@ -278,23 +308,27 @@ Navigate to `mobile/app/` and show:
 
 **Key Point:** "This is what reflection looks like. We'll do this regularly."
 
+## Part 5: Wrap-up
 
+- **Before Thursday:** Read The Pragmatic Programmer (Ch. 1) and the first two chapters of the Agile Samurai.
+- **Thursday:** Come ready to form teams and set up dev environment
+- **Homework:** Will be assigned Thursday (due next Tuesday)
 
-### Part 5: Q&A & Wrap-up (15 minutes)
+## Instructor Notes
 
-#### Questions (10 minutes)
+### Questions (10 minutes)
 - Open floor for questions
 - Address common concerns:
   - "I'm new to programming" → That's okay! We'll learn together
   - "What if I fall behind?" → Ask for help, work with your team
   - "How much time will this take?" → Expect 6-10 hours/week outside class
 
-#### Preview Next Class (3 minutes)
+### Preview Next Class (3 minutes)
 - **Thursday:** Team formation, working agreement, dev setup
 - **Homework:** Will be assigned Thursday (due next Tuesday)
 - **Reading:** The Pragmatic Programmer (Ch. 1) - due Thursday
 
-#### Wrap-up (2 minutes)
+### Wrap-up (2 minutes)
 - Remind students to:
   - Read the syllabus
   - Complete the reading by Thursday
@@ -302,19 +336,7 @@ Navigate to `mobile/app/` and show:
 - Thank students for their attention
 
 
-
-## Materials Needed
-
-- Projector/screen for code walkthrough
-- Starter app repository (cloned and ready)
-- Backend server running
-- Web app running
-- Browser with DevTools
-- Reflection template (handout or digital)
-
-## Instructor Notes
-
-### Common Questions & Answers
+## FAQs
 
 **Q: "Do I need to know Python/React/React Native already?"**  
 A: No! We'll learn together. Some experience helps, but we'll start from basics.
@@ -324,26 +346,4 @@ A: That's fine! In Phase 1, you'll explore all three. In Phase 2, you can focus 
 
 **Q: "How do teams work?"**  
 A: You'll form teams on Thursday. Teams work together on assignments, but everyone submits individual reflections.
-
-### Troubleshooting
-
-- **If backend won't start:** Check Python version, poetry installation
-- **If students can't see code:** Use larger font, zoom in
-- **If request tracing is confusing:** Slow down, repeat steps, ask for questions
-
-### Time Management Tips
-
-- **If running short:** Skip detailed code explanations, focus on high-level flow
-- **If running long:** Move Q&A to end, but keep reflection practice
-
-
-
-## Student Deliverables
-
-- None for today (homework assigned Thursday)
-
-## Next Steps
-
-- **Before Thursday:** Read The Pragmatic Programmer (Ch. 1)
-- **Thursday:** Come ready to form teams and set up dev environment
 

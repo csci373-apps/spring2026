@@ -31,7 +31,7 @@ export default function PageHeader({ title, excerpt, type, group, setMeetingStat
     setMeetingStates(savedStates);
   }
   
-  useEffect(loadSavedStates, []);
+  useEffect(loadSavedStates, [setMeetingStates]);
 
   const toggleAll = () => {
     const newExpanded = !allExpanded;
@@ -39,7 +39,7 @@ export default function PageHeader({ title, excerpt, type, group, setMeetingStat
     
     const newStates: Record<string, boolean> = {};
     topics.forEach(topic => {
-      topic.meetings.forEach((meeting, index) => {
+      topic.meetings.forEach((meeting) => {
         const meetingKey = `meeting-${meeting.date}-${meeting.topic.replace(/\s+/g, '-').toLowerCase()}`;
         newStates[meetingKey] = newExpanded;
         localStorage.setItem(meetingKey, JSON.stringify(newExpanded));

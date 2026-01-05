@@ -3,6 +3,7 @@ title: "Frontend Integration"
 date: "2026-02-12"
 type: "assignment"
 num: "4"
+draft: 1
 due_date: "2026-02-17"
 ---
 

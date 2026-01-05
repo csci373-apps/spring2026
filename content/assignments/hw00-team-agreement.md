@@ -3,7 +3,9 @@ title: "Team Working Agreement + Dev Setup"
 date: "2026-01-15"
 type: "assignment"
 num: "0"
+draft: 0
 due_date: "2026-01-20"
+heading_max_level: 3
 ---
 
 ## Overview
@@ -151,12 +153,12 @@ Verify that your development environment is set up correctly and document the se
 #### 1. Backend Setup (5 points)
 
 **Verify:**
-- [ ] Docker Desktop installed and running
-- [ ] Environment variables configured (`.env` file exists in project root)
-- [ ] Docker services start successfully (`docker compose up -d`)
-- [ ] Backend server accessible at `http://localhost:8000/docs`
-- [ ] FastAPI docs page loads correctly
-- [ ] Database container is running (`docker compose ps` shows database as "Up")
+-  Docker Desktop installed and running
+-  Environment variables configured (`.env` file exists in project root)
+-  Docker services start successfully (`docker compose up -d`)
+-  Backend server accessible at `http://localhost:8000/docs`
+-  FastAPI docs page loads correctly
+-  Database container is running (`docker compose ps` shows database as "Up")
 
 **Documentation:**
 Take screenshots or provide terminal output showing:
@@ -169,14 +171,14 @@ Take screenshots or provide terminal output showing:
 #### 2. Frontend Setup (5 points)
 
 **Verify:**
-- [ ] Frontend accessible at `http://localhost:5173` (running in Docker)
-- [ ] Web app loads correctly
-- [ ] Can see login page (or main page)
-- [ ] Frontend container is running (`docker compose ps` shows frontend as "Up")
+-  Frontend accessible at `http://localhost:5173` (running in Docker)
+-  Web app loads correctly
+-  Can see login page (or main page)
+-  Frontend container is running (`docker compose ps` shows frontend as "Up")
 
 **Optional (for local development):**
-- [ ] Node.js 18+ installed (`node --version`)
-- [ ] Can run frontend locally if needed (`npm install` and `npm run dev` in `ui/` directory)
+-  Node.js 18+ installed (`node --version`)
+-  Can run frontend locally if needed (`npm install` and `npm run dev` in `ui/` directory)
 
 **Documentation:**
 Take screenshots or provide terminal output showing:
@@ -187,11 +189,11 @@ Take screenshots or provide terminal output showing:
 #### 3. Git Setup (3 points)
 
 **Verify:**
-- [ ] Git installed (`git --version`)
-- [ ] Git configured with name and email (`git config --list`)
-- [ ] Team's repository forked and cloned (one fork per team)
-- [ ] You're added as a collaborator on the team's fork
-- [ ] Can push to team's fork (`git push origin main` succeeds)
+-  Git installed (`git --version`)
+-  Git configured with name and email (`git config --list`)
+-  Team's repository forked and cloned (one fork per team)
+-  You're added as a collaborator on the team's fork
+-  Can push to team's fork (`git push origin main` succeeds)
 
 **Documentation:**
 Provide terminal output showing:
@@ -207,11 +209,11 @@ Provide terminal output showing:
 **Note:** Mobile setup is optional for HW0, but you'll need it for Week 6.
 
 **Verify:**
-- [ ] Node.js 18.x or 20.x installed (`node --version` should show `v18.x.x` or `v20.x.x`) - Required for Expo
-- [ ] Expo CLI accessible (`npx expo-cli --version` or `npx expo --version`)
-- [ ] Mobile dependencies installed (`npm install` in `mobile/` directory succeeds)
-- [ ] Environment variable set (`mobile/.env` file with `EXPO_PUBLIC_API_URL`)
-- [ ] Expo starts (`npx expo start` shows QR code)
+-  Node.js 18.x or 20.x installed (`node --version` should show `v18.x.x` or `v20.x.x`) - Required for Expo
+-  Expo CLI accessible (`npx expo-cli --version` or `npx expo --version`)
+-  Mobile dependencies installed (`npm install` in `mobile/` directory succeeds)
+-  Environment variable set (`mobile/.env` file with `EXPO_PUBLIC_API_URL`)
+-  Expo starts (`npx expo start` shows QR code)
 
 **Important:** 
 - **Compatible versions:** Node.js 18.x LTS or 20.x LTS work with Expo SDK 54 (download from https://nodejs.org/)
@@ -228,10 +230,10 @@ Take screenshots or provide terminal output showing:
 #### 4. Integration Test (2 points)
 
 **Verify:**
-- [ ] Backend and frontend can communicate
-- [ ] Can make a test API call (try login endpoint in FastAPI docs)
-- [ ] Response is received correctly
-- [ ] All Docker services are running and communicating
+-  Backend and frontend can communicate
+-  Can make a test API call (try login endpoint in FastAPI docs)
+-  Response is received correctly
+-  All Docker services are running and communicating
 
 **Documentation:**
 Take screenshot showing:
@@ -316,23 +318,23 @@ Answer the following questions:
 Before submitting, make sure you have:
 
 ### Team Submission (one per team):
-- [ ] Team Working Agreement document
-  - [ ] Communication section
-  - [ ] Meetings section
-  - [ ] Work Distribution section
-  - [ ] Code Review section
-  - [ ] Conflict Resolution section
+-  Team Working Agreement document
+  -  Communication section
+  -  Meetings section
+  -  Work Distribution section
+  -  Code Review section
+  -  Conflict Resolution section
 
 ### Individual Submission (each team member):
-- [ ] Dev Setup Verification document
-  - [ ] Backend setup screenshots/output
-  - [ ] Frontend setup screenshots/output
-  - [ ] Git setup verification
-  - [ ] Integration test screenshot
-- [ ] Individual Reflection document
-  - [ ] All 5 prompts addressed
-  - [ ] 300-500 words total
-  - [ ] Well-written and thoughtful
+-  Dev Setup Verification document
+  -  Backend setup screenshots/output
+  -  Frontend setup screenshots/output
+  -  Git setup verification
+  -  Integration test screenshot
+-  Individual Reflection document
+  -  All 5 prompts addressed
+  -  300-500 words total
+  -  Well-written and thoughtful
 
 
 ## Getting Help
@@ -379,6 +381,4 @@ If you have questions about this assignment:
 - Ask your team
 - Ask in class
 - Email the instructor
-
-Good luck! 🚀
 

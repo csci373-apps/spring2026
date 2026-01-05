@@ -9,7 +9,8 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
   useEffect(() => {
     const mainElement = document.querySelector('main');
     if (mainElement) {
-      if (pathname.startsWith('/resources')) {
+      // Only apply resources layout to detail pages (with slug), not the landing page
+      if (pathname.startsWith('/resources/') && pathname !== '/resources') {
         mainElement.setAttribute('data-resources-layout', 'true');
       } else {
         mainElement.removeAttribute('data-resources-layout');

@@ -31,6 +31,7 @@ export interface PostData {
   excluded?: boolean;
   notes?: string;
   toc?: boolean;
+  heading_max_level?: number;
 }
 
 export function getAllPostIds(subdirectory?: string) {
@@ -73,7 +74,42 @@ export async function getPostData(id: string, subdirectory?: string): Promise<Po
     .use(smartypants, { dashes: 'oldschool' })  // Convert -- to en-dash (–) and --- to em-dash (—)
     .use(html, { sanitize: false })  // Allow HTML without sanitization
     .process(matterResult.content);
-  const contentHtml = processedContent.toString();
+  let contentHtml = processedContent.toString();
+  
+  // Wrap each instructor notes section with data attribute for conditional rendering
+  // Find all "## Instructor Notes" headings and wrap each section individually
+  // Each section includes the heading and everything until the next h2 heading (or end of document)
+  const instructorNotesRegex = /<h2[^>]*>Instructor Notes<\/h2>/g;
+  const matches: Array<number> = [];
+  let match;
+  
+  // Find all "Instructor Notes" heading positions
+  while ((match = instructorNotesRegex.exec(contentHtml)) !== null) {
+    matches.push(match.index);
+  }
+  
+  if (matches.length > 0) {
+    // Process from end to beginning to avoid index shifting issues
+    for (let i = matches.length - 1; i >= 0; i--) {
+      const sectionStart = matches[i];
+      
+      // Find the next h2 heading after this one (or end of document)
+      const afterStart = contentHtml.substring(sectionStart);
+      const nextH2Match = afterStart.substring(afterStart.indexOf('</h2>') + 5).match(/<h2[^>]*>/);
+      
+      let sectionEnd: number;
+      if (nextH2Match && nextH2Match.index !== undefined) {
+        sectionEnd = sectionStart + afterStart.indexOf('</h2>') + 5 + nextH2Match.index;
+      } else {
+        sectionEnd = contentHtml.length;
+      }
+      
+      // Extract and wrap this instructor notes section
+      const sectionContent = contentHtml.substring(sectionStart, sectionEnd);
+      const wrappedContent = `<div data-instructor-notes="true">${sectionContent}</div>`;
+      contentHtml = contentHtml.substring(0, sectionStart) + wrappedContent + contentHtml.substring(sectionEnd);
+    }
+  }
 
   // Combine the data with the id and contentHtml
   return {

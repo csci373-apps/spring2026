@@ -4,49 +4,50 @@ date: "2026-01-15"
 type: "activity"
 ---
 
-
 ## Learning Objectives
 
-By the end of this session, students will:
+By the end of this session, you will:
 - Be in a team of 3-4 students
 - Have created a Phase 1 Working Agreement
-- Have their dev environment set up and verified
+- Have your dev environment set up and verified
 - Understand the Git workflow for Phase 1
-- Have completed their first team reflection
+- Have completed your first team reflection
 
+## Agenda
 
+| Step | Time | Activity | Description |
+|------|------|----------|-------------|
+| 1 | 15 mins | Team Formation | Form teams of 3-4 students |
+| 2 | 30 mins | Working Agreement | Create team norms and expectations |
+| 3 | 35 mins | Dev Environment Setup | Install and verify tools |
+| 4 | 20 mins | Git Workflow Overview | Feature branches, commits, rebasing, PRs |
 
-## Agenda (90 minutes)
+## Part 1: Team Formation
 
-| Time | Activity | Description |
-|------|----------|-------------|
-| 0:00-0:15 | Team Formation | Form teams of 3-4 students |
-| 0:15-0:45 | Working Agreement | Create team norms and expectations |
-| 0:45-1:20 | Dev Environment Setup | Install and verify tools |
-| 1:20-1:40 | Git Workflow Overview | Feature branches, commits, rebasing, PRs |
+Form teams of 3-4 students. You'll work together on all Phase 1 assignments. Each team will have one forked repository, and all team members will be collaborators on that fork.
 
----
+**What to do:**
+- Introduce yourselves (name, programming experience, what you're excited/nervous about, preferred communication method)
+- Choose a team name (fun but professional)
+- One team member will fork the starter repository and add everyone as collaborators
 
-## Detailed Instructions
+## Instructor Notes
 
-### Part 1: Team Formation (15 minutes)
-
-#### Introduction (2 minutes)
-1. **Welcome back** and check in
-2. **Explain team structure:**
+### Introduction (5 minutes)
+1. **Welcome back** and check in (2 minutes)
+2. **Explain team structure** (3 minutes):
    - Teams of 3-4 students
    - You'll work together on all Phase 1 assignments
    - Each team will have their own forked repository (one fork per team)
    - All team members will be collaborators on the team's fork
    - Individual reflections, but team code
 
-#### Team Formation Activity (13 minutes)
-
+### Team Formation Activity (5 minutes)
 1. **Count off** by desired team size
 2. **Form teams** by number
 3. **Allow one swap** if someone has a conflict
 
-#### Team Introductions (5 minutes)
+### Team Introductions (5 minutes)
 **Each team:**
 1. **Introduce yourselves** to each other
 2. **Share:**
@@ -62,19 +63,19 @@ By the end of this session, students will:
 
 **Transition:** "Now that you're in teams, let's create your working agreement..."
 
+## Part 2: Working Agreement
 
+A working agreement is a set of norms your team commits to. It's not a contract, but a living document that helps prevent conflicts and sets expectations.
 
-### Part 2: Working Agreement (30 minutes)
+**What to create:**
+- Communication: How will you communicate? Response time expectations? Availability?
+- Meetings: How often? How long? Where?
+- Work Distribution: How will you divide work? How will you ensure everyone contributes?
+- Code Review: Who reviews PRs? How quickly? What makes a good review?
+- Conflict Resolution: What if you disagree? What if someone isn't contributing?
+- Learning & Growth: How will you help each other learn?
 
-#### What is a Working Agreement? (5 minutes)
-
-**Instructor explains:**
-- A working agreement is a set of norms your team commits to
-- It's not a contract, but a living document
-- It helps prevent conflicts and sets expectations
-- You'll revisit it throughout the semester
-
-**Show example working agreement:**
+**Template:**
 ```markdown
 # Team [Name] Working Agreement - Phase 1
 
@@ -109,17 +110,43 @@ By the end of this session, students will:
 - How do we celebrate successes?
 ```
 
-#### Team Activity: Create Working Agreement (20 minutes)
+Be specific (not "we'll communicate" but "we'll use Slack and respond within 24 hours"). Everyone should agree.
+
+## Instructor Notes
+
+### What is a Working Agreement? (5 minutes)
+
+**Instructor explains:**
+- A working agreement is a set of norms your team commits to
+- It's not a contract, but a living document
+- It helps prevent conflicts and sets expectations
+- You'll revisit it throughout the semester
+
+### Team Activity: Discuss Sections (10 minutes)
 
 **Instructions for teams:**
-1. **Discuss each section** (10 minutes)
+1. **Discuss each section** (5 minutes - first half)
+   - Communication and Meetings sections
    - Be honest about your needs
    - Compromise when needed
    - Write down your decisions
 
-2. **Draft your agreement** (10 minutes)
+2. **Continue discussion** (5 minutes - second half)
+   - Work Distribution, Code Review, Conflict Resolution, Learning & Growth
+   - Ensure everyone's voice is heard
+   - Make decisions together
+
+### Team Activity: Draft Agreement (10 minutes)
+
+**Instructions for teams:**
+1. **Write first draft** (5 minutes)
    - Use the template provided
    - Be specific (not "we'll communicate" but "we'll use Slack and respond within 24 hours")
+   - Get all sections down
+
+2. **Review and finalize** (5 minutes)
+   - Everyone should read the draft
+   - Make any final adjustments
    - Everyone should agree
 
 **Instructor circulates:**
@@ -127,7 +154,7 @@ By the end of this session, students will:
 - Ensure agreements are specific
 - Check that everyone is participating
 
-#### Share Highlights (5 minutes)
+### Share Highlights (5 minutes)
 **Ask 2-3 teams to share:**
 - One interesting norm they established
 - How they'll handle conflicts
@@ -137,13 +164,59 @@ By the end of this session, students will:
 
 **Transition:** "Now let's get your dev environment set up..."
 
+## Part 3: Dev Environment Setup
 
+Set up your development environment. You'll need:
 
-### Part 3: Dev Environment Setup (35 minutes)
+**Prerequisites:**
+- Docker Desktop installed
+- Git installed
+- A code editor (VS Code, etc.)
+- GitHub account
+- SSH key set up with GitHub (for cloning repositories)
+- Node.js 18.x or 20.x installed (for Expo/mobile development)
+- Expo Go app on phone (optional, for mobile testing)
 
-#### Prerequisites Check (5 minutes)
+**Setup steps:**
 
-**Note:** SSH key setup is now part of the prerequisites. Students who need to set up SSH keys will do so before forking the repository.
+1. **SSH Key Setup** (if needed)
+   - Check if you have one: `ls -la ~/.ssh`
+   - Create one: `ssh-keygen -t ed25519 -C "your_email@example.com"`
+   - Add to GitHub: https://github.com/settings/keys
+   - Test: `ssh -T git@github.com`
+
+2. **Fork Repository** (team activity)
+   - One team member forks the starter repo
+   - Add all team members as collaborators (Settings → Collaborators)
+   - Each team member clones using SSH: `git clone git@github.com:TEAM_MEMBER_USERNAME/health-app.git`
+
+3. **Backend Setup**
+   - Navigate to project: `cd health-app`
+   - Copy environment file: `cp .env.example .env`
+   - Start Docker: `docker compose up -d`
+   - Verify: Open http://localhost:8000/docs (should see FastAPI docs)
+
+4. **Frontend Setup**
+   - Already running in Docker! Open http://localhost:5173
+
+5. **Mobile Setup** (optional for today)
+   - Verify Node.js: `node --version` (should be v18.x.x or v20.x.x)
+   - Navigate to mobile: `cd mobile`
+   - Install dependencies: `npm install`
+   - Create `.env`: `echo "EXPO_PUBLIC_API_URL=http://localhost:8000" > .env`
+   - Start Expo: `npx expo start`
+
+**Verification checklist:**
+- Docker Desktop is running
+- Backend shows docs at http://localhost:8000/docs
+- Frontend shows login page at http://localhost:5173
+- Git is configured (name and email)
+- All team members can push to the team's fork
+- (Optional) Expo starts and shows QR code
+
+## Instructor Notes
+
+### Prerequisites Check (5 minutes)
 
 **Instructor asks:** "Raise your hand if you have:"
 - Docker Desktop installed
@@ -166,7 +239,7 @@ By the end of this session, students will:
   - **If you have Node 19 or 21+:** You may need to downgrade to Node 18 or 20 if you encounter Expo issues
 - Expo Go: Install from App Store (iOS) or Google Play (Android)
 
-#### SSH Key Setup (if needed) (5 minutes)
+### SSH Key Setup (if needed) (5 minutes)
 
 **Check if you have SSH key:**
 ```bash
@@ -201,7 +274,7 @@ Should see: "Hi [username]! You've successfully authenticated..."
 
 **Instructor:** Help students who don't have SSH keys set up
 
-#### Fork Repository (Team Activity) (5 minutes)
+### Fork Repository (Team Activity) (5 minutes)
 
 **Instructions for teams:**
 1. **Decide who will fork:** One team member will fork the repo (or create a team GitHub organization)
@@ -228,7 +301,7 @@ Should see: "Hi [username]! You've successfully authenticated..."
 - Verify all team members have been added as collaborators
 - Verify all team members can clone the team's fork
 
-#### Backend Setup (8 minutes)
+### Backend Setup - Initial Steps (5 minutes)
 
 **Instructions:**
 1. **Navigate to project root:**
@@ -251,12 +324,17 @@ Should see: "Hi [username]! You've successfully authenticated..."
    - Backend API server
    - Frontend web server
 
-4. **Verify backend is running:**
-   - Wait 30-60 seconds for services to start
+**Instructor:** Help teams troubleshoot issues (Docker not running, port conflicts, etc.)
+
+### Backend Setup - Verification (5 minutes)
+
+**Instructions:**
+1. **Wait for services to start** (30-60 seconds)
+2. **Verify backend is running:**
    - Open http://localhost:8000/docs
    - Should see FastAPI docs
 
-5. **Check Docker containers:**
+3. **Check Docker containers:**
    ```bash
    docker compose ps
    ```
@@ -264,7 +342,7 @@ Should see: "Hi [username]! You've successfully authenticated..."
 
 **Instructor:** Help teams troubleshoot issues (Docker not running, port conflicts, etc.)
 
-#### Frontend Setup (7 minutes)
+### Frontend Setup (5 minutes)
 
 **Instructions:**
 1. **Frontend is already running in Docker!**
@@ -275,10 +353,9 @@ Should see: "Hi [username]! You've successfully authenticated..."
    - Open http://localhost:5173
    - Should see the web app
 
-
 **Instructor:** Help teams troubleshoot issues (port conflicts, Docker not running, etc.)
 
-#### Mobile Setup (10 minutes)
+### Mobile Setup - Initial Steps (5 minutes)
 
 **Instructions:**
 1. **Verify Node.js version:**
@@ -299,8 +376,12 @@ Should see: "Hi [username]! You've successfully authenticated..."
    ```bash
    npm install
    ```
+   (This may take a few minutes - can continue while it runs)
 
-3. **Install Expo CLI globally** (if not installed):
+### Mobile Setup - Configuration & Start (5 minutes)
+
+**Instructions:**
+1. **Install Expo CLI globally** (if not installed):
    ```bash
    npm install -g expo-cli
    ```
@@ -309,7 +390,7 @@ Should see: "Hi [username]! You've successfully authenticated..."
    npx expo-cli --version
    ```
 
-4. **Set up environment variables:**
+2. **Set up environment variables:**
    Create `mobile/.env` file:
    ```bash
    cd mobile
@@ -317,12 +398,12 @@ Should see: "Hi [username]! You've successfully authenticated..."
    ```
    Note: For physical devices, use your computer's IP address instead of localhost
 
-5. **Start Expo:**
+3. **Start Expo:**
    ```bash
    npx expo start
    ```
 
-6. **Verify it works:**
+4. **Verify it works:**
    - Should see QR code in terminal
    - **Option 1:** Scan QR code with Expo Go app on your phone
    - **Option 2:** Press 'w' to open in web browser
@@ -343,7 +424,7 @@ Should see: "Hi [username]! You've successfully authenticated..."
 
 **Instructor:** Help teams troubleshoot issues (Node.js version, Expo CLI issues, network connectivity)
 
-#### Verification Checklist (5 minutes)
+### Verification Checklist (5 minutes)
 
 **Each team should verify:**
 - Docker Desktop is running
@@ -389,83 +470,33 @@ Should see: "Hi [username]! You've successfully authenticated..."
 
 **Transition:** "Great! Now let's talk about how you'll work with Git..."
 
+## Part 4: Git Workflow Overview
 
+Review the [Git Workflow guide](/resources/git-workflow) for complete details on Phase 1 Git workflow.
 
-### Part 4: Git Workflow Overview (20 minutes)
+**Quick summary:**
+- Create feature branches (never commit directly to `main`)
+- Commit logical units of work (not "save points")
+- Clean up commits before pushing (amend, rebase)
+- Push to team's fork and create PRs
+- Review each other's PRs
+- Update `main` after merging
 
-#### Phase 1 Git Workflow (15 minutes)
+**Key principle:** Each commit should be a logical unit that you'd be comfortable showing in a PR.
+
+## Instructor Notes
+
+### Git Workflow Overview (5 minutes)
 
 **Instructor explains:**
+- Reference the [Git Workflow guide](/resources/git-workflow) for complete details
+- Key points:
+  - Feature branches (never commit to `main`)
+  - Commit logical units of work
+  - Clean up commits before pushing
+  - PRs and code review process
 
-**1. Feature Branches:**
-- Never commit directly to `main`
-- Create a branch for each feature/assignment:
-  ```bash
-  git checkout -b feature/hw1-backend-tests
-  ```
-
-**2. Commit Logical Units of Work:**
-- Commit when you've completed a logical piece of work (not just every 5 minutes!)
-- **Good commits:** Working code that does one thing
-  ```bash
-  git commit -m "Add tests for login endpoint"
-  ```
-- **Bad commits:** Broken code, incomplete features, "save point" commits
-- **Rule of thumb:** Each commit should represent a working state that you'd be okay showing in a PR
-- Clear commit messages that describe what changed and why
-
-**3. Clean Up Commits (Before Pushing):**
-- **Amend the last commit** if you realize it's broken or incomplete:
-  ```bash
-  # Fix the issue, then:
-  git add .
-  git commit --amend --no-edit  # Updates last commit without changing message
-  # Or with new message:
-  git commit --amend -m "Add tests for login endpoint (fixed typo)"
-  ```
-- **Rebase to clean up multiple commits** before pushing:
-  ```bash
-  # Interactive rebase of last 3 commits:
-  git rebase -i HEAD~3
-  # In the editor:
-  # - Change "pick" to "squash" to combine commits
-  # - Change "pick" to "edit" to modify a commit
-  # - Delete lines to remove commits
-  ```
-- **Why clean up?** Your commit history tells a story. Make it a good one!
-
-**4. Push to Team's Fork:**
-- Push your cleaned-up branch:
-  ```bash
-  git push origin feature/hw1-backend-tests
-  ```
-- **If you've amended/rebased:** You may need to force push (only on feature branches!):
-  ```bash
-  git push --force-with-lease origin feature/hw1-backend-tests
-  ```
-  ⚠️ **Never force push to `main`!** Only use on your feature branches.
-  **Note:** You're pushing to your team's shared fork, not your personal fork
-
-**5. Create Pull Request:**
-- Go to GitHub
-- Click "New Pull Request"
-- Compare: `your-branch` → `main`
-- Add description, request review from teammates
-
-**6. Code Review:**
-- Teammates review your PR
-- Make changes based on feedback
-- **If you need to fix something:** Make changes, commit, then push (or amend if it's a small fix)
-
-**7. Update Main:**
-- After merging, update your local main:
-  ```bash
-  git checkout main
-  git pull origin main
-  ```
-  **Note:** This pulls from your team's fork, so all team members get the updates
-
-#### When to Commit vs When NOT to Commit (3 minutes)
+### When to Commit vs When NOT to Commit (5 minutes)
 
 **Instructor explains:**
 
@@ -484,18 +515,18 @@ Should see: "Hi [username]! You've successfully authenticated..."
 
 **Key principle:** Each commit should be a logical unit that you'd be comfortable showing in a PR. If you wouldn't want someone to review it, don't commit it (or amend it first).
 
-#### Demo: Create First PR + Clean Up Commits (5 minutes)
+### Demo: Create First PR + Clean Up Commits (10 minutes)
 
 **Instructor demonstrates:**
 
-**Scenario 1: Good commit workflow**
+**Scenario 1: Good commit workflow** (3 minutes)
 1. Create a test branch
 2. Make a small change (add a comment)
 3. Test that it works
 4. Commit with clear message
 5. Push and create PR
 
-**Scenario 2: Oops, I committed broken code**
+**Scenario 2: Oops, I committed broken code** (3 minutes)
 1. Realize the last commit has a bug
 2. Fix the bug
 3. Amend the commit:
@@ -508,7 +539,7 @@ Should see: "Hi [username]! You've successfully authenticated..."
    git push --force-with-lease origin test-branch
    ```
 
-**Scenario 3: Too many small commits**
+**Scenario 3: Too many small commits** (4 minutes)
 1. Show a branch with 5 "save point" commits
 2. Interactive rebase to squash them:
    ```bash
@@ -526,11 +557,37 @@ Should see: "Hi [username]! You've successfully authenticated..."
 
 **Transition:** "Now let's do your first team reflection..."
 
+## Part 5: First Team Reflection
 
+Reflect on today's work as a team. Discuss:
 
-### Part 5: First Team Reflection (if time permits, or assign as homework)
+1. **What did we do today?**
+   - Formed teams
+   - Created working agreement
+   - Set up dev environment
+   - Learned Git workflow
 
-#### Reflection Prompt (5 minutes)
+2. **What did we learn?**
+   - How to work as a team
+   - How to set up the project
+   - How Git workflow works
+
+3. **What was hard?**
+   - What was confusing?
+   - What took longer than expected?
+
+4. **What questions do we have?**
+   - What do we still need to know?
+
+5. **How will we work together?**
+   - What are our strengths as a team?
+   - What do we need to work on?
+
+Write down your reflections (will be part of HW0).
+
+## Instructor Notes
+
+### Reflection Prompt (5 minutes)
 
 **Ask teams to discuss:**
 1. **What did we do today?**
@@ -556,16 +613,6 @@ Should see: "Hi [username]! You've successfully authenticated..."
    - What do we need to work on?
 
 **Instructor:** Have teams write down their reflections (will be part of HW0)
-
-
-
-## Materials Needed
-
-- Starter repository (GitHub link)
-- Working Agreement template (handout or digital)
-- Dev setup instructions (handout or digital)
-- Git workflow diagram (whiteboard or slides)
-- Computer for each student (or pairs)
 
 ## Instructor Notes
 
@@ -610,25 +657,8 @@ Solution: Provide Docker setup, or use SQLite for simplicity
 - **If teams are unbalanced:** You can make small adjustments
 - **If someone is left out:** Form a team with them, or add to existing team
 
-
-
-## Student Deliverables
-
-- Team formed and name chosen
-- Working Agreement created (part of HW0)
-- Dev environment set up and verified (part of HW0)
-- First team reflection (part of HW0)
-
-## Homework Preview
-
-**HW0: Team Working Agreement + Dev Setup + Team Reflection**
-- Due: Tuesday, January 20
-- Submit: Working agreement document, dev setup verification, individual reflection
-- See `hw00.md` for full details
-
 ## Next Steps
 
 - **Before Tuesday:** Complete HW0
 - **Tuesday:** Backend deep dive - models, schemas, routes
 - **Reading:** FastAPI Dependencies documentation (due Tuesday)
-

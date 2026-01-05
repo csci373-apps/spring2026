@@ -16,7 +16,7 @@ export default function Navigation() {
     { href: "/", label: "Schedule" },
     { href: "/syllabus", label: "Syllabus" },
     { href: "/assignments", label: "Assignments" },
-    { href: "/activities", label: "Activities" },
+    // { href: "/activities", label: "Activities" },
     { href: "/resources", label: "Resources" },
   ];
 

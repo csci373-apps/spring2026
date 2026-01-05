@@ -12,7 +12,7 @@ export default function SchedulePage() {
   function loadSavedStates() {
     const savedStates: Record<string, boolean> = {};
     topics.forEach(topic => {
-      topic.meetings.forEach((meeting, index) => {
+      topic.meetings.forEach((meeting) => {
         const meetingKey = `meeting-${meeting.date}-${meeting.topic.replace(/\s+/g, '-').toLowerCase()}`;
         if (typeof window !== 'undefined') {
           const savedState = localStorage.getItem(meetingKey);

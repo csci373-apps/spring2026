@@ -3,7 +3,6 @@ import PageHeader from '@/components/PageHeader';
 import MarkdownContent from '@/components/MarkdownContent';
 import TableOfContents from '@/components/TableOfContents';
 import StyleGuideStyles from '@/components/StyleGuideStyles';
-import { notFound } from 'next/navigation';
 
 interface AssignmentPageProps {
   params: Promise<{
@@ -23,6 +22,7 @@ function formatDate(dateString: string): string {
 export default async function AssignmentPage({ params }: AssignmentPageProps) {
   const { slug } = await params;
   const postData = await getPostData(slug, 'assignments');
+  const { heading_max_level } = postData;
   const isStyleGuideDemo = slug === 'style-guide-demo';
   
   return (
@@ -44,7 +44,7 @@ export default async function AssignmentPage({ params }: AssignmentPageProps) {
         {/* Table of Contents */}
         {postData.toc !== false && (
           <div className="hidden lg:block">
-            <TableOfContents />
+            <TableOfContents maxLevel={heading_max_level || 2} />
           </div>
         )}
       </div>

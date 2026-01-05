@@ -1,10 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-import { createRoot } from 'react-dom/client';
-import ImageGrid from '@/components/ImageGrid';
-import ExpandableSection from '@/components/ExpandableSection';
-import { IMAGE_SETS, IMAGE_PATHS } from '@/lib/remark-imagegrid';
+import { useRef } from 'react';
 
 interface MarkdownContentProps {
   content: string;
