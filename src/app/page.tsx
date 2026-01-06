@@ -7,6 +7,7 @@ import topics from '@/lib/topics';
 
 export default function SchedulePage() {
   const [meetingStates, setMeetingStates] = useState<Record<string, boolean>>({});
+  const [isDark, setIsDark] = useState(false);
 
   // Load saved states from localStorage on mount
   function loadSavedStates() {
@@ -27,6 +28,22 @@ export default function SchedulePage() {
 
   useEffect(loadSavedStates, []);
 
+  useEffect(() => {
+    // Check if dark mode is active
+    setIsDark(document.documentElement.classList.contains('dark'));
+    
+    // Watch for dark mode changes
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains('dark'));
+    });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+    
+    return () => observer.disconnect();
+  }, []);
+
 
   const setMeetingState = (meetingKey: string, show: boolean) => {
     setMeetingStates(prev => ({
@@ -42,7 +59,12 @@ export default function SchedulePage() {
       {topics.map((topic) => (
         <div key={topic.id} className="mb-16">
           <h2>Topic {topic.id}: {topic.title}</h2>
-          <p className="pb-6 !mb-0 border-b border-black dark:border-gray-700 text-gray-700 dark:text-gray-300">{topic.description}</p>
+          <p 
+            className="pb-6 !mb-0 border-b border-black dark:border-gray-700 text-gray-700 dark:text-gray-300"
+            style={isDark ? { borderColor: '#374151', color: '#d1d5db' } : undefined}
+          >
+            {topic.description}
+          </p>
           
           {topic.meetings.map((meeting, index) => {
             const meetingKey = `meeting-${meeting.date}-${meeting.topic.replace(/\s+/g, '-').toLowerCase()}`;

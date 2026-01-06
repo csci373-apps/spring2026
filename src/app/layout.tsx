@@ -34,7 +34,30 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const theme = localStorage.getItem('theme');
+                  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  const shouldBeDark = theme === 'dark' || (!theme && prefersDark);
+                  const html = document.documentElement;
+                  if (shouldBeDark) {
+                    html.classList.add('dark');
+                    html.style.colorScheme = 'dark';
+                  } else {
+                    html.classList.remove('dark');
+                    html.style.colorScheme = 'light';
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body className={`${inter.className} ${abril.variable} ${outfit.variable}`}>
         <Navigation />
         <LayoutWrapper>

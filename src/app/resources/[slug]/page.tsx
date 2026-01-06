@@ -72,32 +72,32 @@ export default async function ResourcePage({ params }: PageProps) {
                 
                 {/* Next/Previous Navigation */}
                 {(previousResource || nextResource) && (
-                  <div className="mt-12 pt-8 border-t border-gray-200 flex justify-between gap-4">
+                  <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row justify-between gap-4">
                     {previousResource ? (
                       <Link
                         href={`/resources/${previousResource.id}`}
-                        className="flex items-center gap-3 px-4 py-3 !border bg-white !border-gray-300 rounded-lg hover:bg-gray-50 hover:border-blue-500 transition-all group no-underline"
+                        className="flex items-center gap-3 px-4 py-3 !border bg-white dark:bg-gray-900 !border-gray-300 dark:!border-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 hover:border-blue-500 dark:hover:border-blue-600 transition-all group no-underline w-full sm:w-auto"
                       >
-                        <ChevronLeftIcon className="w-5 h-5 text-gray-600 group-hover:text-blue-600" />
-                        <div className="flex flex-col">
-                          <span className="text-xs text-gray-500 uppercase tracking-wide">Previous</span>
-                          <span className="font-medium text-gray-900 group-hover:text-blue-600">{previousResource.title}</span>
+                        <ChevronLeftIcon className="w-5 h-5 text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 flex-shrink-0" />
+                        <div className="flex flex-col min-w-0">
+                          <span className="text-xs text-gray-500 dark:text-gray-300 uppercase tracking-wide">Previous</span>
+                          <span className="font-medium text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 truncate">{previousResource.title}</span>
                         </div>
                       </Link>
                     ) : (
-                      <div></div>
+                      <div className="hidden sm:block"></div>
                     )}
                     
                     {nextResource ? (
                       <Link
                         href={`/resources/${nextResource.id}`}
-                        className="flex items-center gap-3 px-4 py-3 bg-white !border !border-gray-300 rounded-lg hover:bg-gray-50 hover:border-blue-500 transition-all group text-right ml-auto no-underline"
+                        className="flex items-center gap-3 px-4 py-3 bg-white dark:bg-gray-900 !border !border-gray-300 dark:!border-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 hover:border-blue-500 dark:hover:border-blue-600 transition-all group sm:text-right sm:ml-auto no-underline w-full sm:w-auto"
                       >
-                        <div className="flex flex-col">
-                          <span className="text-xs text-gray-500 uppercase tracking-wide">Next</span>
-                          <span className="font-medium text-gray-900 group-hover:text-blue-600">{nextResource.title}</span>
+                        <div className="flex flex-col min-w-0 flex-1 sm:flex-none">
+                          <span className="text-xs text-gray-500 dark:text-gray-300 uppercase tracking-wide">Next</span>
+                          <span className="font-medium text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 truncate">{nextResource.title}</span>
                         </div>
-                        <ChevronRightIcon className="w-5 h-5 text-gray-600 group-hover:text-blue-600" />
+                        <ChevronRightIcon className="w-5 h-5 text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 flex-shrink-0 ml-auto sm:ml-0" />
                       </Link>
                     ) : null}
                   </div>

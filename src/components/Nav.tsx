@@ -8,6 +8,9 @@ export default function Navigation() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isDark, setIsDark] = useState(false);
+  const [isToggleHovered, setIsToggleHovered] = useState(false);
   
   const normalizePath = (path: string) => path.replace(/\/$/, "");
 
@@ -23,7 +26,45 @@ export default function Navigation() {
   // Only run on client side to prevent hydration mismatch
   useEffect(() => {
     setMounted(true);
+    
+    // Check for saved dark mode preference or default to system preference
+    // This should match the script in layout.tsx
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const shouldBeDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
+    
+    // Sync state with what's already applied by the script
+    setIsDark(shouldBeDark);
+    
+    // Ensure the class is set (in case script didn't run)
+    if (shouldBeDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
   }, []);
+
+  // Handle scroll for frosted glass effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const toggleDarkMode = () => {
+    const newDarkMode = !isDark;
+    setIsDark(newDarkMode);
+    
+    if (newDarkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  };
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -34,13 +75,23 @@ export default function Navigation() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-white dark:bg-black" suppressHydrationWarning>
-      <div className="px-4 sm:px-6 lg:px-8 flex justify-between h-16">
+    <nav 
+      data-nav="true"
+      className={`sticky top-0 z-50 border-b transition-all duration-300 ${
+        isScrolled 
+          ? 'bg-white/80 backdrop-blur-md backdrop-saturate-150 dark:bg-black/80' 
+          : 'bg-white dark:bg-black'
+      } border-gray-200 dark:border-gray-800`} 
+      style={isDark ? (isScrolled ? { backgroundColor: 'rgba(0, 0, 0, 0.8)' } : { backgroundColor: '#000000' }) : undefined}
+      suppressHydrationWarning
+    >
+      <div className="px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16 max-w-7xl mx-auto">
         {/* Logo */}
         <div className="flex items-center">
           <Link 
             href="/" 
-            className="!border-transparent dark:!border-gray-800 !text-black dark:!text-white font-bold !text-xl"
+            className="!text-black dark:!text-white font-medium text-lg hover:opacity-80 transition-opacity !no-underline !border-0"
+            style={isDark ? { color: '#f9fafb' } : undefined}
             suppressHydrationWarning
           >
             CSCI 373
@@ -48,31 +99,119 @@ export default function Navigation() {
         </div>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center space-x-4">
+        <div className="hidden md:flex items-center space-x-6">
           {navItems.slice(1).map((item) => {
             const isActive = mounted && normalizePath(pathname) === normalizePath(item.href);
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`transition-colors dark:hover:!text-sky-300 hover:!text-sky-700 hover:!border-sky-700 ${
+                className={`text-sm transition-colors !no-underline !border-0 ${
                   isActive
-                    ? "!font-semibold !border-sky-700 dark:!border-sky-300"
-                    : "!border-transparent !hover:border-sky-700 !text-black dark:!text-white"
+                    ? `${isDark ? "!text-gray-300" : "!text-gray-600"} font-bold`
+                    : `${isDark ? "!text-gray-100" : "!text-black"} hover:!text-gray-600 dark:hover:!text-white`
                 }`}
+                style={isDark ? (isActive ? { color: '#d1d5db' } : { color: '#f3f4f6' }) : undefined}
                 suppressHydrationWarning
               >
                 {item.label}
               </Link>
             );
           })}
+          
+          {/* Dark Mode Toggle */}
+          <button
+            onClick={toggleDarkMode}
+            onMouseEnter={() => setIsToggleHovered(true)}
+            onMouseLeave={() => setIsToggleHovered(false)}
+            className="p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors focus:outline-none"
+            aria-label="Toggle dark mode"
+          >
+            {isDark ? (
+              // Sun icon for light mode
+              <svg
+                className="w-5 h-5 text-black dark:text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                style={isDark ? (isToggleHovered ? { color: '#1f2937' } : { color: '#f3f4f6' }) : undefined}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                />
+              </svg>
+            ) : (
+              // Moon icon for dark mode
+              <svg
+                className="w-5 h-5 text-black dark:text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                style={isDark ? (isToggleHovered ? { color: '#1f2937' } : { color: '#f3f4f6' }) : undefined}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                />
+              </svg>
+            )}
+          </button>
         </div>
 
-        {/* Mobile menu button */}
-        <div className="md:hidden flex items-center">
+        {/* Mobile menu button and dark mode toggle */}
+        <div className="md:hidden flex items-center space-x-2">
+          {/* Dark Mode Toggle */}
+          <button
+            onClick={toggleDarkMode}
+            onMouseEnter={() => setIsToggleHovered(true)}
+            onMouseLeave={() => setIsToggleHovered(false)}
+            className="p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors focus:outline-none"
+            aria-label="Toggle dark mode"
+          >
+            {isDark ? (
+              // Sun icon for light mode
+              <svg
+                className="w-5 h-5 text-black dark:text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                style={isDark ? (isToggleHovered ? { color: '#1f2937' } : { color: '#f3f4f6' }) : undefined}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                />
+              </svg>
+            ) : (
+              // Moon icon for dark mode
+              <svg
+                className="w-5 h-5 text-black dark:text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                style={isDark ? (isToggleHovered ? { color: '#1f2937' } : { color: '#f3f4f6' }) : undefined}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                />
+              </svg>
+            )}
+          </button>
+          
           <button
             onClick={toggleMenu}
-            className="focus:outline-none"
+            className="focus:outline-none text-gray-900 dark:text-white"
+            style={isDark ? { color: '#f3f4f6' } : undefined}
             aria-label="Toggle menu"
           >
             <svg
@@ -103,7 +242,14 @@ export default function Navigation() {
 
       {/* Mobile Navigation */}
       <div className={`md:hidden ${isMenuOpen ? "block" : "hidden"}`}>
-        <div className="border-t border-gray-200">
+        <div 
+          className={`border-t transition-all duration-300 ${
+            isScrolled 
+              ? 'bg-white/80 backdrop-blur-md backdrop-saturate-150 dark:bg-black/80' 
+              : 'bg-white dark:bg-black'
+          } border-gray-200 dark:border-gray-800`}
+          style={isDark ? (isScrolled ? { backgroundColor: 'rgba(0, 0, 0, 0.8)' } : { backgroundColor: '#000000' }) : undefined}
+        >
           {navItems.slice(1).map((item) => {
             const isActive = mounted && normalizePath(pathname) === normalizePath(item.href);
             return (
@@ -111,17 +257,20 @@ export default function Navigation() {
                 key={item.href}
                 href={item.href}
                 onClick={closeMenu}
-                className={`block px-6 py-4 text-base font-medium transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 ${
+                className={`block px-6 py-4 text-sm hover:bg-gray-200 dark:hover:bg-gray-900 transition-colors !no-underline !border-0 ${
                   isActive
-                    ? "bg-gray-100 dark:bg-gray-800 font-semibold !border-gray-100 dark:!border-gray-800"
-                    : "!border-transparent"
+                    ? `${isDark ? "!text-gray-300" : "!text-gray-600"} !font-bold bg-gray-50 dark:bg-gray-900`
+                    : `${isDark ? "!text-gray-100" : "!text-black"} hover:!text-gray-600 dark:hover:!text-white`
                 }`}
+                style={isDark ? (isActive ? { color: '#d1d5db', backgroundColor: '#111827' } : { color: '#f3f4f6' }) : undefined}
                 suppressHydrationWarning
               >
                 {item.label}
               </Link>
             );
           })}
+          
+          
         </div>
       </div>
     </nav>

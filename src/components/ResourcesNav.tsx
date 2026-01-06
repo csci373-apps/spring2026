@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
@@ -17,7 +17,24 @@ interface ResourcesNavProps {
 
 export default function ResourcesNav({ resourcePages }: ResourcesNavProps) {
   const [navOpen, setNavOpen] = useState(false);
+  const [isDark, setIsDark] = useState(false);
   const pathname = usePathname();
+
+  useEffect(() => {
+    // Check if dark mode is active
+    setIsDark(document.documentElement.classList.contains('dark'));
+    
+    // Watch for dark mode changes
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains('dark'));
+    });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+    
+    return () => observer.disconnect();
+  }, []);
   
   // Group pages by their group field
   const groupedPages = resourcePages.reduce((groups, page) => {
@@ -47,9 +64,10 @@ export default function ResourcesNav({ resourcePages }: ResourcesNavProps) {
                     onClick={() => setNavOpen(false)}
                     className={`text-sm font-medium transition-colors ${
                       isActive
-                        ? 'font-bold !text-black hover:!text-gray-900 !border-0'
-                        : 'text-blue-700 border-blue-500 '
+                        ? `font-bold ${isDark ? '!text-white' : '!text-black'} hover:!text-gray-900 dark:hover:!text-gray-200 !border-0`
+                        : 'text-blue-700 dark:text-blue-400 border-blue-500 '
                     }`}
+                    style={isDark && isActive ? { color: '#ffffff' } : undefined}
                   >
                     {page.title}
                   </Link>

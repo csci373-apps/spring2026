@@ -1,9 +1,9 @@
 const topics = [
   {
     id: 1,
-    title: "Orientation, Architecture, and Ambiguity",
+    title: "Intro to the Course",
     description:
-      "Set expectations for a studio course, establish team norms, and build architectural literacy. Introduce the idea that requirements are incomplete and SDLC work runs alongside coding.",
+      "Expectations, team norms, intro to the tech stack and course structure.",
     meetings: [
       {
         date: "Tu, Jan 13",
@@ -19,9 +19,9 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Slides", url: "https://docs.google.com/presentation/d/1OZNO79sDQ3uI1sypTpXfwVLs0MCQUp-x/edit?usp=sharing&ouid=113376576186080604800&rtpof=true&sd=true" },
-          { title: "Syllabus", url: "/syllabus/" },
-          { title: "Day 1: Course Intro", url: "/activities/day01-course-intro/" },
+          { title: "Slides", url: "https://docs.google.com/presentation/d/1OZNO79sDQ3uI1sypTpXfwVLs0MCQUp-x/edit?usp=sharing&ouid=113376576186080604800&rtpof=true&sd=true", draft: 0 },
+          { title: "Syllabus", url: "/syllabus/", draft: 0 },
+          { title: "Day 1: Course Intro", url: "/activities/day01-course-intro/", draft: 0 },
         ]
       },
       {
@@ -37,8 +37,8 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Slides", url: "#" },
-          { title: "Day 2: Team Formation + Dev Setup", url: "/activities/day02-team-formation-dev-setup/" },
+          { title: "Slides", url: "#", draft: 1 },
+          { title: "Day 2: Team Formation + Dev Setup", url: "/activities/day02-team-formation-dev-setup/", draft: 0 },
         ],
         readings: [
           {
@@ -91,8 +91,8 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Slides", url: "#" },
-          { title: "Day 3: Backend Deep Dive", url: "/activities/day03-backend-deep-dive/" },
+          { title: "Slides", url: "#", draft: 1 },
+          { title: "Day 3: Backend Deep Dive", url: "/activities/day03-backend-deep-dive/", draft: 1 },
         ],
         readings: [
           {
@@ -126,8 +126,8 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Slides", url: "#" },
-          { title: "Day 4: Pytest Workshop", url: "/activities/day04-pytest-workshop/" },
+          { title: "Slides", url: "#", draft: 1 },
+          { title: "Day 4: Pytest Workshop", url: "/activities/day04-pytest-workshop/", draft: 1 },
         ],
         readings: [
           {
@@ -168,8 +168,8 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Slides", url: "#" },
-          { title: "Day 5: Domain Modeling", url: "/activities/day05-domain-modeling/" },
+          { title: "Slides", url: "#", draft: 1 },
+          { title: "Day 5: Domain Modeling", url: "/activities/day05-domain-modeling/", draft: 1 },
         ],
         readings: [
           {
@@ -203,7 +203,7 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Day 6: Implementation Studio", url: "/activities/day06-implementation-studio/" },
+          { title: "Day 6: Implementation Studio", url: "/activities/day06-implementation-studio/", draft: 1 },
         ],
         assigned: {
           titleShort: "HW2",
@@ -233,8 +233,8 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Slides", url: "#" },
-          { title: "Day 7: Design Principles", url: "/activities/day07-design-principles/" },
+          { title: "Slides", url: "#", draft: 1 },
+          { title: "Day 7: Design Principles", url: "/activities/day07-design-principles/", draft: 1 },
         ],
         readings: [
           {
@@ -269,7 +269,7 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Day 8: Refactoring Studio", url: "/activities/day08-refactoring-studio/" },
+          { title: "Day 8: Refactoring Studio", url: "/activities/day08-refactoring-studio/", draft: 1 },
         ],
         assigned: {
           titleShort: "HW3",
@@ -299,8 +299,8 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Slides", url: "#" },
-          { title: "Day 9: React Architecture", url: "/activities/day09-react-architecture/" },
+          { title: "Slides", url: "#", draft: 1 },
+          { title: "Day 9: React Architecture", url: "/activities/day09-react-architecture/", draft: 1 },
         ],
         readings: [
           {
@@ -334,7 +334,7 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Day 10: TypeScript, Contexts, Hooks", url: "/activities/day10-typescript-contexts-hooks/" },
+          { title: "Day 10: TypeScript, Contexts, Hooks", url: "/activities/day10-typescript-contexts-hooks/", draft: 1 },
         ],
         assigned: {
           titleShort: "HW4",
@@ -366,8 +366,8 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Slides", url: "#" },
-          { title: "Day 11: React Native + Expo", url: "/activities/day11-react-native-expo/" },
+          { title: "Slides", url: "#", draft: 1 },
+          { title: "Day 11: React Native + Expo", url: "/activities/day11-react-native-expo/", draft: 1 },
         ],
         readings: [
           {
@@ -395,7 +395,7 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Day 12: Mobile UI Integration", url: "/activities/day12-mobile-ui-integration/" },
+          { title: "Day 12: Mobile UI Integration", url: "/activities/day12-mobile-ui-integration/", draft: 1 },
         ],
         assigned: {
           titleShort: "HW5",
@@ -426,8 +426,8 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Slides", url: "#" },
-          { title: "Day 13: Human-Centered Design + Low-Fi Prototyping", url: "/activities/day13-hcd-lowfi-prototyping/" },
+          { title: "Slides", url: "#", draft: 1 },
+          { title: "Day 13: Human-Centered Design + Low-Fi Prototyping", url: "/activities/day13-hcd-lowfi-prototyping/", draft: 1 },
         ],
         readings: [
           {
@@ -460,7 +460,7 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Day 14: High-Fidelity Prototyping + Implementation", url: "/activities/day14-hifi-prototyping-implementation/" },
+          { title: "Day 14: High-Fidelity Prototyping + Implementation", url: "/activities/day14-hifi-prototyping-implementation/", draft: 1 },
         ],
         assigned: {
           titleShort: "HW6",
@@ -490,7 +490,7 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Day 15: Demo Prep + Phase 1 Reflection", url: "/activities/day15-demo-prep/" },
+          { title: "Day 15: Demo Prep + Phase 1 Reflection", url: "/activities/day15-demo-prep/", draft: 1 },
         ],
         readings: [
           {
@@ -515,7 +515,7 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Day 16: Sprint 1 Demos + Phase 1 Retrospective", url: "/activities/day16-sprint-demos-retrospective/" },
+          { title: "Day 16: Sprint 1 Demos + Phase 1 Retrospective", url: "/activities/day16-sprint-demos-retrospective/", draft: 1 },
         ],
         assigned: {
           titleShort: "HW7",
@@ -556,9 +556,9 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Agile Primer", url: "/activities/agile-primer/" },
-          { title: "Vertical Team Formation", url: "/activities/vertical-teams/" },
-          { title: "Phase 2 Working Agreement", url: "/activities/working-agreement-phase2/" },
+          { title: "Agile Primer", url: "/activities/agile-primer/", draft: 1 },
+          { title: "Vertical Team Formation", url: "/activities/vertical-teams/", draft: 1 },
+          { title: "Phase 2 Working Agreement", url: "/activities/working-agreement-phase2/", draft: 1 },
         ],
         readings: [
           {
@@ -583,9 +583,9 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Feature Assignment", url: "/activities/feature-assignment/" },
-          { title: "Sprint Planning Workshop", url: "/activities/sprint-planning-workshop/" },
-          { title: "API Contract Definition", url: "/activities/api-contracts/" },
+          { title: "Feature Assignment", url: "/activities/feature-assignment/", draft: 1 },
+          { title: "Sprint Planning Workshop", url: "/activities/sprint-planning-workshop/", draft: 1 },
+          { title: "API Contract Definition", url: "/activities/api-contracts/", draft: 1 },
         ],
       },
     ],
@@ -610,9 +610,9 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Daily Standup Protocol", url: "/activities/standup-protocol/" },
-          { title: "Feature Development Guide", url: "/activities/feature-development/" },
-          { title: "Cross-Team Collaboration", url: "/activities/cross-team-collab/" },
+          { title: "Daily Standup Protocol", url: "/activities/standup-protocol/", draft: 1 },
+          { title: "Feature Development Guide", url: "/activities/feature-development/", draft: 1 },
+          { title: "Cross-Team Collaboration", url: "/activities/cross-team-collab/", draft: 1 },
         ],
       },
       {
@@ -629,9 +629,9 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "PR Workflow (Shared Repo)", url: "/activities/pr-workflow-shared/" },
-          { title: "Code Review Across Teams", url: "/activities/cross-team-review/" },
-          { title: "Conflict Resolution", url: "/activities/conflict-resolution/" },
+          { title: "PR Workflow (Shared Repo)", url: "/activities/pr-workflow-shared/", draft: 1 },
+          { title: "Code Review Across Teams", url: "/activities/cross-team-review/", draft: 1 },
+          { title: "Conflict Resolution", url: "/activities/conflict-resolution/", draft: 1 },
         ],
       },
       {
@@ -648,8 +648,8 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Feature Development", url: "/activities/feature-development/" },
-          { title: "Team Check-in", url: "/activities/team-checkin/" },
+          { title: "Feature Development", url: "/activities/feature-development/", draft: 1 },
+          { title: "Team Check-in", url: "/activities/team-checkin/", draft: 1 },
         ],
       },
       {
@@ -666,8 +666,8 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Integration Testing", url: "/activities/integration-testing/" },
-          { title: "Code Review Across Teams", url: "/activities/cross-team-review/" },
+          { title: "Integration Testing", url: "/activities/integration-testing/", draft: 1 },
+          { title: "Code Review Across Teams", url: "/activities/cross-team-review/", draft: 1 },
         ],
       },
     ],
@@ -692,9 +692,9 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Sprint Review Format", url: "/activities/sprint-review/" },
-          { title: "Sprint Retrospective", url: "/activities/sprint-retro/" },
-          { title: "Sprint Planning", url: "/activities/sprint-planning/" },
+          { title: "Sprint Review Format", url: "/activities/sprint-review/", draft: 1 },
+          { title: "Sprint Retrospective", url: "/activities/sprint-retro/", draft: 1 },
+          { title: "Sprint Planning", url: "/activities/sprint-planning/", draft: 1 },
         ],
       },
       {
@@ -711,8 +711,8 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Feature Development", url: "/activities/feature-development/" },
-          { title: "Team Check-in", url: "/activities/team-checkin/" },
+          { title: "Feature Development", url: "/activities/feature-development/", draft: 1 },
+          { title: "Team Check-in", url: "/activities/team-checkin/", draft: 1 },
         ],
       },
       {
@@ -729,8 +729,8 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Feature Development", url: "/activities/feature-development/" },
-          { title: "Integration Testing", url: "/activities/integration-testing/" },
+          { title: "Feature Development", url: "/activities/feature-development/", draft: 1 },
+          { title: "Integration Testing", url: "/activities/integration-testing/", draft: 1 },
         ],
       },
       {
@@ -747,8 +747,8 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Code Review Across Teams", url: "/activities/cross-team-review/" },
-          { title: "Integration Testing", url: "/activities/integration-testing/" },
+          { title: "Code Review Across Teams", url: "/activities/cross-team-review/", draft: 1 },
+          { title: "Integration Testing", url: "/activities/integration-testing/", draft: 1 },
         ],
       },
     ],
@@ -773,8 +773,8 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Sprint Review", url: "/activities/sprint-review/" },
-          { title: "Integration Testing Guide", url: "/activities/integration-testing/" },
+          { title: "Sprint Review", url: "/activities/sprint-review/", draft: 1 },
+          { title: "Integration Testing Guide", url: "/activities/integration-testing/", draft: 1 },
         ],
       },
       {
@@ -791,8 +791,8 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Feature Development", url: "/activities/feature-development/" },
-          { title: "Integration Testing", url: "/activities/integration-testing/" },
+          { title: "Feature Development", url: "/activities/feature-development/", draft: 1 },
+          { title: "Integration Testing", url: "/activities/integration-testing/", draft: 1 },
         ],
       },
       {
@@ -809,8 +809,8 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Integration Testing", url: "/activities/integration-testing/" },
-          { title: "Bug Triage", url: "/activities/bug-triage/" },
+          { title: "Integration Testing", url: "/activities/integration-testing/", draft: 1 },
+          { title: "Bug Triage", url: "/activities/bug-triage/", draft: 1 },
         ],
       },
       {
@@ -827,8 +827,8 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Integration Testing", url: "/activities/integration-testing/" },
-          { title: "Final Testing Checklist", url: "/activities/final-testing/" },
+          { title: "Integration Testing", url: "/activities/integration-testing/", draft: 1 },
+          { title: "Final Testing Checklist", url: "/activities/final-testing/", draft: 1 },
         ],
       },
     ],
@@ -853,8 +853,8 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Final Testing Checklist", url: "/activities/final-testing/" },
-          { title: "Demo Preparation", url: "/activities/demo-prep/" },
+          { title: "Final Testing Checklist", url: "/activities/final-testing/", draft: 1 },
+          { title: "Demo Preparation", url: "/activities/demo-prep/", draft: 1 },
         ],
         readings: [
           {
@@ -876,8 +876,8 @@ const topics = [
           </>
         ),
         activities: [
-          { title: "Final Demo Format", url: "/activities/final-demo/" },
-          { title: "Course Reflection", url: "/activities/course-reflection/" },
+          { title: "Final Demo Format", url: "/activities/final-demo/", draft: 1 },
+          { title: "Course Reflection", url: "/activities/course-reflection/", draft: 1 },
         ],
       },
     ],

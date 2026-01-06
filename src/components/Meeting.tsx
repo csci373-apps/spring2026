@@ -2,6 +2,7 @@
 
 import clsx from 'clsx';
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 
 interface Reading {
   citation: string | React.ReactElement;
@@ -43,6 +44,7 @@ export default function Meeting({
   showDetails: boolean;
   setShowDetails: (show: boolean) => void;
 }) {
+  const [isDark, setIsDark] = useState(false);
   const meetingKey = `meeting-${meeting.date}-${meeting.topic.replace(/\s+/g, '-').toLowerCase()}`;
   const hasActivities = 'activities' in meeting && meeting.activities && meeting.activities.length > 0;
   const hasReadings = 'readings' in meeting && meeting.readings && meeting.readings.length > 0;
@@ -50,6 +52,22 @@ export default function Meeting({
   const hasMoreDetails = hasActivities || hasReadings;
   const hasDiscussionQuestions = 'discussionQuestions' in meeting && meeting.discussionQuestions;
   const isHoliday = 'holiday' in meeting && meeting.holiday;
+
+  useEffect(() => {
+    // Check if dark mode is active
+    setIsDark(document.documentElement.classList.contains('dark'));
+    
+    // Watch for dark mode changes
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains('dark'));
+    });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+    
+    return () => observer.disconnect();
+  }, []);
 
   function toggleDetails(e: React.MouseEvent<HTMLElement>) {
     
@@ -82,7 +100,7 @@ export default function Meeting({
     if (hasActivities) {
       return (
         <div className="mb-6">
-            {hasActivities ? <strong className="text-gray-700 dark:text-gray-300">Slides / Activities</strong> : ``}
+            {hasActivities ? <strong className="text-gray-700 dark:text-gray-300" style={isDark ? { color: '#d1d5db' } : undefined}>Slides / Activities</strong> : ``}
             <ul>
                 {'activities' in meeting && meeting.activities?.map((activity: Activity, index: number) => (
                 <li key={index} className="text-gray-700 dark:text-gray-300">
@@ -99,7 +117,7 @@ export default function Meeting({
   function renderReadings({title, readings}: {title: string, readings:Reading[]}) {
     return (
       <div className="mb-6">
-          {<strong className="text-gray-700 dark:text-gray-300">{title}</strong>}
+          {<strong className="text-gray-700 dark:text-gray-300" style={isDark ? { color: '#d1d5db' } : undefined}>{title}</strong>}
           <ol>
               {
               readings.map((reading: Reading, index: number) => {
@@ -146,7 +164,11 @@ export default function Meeting({
   function renderDetailsButton() {
     if (hasMoreDetails) {
       return (
-            <button onClick={toggleDetails} className="text-black dark:text-white hover:text-sky-700 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white flex justify-center items-center rounded-full w-[35px] h-[35px]">
+            <button 
+              onClick={toggleDetails} 
+              className="text-black dark:text-gray-200 hover:text-sky-700 dark:hover:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-800 flex justify-center items-center rounded-full w-[35px] h-[35px] transition-colors"
+              style={isDark ? { color: '#e5e7eb' } : undefined}
+            >
                 {showDetails ? 
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={4} d="M5 15l7-7 7 7" />
@@ -162,9 +184,12 @@ export default function Meeting({
   } 
 
   return (
-    <div className={clsx("flex justify-between gap-4 border-b border-black dark:border-gray-700 pt-4 pb-2", {
-      'bg-gray-100 dark:bg-gray-800': isHoliday
-    })}>
+    <div 
+      className={clsx("flex justify-between gap-4 border-b border-black dark:border-gray-700 pt-4 pb-2", {
+        'bg-gray-100 dark:bg-gray-800': isHoliday
+      })}
+      style={isDark ? (isHoliday ? { borderColor: '#374151', backgroundColor: '#1f2937' } : { borderColor: '#374151' }) : undefined}
+    >
         <div className={clsx("flex gap-4", {
             'flex-col': showDetails,
             'md:flex-row': showDetails
@@ -182,11 +207,14 @@ export default function Meeting({
                     'text-black dark:text-white': showDetails,
                     // 'uppercase': showDetails
                 })}>{meeting.topic}</span></p>
-                <div className={clsx("overflow-hidden transition-all duration-300 ease-in-out", {
-                    'text-gray-100': isHoliday,
-                    'max-h-0 opacity-0': !showDetails,
-                    'max-h-[1000px] opacity-100': showDetails
-                })}>
+                <div 
+                  className={clsx("overflow-hidden transition-all duration-300 ease-in-out", {
+                      'text-gray-100 dark:text-gray-300': isHoliday,
+                      'max-h-0 opacity-0': !showDetails,
+                      'max-h-[1000px] opacity-100': showDetails
+                  })}
+                  style={isDark && isHoliday ? { color: '#d1d5db' } : undefined}
+                >
                     { meeting.description && (
                         typeof meeting.description === 'string' 
                           ? <p>{meeting.description}</p>
@@ -207,7 +235,7 @@ export default function Meeting({
                     {
                       meeting.due ? ( 
                         <>
-                          <strong className="text-gray-700 dark:text-gray-300">Due: </strong>
+                          <strong className="text-gray-700 dark:text-gray-300" style={isDark ? { color: '#d1d5db' } : undefined}>Due: </strong>
                           {renderAssignment(meeting.due)}
                         </>
                         ) : ''

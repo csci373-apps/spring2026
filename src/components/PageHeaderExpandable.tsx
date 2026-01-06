@@ -12,7 +12,24 @@ interface PageHeaderProps {
 
 export default function PageHeader({ title, excerpt, type, group, setMeetingStates }: PageHeaderProps) {
   const [allExpanded, setAllExpanded] = useState(false);
+  const [isDark, setIsDark] = useState(false);
   const className = '!border-transparent hover:border-b-2';
+
+  useEffect(() => {
+    // Check if dark mode is active
+    setIsDark(document.documentElement.classList.contains('dark'));
+    
+    // Watch for dark mode changes
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains('dark'));
+    });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+    
+    return () => observer.disconnect();
+  }, []);
 
   // Load saved states from localStorage on mount
   function loadSavedStates() {
@@ -60,6 +77,7 @@ export default function PageHeader({ title, excerpt, type, group, setMeetingStat
         <button
           onClick={toggleAll}
           className="px-4 py-2 border-2 border-black dark:border-gray-700 text-gray-700 dark:text-gray-300 transition-colors text-sm md:text-medium"
+          style={isDark ? { borderColor: '#374151', color: '#d1d5db' } : undefined}
           >
           {allExpanded ? 'Collapse All' : 'Expand All'}
         </button>

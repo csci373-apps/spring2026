@@ -40,11 +40,12 @@ export default async function QuestionsPage() {
       date: postData.date,
       type: postData.type,
       excluded: postData.excluded,
+      draft: postData.draft,
     };
   }));
 
-  // Filter out excluded activities
-  const filteredActivities = activities.filter(activity => !activity.excluded);
+  // Filter out excluded and draft activities
+  const filteredActivities = activities.filter(activity => !activity.excluded && !(activity.draft === 1));
 
   // Sort activities by date
   filteredActivities.sort((a, b) => a.date.localeCompare(b.date));
@@ -85,11 +86,15 @@ export default async function QuestionsPage() {
             <td style={{ width: '100px' }}>{activity.showWeek ? `Week ${activity.weekNumber}` : ''}</td>
             <td style={{ width: '100px' }}>{formatDate(activity.date)}</td>
             <td>
-              <Link 
-                href={`/activities/${activity.id}`}
-              >
-                {activity.activityNumber}. {activity.title}
-              </Link>
+              {activity.draft === 1 ? (
+                <span>{activity.activityNumber}. {activity.title}</span>
+              ) : (
+                <Link 
+                  href={`/activities/${activity.id}`}
+                >
+                  {activity.activityNumber}. {activity.title}
+                </Link>
+              )}
             </td>
             
           </tr>

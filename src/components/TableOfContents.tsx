@@ -15,6 +15,24 @@ interface TableOfContentsProps {
 export default function TableOfContents({ maxLevel = 2 }: TableOfContentsProps) {
   const [tocItems, setTocItems] = useState<TocItem[]>([]);
   const [activeId, setActiveId] = useState<string>('');
+  const [isDark, setIsDark] = useState(false);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Check if dark mode is active
+    setIsDark(document.documentElement.classList.contains('dark'));
+    
+    // Watch for dark mode changes
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains('dark'));
+    });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+    
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     // Build selector based on maxLevel (e.g., maxLevel 2 = "h2", maxLevel 3 = "h2, h3")
@@ -101,7 +119,10 @@ export default function TableOfContents({ maxLevel = 2 }: TableOfContentsProps) 
 
   return (
     <nav className="sticky top-20 w-64 flex-shrink-0">
-      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+      <div 
+        className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 border border-gray-200 dark:border-gray-800"
+        style={isDark ? { backgroundColor: '#111827' } : undefined}
+      >
         <ul className="!list-none !p-0 !m-0 space-y-0.5">
           {tocItems.map((item) => {
             // Calculate indentation based on level (h2 = 0, h3 = 4, h4 = 8, etc.)
@@ -130,11 +151,20 @@ export default function TableOfContents({ maxLevel = 2 }: TableOfContentsProps) 
                     });
                   }
                 }}
-                className={`block py-0.5 px-2 text-sm transition-colors whitespace-nowrap overflow-hidden !border-0 text-ellipsis ${
+                className={`block py-0.5 px-2 text-sm transition-colors whitespace-nowrap overflow-hidden !border-0 text-ellipsis rounded ${
                   activeId === item.id
-                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-bold'
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
+                    ? 'bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-bold'
+                    : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-800'
                 }`}
+                onMouseEnter={() => setHoveredId(item.id)}
+                onMouseLeave={() => setHoveredId(null)}
+                style={isDark && hoveredId === item.id && activeId !== item.id ? { 
+                  backgroundColor: '#1f2937', 
+                  color: '#ffffff' 
+                } : isDark && activeId === item.id ? {
+                  backgroundColor: '#1e3a8a',
+                  color: '#93c5fd'
+                } : undefined}
                 title={item.text}
               >
                 {item.text}

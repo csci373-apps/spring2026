@@ -1,11 +1,11 @@
 ---
-title: "Syllabus: Software Development Practicum"
+title: "Syllabus: Software Development Studio"
 date: "2025-08-26"
 ---
 
 
 <table>
-  <tr><td><strong>Course</strong></td><td>CSCI 373: Software Development Practicum</td></tr>
+  <tr><td><strong>Course</strong></td><td>CSCI 373: Software Development Studio</td></tr>
   <tr><td><strong>Instructors</strong></td><td>Dr. Kevin Sanft (ksanft@unca.edu) & Dr. Sarah Van Wart (svanwart@unca.edu)</td></tr>
   <tr><td><strong>Credits</strong></td><td>3 Credit Hours</td></tr>
   <tr><td><strong>Time & Location</strong></td><td>Tu/Th, 9:55 AM - 11:35 AM in RRO 217</td></tr>
