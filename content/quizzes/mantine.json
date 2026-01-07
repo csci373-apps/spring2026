@@ -1,0 +1,88 @@
+{
+  "questions": [
+    {
+      "id": "q1",
+      "question": "What is the benefit of using a design system like Mantine?",
+      "options": [
+        "Pre-built components reduce development time and ensure professional-quality, accessible widgets",
+        "It makes code run faster",
+        "It eliminates the need for testing",
+        "It reduces file sizes"
+      ],
+      "correct": 0,
+      "explanation": "Design systems like Mantine provide pre-built, accessible components that reduce development time and ensure professional-quality widgets. High-quality widgets can take a long time to build from scratch."
+    },
+    {
+      "id": "q2",
+      "question": "What Mantine hook is useful for managing modal or drawer open/close state?",
+      "options": [
+        "`useDisclosure` - provides open, close, and toggle functions",
+        "`useModal` - a custom hook",
+        "`useState` - the standard React hook",
+        "`useToggle` - a different hook"
+      ],
+      "correct": 0,
+      "explanation": "Mantine's `useDisclosure` hook is specifically designed for managing open/close state for modals, drawers, and similar components. It provides `open`, `close`, and `toggle` functions."
+    },
+    {
+      "id": "q3",
+      "question": "What are design tokens?",
+      "options": [
+        "Git commit tokens",
+        "Named constants for colors, spacing, typography, and other design values that can be referenced throughout the codebase",
+        "Authentication tokens for API access",
+        "Database connection tokens"
+      ],
+      "correct": 1,
+      "explanation": "Design tokens are foundational design decisions (colors, spacing, typography, etc.) stored as named constants. Instead of hardcoding values like `#3b82f6`, you use `designTokens.colors.primary`."
+    },
+    {
+      "id": "q4",
+      "question": "What is a design system?",
+      "options": [
+        "A testing framework",
+        "A database design tool",
+        "A version control system",
+        "A collection of reusable components, design patterns, and guidelines that ensure consistency across an application"
+      ],
+      "correct": 3,
+      "explanation": "A design system is a collection of reusable components, design patterns, and guidelines that ensure consistency, efficiency, accessibility, and maintainability across an application."
+    },
+    {
+      "id": "q5",
+      "question": "What icon library does Mantine work with in the starter code?",
+      "options": [
+        "Tabler Icons - already installed and ready to use",
+        "Font Awesome",
+        "Custom icon set",
+        "Material Icons"
+      ],
+      "correct": 0,
+      "explanation": "Mantine works with Tabler Icons, which is already installed in the starter code. You can import icons like `IconPlus`, `IconEdit`, etc. from `@tabler/icons-react`."
+    },
+    {
+      "id": "q6",
+      "question": "Where is Mantine configured in the starter code?",
+      "options": [
+        "It's not configured, you need to set it up yourself",
+        "In a separate config file",
+        "The theme is set up in `ui/src/theme.ts` and the provider wraps the app in `ui/src/main.tsx`",
+        "In the package.json file"
+      ],
+      "correct": 2,
+      "explanation": "Mantine is already configured in the starter code. The theme is set up in `ui/src/theme.ts` and the `MantineProvider` wraps the app in `ui/src/main.tsx`, so you can use Mantine components immediately."
+    },
+    {
+      "id": "q7",
+      "question": "What Mantine component would you use to create a vertical stack of elements with consistent spacing?",
+      "options": [
+        "`Grid` - for grid layouts",
+        "`Stack` - provides vertical stacking with consistent spacing",
+        "`Container` - for centering content",
+        "`Group` - for horizontal grouping"
+      ],
+      "correct": 1,
+      "explanation": "The `Stack` component creates a vertical stack of elements with consistent spacing. `Group` is for horizontal grouping, `Container` centers content, and `Grid` is for grid layouts."
+    }
+  ]
+}

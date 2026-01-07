@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
+import { useDarkMode } from '@/hooks/useDarkMode';
 
 interface ResourcePage {
   slug: string;
@@ -17,24 +18,8 @@ interface ResourcesNavProps {
 
 export default function ResourcesNav({ resourcePages }: ResourcesNavProps) {
   const [navOpen, setNavOpen] = useState(false);
-  const [isDark, setIsDark] = useState(false);
+  const isDark = useDarkMode();
   const pathname = usePathname();
-
-  useEffect(() => {
-    // Check if dark mode is active
-    setIsDark(document.documentElement.classList.contains('dark'));
-    
-    // Watch for dark mode changes
-    const observer = new MutationObserver(() => {
-      setIsDark(document.documentElement.classList.contains('dark'));
-    });
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['class']
-    });
-    
-    return () => observer.disconnect();
-  }, []);
   
   // Group pages by their group field
   const groupedPages = resourcePages.reduce((groups, page) => {
@@ -50,7 +35,7 @@ export default function ResourcesNav({ resourcePages }: ResourcesNavProps) {
     <div className="lg:top-8 p-4">
       {Object.entries(groupedPages).map(([groupName, pages]) => (
         <div key={groupName} className="mb-6">
-          <h4 className="text-sm font-semibold text-gray-900 mb-3 uppercase tracking-wide">
+          <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3 uppercase tracking-wide">
             {groupName}
           </h4>
           <ol>
@@ -62,12 +47,11 @@ export default function ResourcesNav({ resourcePages }: ResourcesNavProps) {
                   <Link
                     href={href}
                     onClick={() => setNavOpen(false)}
-                    className={`text-sm font-medium transition-colors ${
+                    className={`text-sm font-medium transition-colors !border-0 ${
                       isActive
-                        ? `font-bold ${isDark ? '!text-white' : '!text-black'} hover:!text-gray-900 dark:hover:!text-gray-200 !border-0`
-                        : 'text-blue-700 dark:text-blue-400 border-blue-500 '
+                        ? 'font-bold text-black dark:text-white hover:text-gray-900 dark:hover:text-gray-200'
+                        : 'text-blue-700 dark:text-blue-400 border-blue-500'
                     }`}
-                    style={isDark && isActive ? { color: '#ffffff' } : undefined}
                   >
                     {page.title}
                   </Link>
@@ -85,7 +69,7 @@ export default function ResourcesNav({ resourcePages }: ResourcesNavProps) {
       {/* Mobile: Collapsible accordion navigation */}
       <div className="lg:hidden">
         <button 
-          className="w-full p-3 bg-gray-100 hover:bg-gray-200 rounded-lg mb-4 flex justify-between items-center transition-colors"
+          className="w-full p-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg mb-4 flex justify-between items-center transition-colors"
           onClick={() => setNavOpen(!navOpen)}
         >
           <span className="font-medium">Resource Pages</span>
@@ -93,7 +77,7 @@ export default function ResourcesNav({ resourcePages }: ResourcesNavProps) {
         </button>
         {navOpen && (
           <div className="mb-6">
-            <nav className="w-full border rounded-lg bg-white">
+            <nav className="w-full border rounded-lg bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
               {renderNavigation()}
             </nav>
           </div>
@@ -101,7 +85,7 @@ export default function ResourcesNav({ resourcePages }: ResourcesNavProps) {
       </div>
       
       {/* Desktop: Sidebar navigation */}
-      <nav className="hidden lg:block w-64 mt-12 flex-shrink-0 border-r md:border-black md:min-h-screen">
+      <nav className="hidden lg:block w-64 mt-12 flex-shrink-0 border-r border-black dark:border-gray-800 md:min-h-screen">
         {renderNavigation()}
       </nav>
     </>

@@ -1,0 +1,88 @@
+{
+  "questions": [
+    {
+      "id": "q1",
+      "question": "When is it safe to use `--force-with-lease`?",
+      "options": [
+        "Only on main branch",
+        "Always, it's completely safe",
+        "Never, it's too dangerous",
+        "Only on feature branches, never on main"
+      ],
+      "correct": 3,
+      "explanation": "`--force-with-lease` is safe to use on feature branches after amending or rebasing. Never force push to `main` - it can overwrite important commits and cause problems for your team."
+    },
+    {
+      "id": "q2",
+      "question": "When is a good time to commit?",
+      "options": [
+        "Only at the end of the day",
+        "When code is broken but you want to save it",
+        "Every 5 minutes to save your work",
+        "When you've completed a logical piece of work, code compiles, and tests pass"
+      ],
+      "correct": 3,
+      "explanation": "Commit when you've completed a logical piece of work (e.g., 'Add tests for login endpoint'), code compiles, and tests pass. Each commit should represent a working state."
+    },
+    {
+      "id": "q3",
+      "question": "What is rebase and why is it required before merging a PR?",
+      "options": [
+        "Rebase deletes all your commits",
+        "Rebase is optional and not recommended",
+        "Rebase creates a merge commit",
+        "Rebase rewrites commit history by replaying your commits on top of the latest main, creating a clean linear history"
+      ],
+      "correct": 3,
+      "explanation": "Rebase rewrites commit history by replaying your commits on top of the latest `main`. It creates a clean, linear history without merge commits. All PRs must be rebased before merging."
+    },
+    {
+      "id": "q4",
+      "question": "What is the team fork structure in Phase 1?",
+      "options": [
+        "Each team member has their own fork",
+        "One team member forks the repo, all members are collaborators on that fork, everyone works from the same fork",
+        "Everyone works directly on the main repository",
+        "Teams don't use forks"
+      ],
+      "correct": 1,
+      "explanation": "In Phase 1, one team member forks the starter repository, all team members are added as collaborators on that fork, and everyone clones and pushes to the same fork. This ensures all team members can see each other's work."
+    },
+    {
+      "id": "q5",
+      "question": "What should you do if you have too many small 'save point' commits?",
+      "options": [
+        "Delete the branch and start over",
+        "Push them all as-is",
+        "Create a new branch",
+        "Use interactive rebase (`git rebase -i HEAD~N`) to squash them into logical commits"
+      ],
+      "correct": 3,
+      "explanation": "Use interactive rebase to clean up your commit history. Change `pick` to `squash` for commits you want to combine. This creates a clean history that tells a good story."
+    },
+    {
+      "id": "q6",
+      "question": "What is the rule about committing directly to `main`?",
+      "options": [
+        "Never commit directly to main - always create a feature branch first",
+        "You can commit directly to main if it's a small change",
+        "Main is for experimental code only",
+        "Only commit to main on weekends"
+      ],
+      "correct": 0,
+      "explanation": "Never commit directly to `main`. Always create a feature branch for each feature/assignment. This keeps work isolated and makes code reviews easier."
+    },
+    {
+      "id": "q7",
+      "question": "What command should you use to fix a mistake in your last commit?",
+      "options": [
+        "`git revert`",
+        "`git commit --fix`",
+        "`git commit --amend` - to update the last commit without creating a new one",
+        "`git undo`"
+      ],
+      "correct": 2,
+      "explanation": "Use `git commit --amend` to update the last commit. This is useful when you realize the last commit has a bug or is incomplete. Use `--no-edit` to keep the same message, or `-m` to change it."
+    }
+  ]
+}

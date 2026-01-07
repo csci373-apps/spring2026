@@ -1,0 +1,88 @@
+{
+  "questions": [
+    {
+      "id": "q1",
+      "question": "Can a dependency function use other dependencies?",
+      "options": [
+        "No - dependencies must be independent",
+        "Only for database sessions",
+        "Yes - dependencies can depend on other dependencies, creating a dependency chain",
+        "Only if they are in the same file"
+      ],
+      "correct": 2,
+      "explanation": "Yes! Dependencies can use `Depends()` to depend on other dependencies. For example, `get_current_user` might depend on `get_bearer_token` and `get_db`, creating a dependency chain."
+    },
+    {
+      "id": "q2",
+      "question": "What does the `@router.get(\"/users\")` decorator do in FastAPI?",
+      "options": [
+        "It creates a database table",
+        "It sets the response format",
+        "It validates the request body",
+        "It registers the function as a GET endpoint at the `/users` path"
+      ],
+      "correct": 3,
+      "explanation": "The `@router.get()` decorator tells FastAPI to register the function as a GET endpoint. When someone makes a GET request to `/users`, FastAPI calls this function."
+    },
+    {
+      "id": "q3",
+      "question": "In a dependency function that manages resources (like database sessions), what keyword should you use instead of `return`?",
+      "options": [
+        "`await` - to wait for the resource",
+        "`return` - it works the same way",
+        "`yield` - to allow cleanup code to run after the endpoint finishes",
+        "`async` - to make it asynchronous"
+      ],
+      "correct": 2,
+      "explanation": "Use `yield` in generator functions for resources that need cleanup. FastAPI calls the function up to `yield` (creates resource), passes the value to your endpoint, then continues after `yield` when done (cleanup)."
+    },
+    {
+      "id": "q4",
+      "question": "What is a decorator in Python?",
+      "options": [
+        "A database table",
+        "A file format",
+        "A function that wraps another function to modify or extend its behavior",
+        "A type of variable"
+      ],
+      "correct": 2,
+      "explanation": "A decorator is a function that takes another function and wraps it, adding behavior (like logging, authentication checks, or timing) that runs before or after the original function executes."
+    },
+    {
+      "id": "q5",
+      "question": "What is a key benefit of using dependency injection in FastAPI?",
+      "options": [
+        "Smaller file sizes",
+        "Faster execution",
+        "Reusability - write once, use in many endpoints",
+        "Automatic database migrations"
+      ],
+      "correct": 2,
+      "explanation": "Dependency injection promotes reusability - you write a dependency once (like `get_current_user`) and can use it in any endpoint that needs authentication, keeping code DRY and maintainable."
+    },
+    {
+      "id": "q6",
+      "question": "What is the purpose of `Depends` in FastAPI?",
+      "options": [
+        "To define database relationships",
+        "To set environment variables",
+        "To inject dependencies (like database sessions or authentication) into endpoints",
+        "To create API documentation"
+      ],
+      "correct": 2,
+      "explanation": "`Depends` is FastAPI's dependency injection system. It allows you to inject reusable dependencies (like database sessions, authentication, etc.) into endpoints, keeping code clean and testable."
+    },
+    {
+      "id": "q7",
+      "question": "What happens if a dependency function raises an `HTTPException`?",
+      "options": [
+        "FastAPI automatically returns the error response to the client",
+        "The application crashes",
+        "The dependency is ignored",
+        "FastAPI retries the request"
+      ],
+      "correct": 0,
+      "explanation": "If a dependency raises an `HTTPException`, FastAPI automatically converts it to an HTTP error response with the specified status code and detail message, stopping execution before the endpoint is called."
+    }
+  ]
+}

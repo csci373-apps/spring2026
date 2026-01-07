@@ -1,8 +1,9 @@
-import { getPostData, getAllPostIds, getAllPosts, PostData } from '@/lib/markdown';
+import { getPostData, getAllPostIds, getAllPosts, PostData, getQuizData } from '@/lib/markdown';
 import PageHeader from '@/components/PageHeader';
 import MarkdownContent from '@/components/MarkdownContent';
 import TableOfContents from '@/components/TableOfContents';
 import ResourcesNav from '@/components/ResourcesNav';
+import ResourceQuiz from '@/components/ResourceQuiz';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
@@ -26,6 +27,7 @@ export default async function ResourcePage({ params }: PageProps) {
   try {
     const postData = await getPostData(slug, 'resources');
     const { title, excerpt, group, toc, heading_max_level } = postData;
+    const quizData = getQuizData(slug);
     
     // Get all resources for navigation
     const resourcePosts = getAllPosts('resources');
@@ -69,6 +71,11 @@ export default async function ResourcePage({ params }: PageProps) {
               {/* Main content */}
               <div className="flex-1 min-w-0">
                 <MarkdownContent content={postData.content} />
+                
+                {/* Quiz */}
+                {quizData && (
+                  <ResourceQuiz quizData={quizData} resourceSlug={slug} />
+                )}
                 
                 {/* Next/Previous Navigation */}
                 {(previousResource || nextResource) && (

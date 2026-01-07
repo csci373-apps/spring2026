@@ -1,0 +1,88 @@
+{
+  "questions": [
+    {
+      "id": "q1",
+      "question": "When using `joinedload` with one-to-many relationships, what method should you call to avoid duplicate rows?",
+      "options": [
+        "`.distinct()` on the query",
+        "`.unique()` on the result",
+        "`.dedupe()` on the result",
+        "Nothing - duplicates are automatically removed"
+      ],
+      "correct": 1,
+      "explanation": "When using `joinedload` with one-to-many relationships, the JOIN can create duplicate rows. Call `.unique()` on the result to remove duplicates."
+    },
+    {
+      "id": "q2",
+      "question": "What is the N+1 problem?",
+      "options": [
+        "When you fetch N records and then make N additional queries to get related data, resulting in N+1 total queries",
+        "When you have N+1 foreign key relationships",
+        "When you query the database N+1 times for the same record",
+        "When you have N+1 database connections open"
+      ],
+      "correct": 0,
+      "explanation": "The N+1 problem occurs when you fetch N records (1 query) and then access relationships for each record in a loop (N additional queries), resulting in N+1 total queries instead of a single query with a JOIN."
+    },
+    {
+      "id": "q3",
+      "question": "What must you remember to do after modifying a database record in SQLAlchemy?",
+      "options": [
+        "Call `await db.rollback()` to undo the changes",
+        "Call `await db.commit()` to save the changes",
+        "Nothing - changes are automatically saved",
+        "Call `await db.close()` to close the connection"
+      ],
+      "correct": 1,
+      "explanation": "After modifying records (create, update, delete), you must call `await db.commit()` to persist the changes to the database. Without commit, changes are only in memory."
+    },
+    {
+      "id": "q4",
+      "question": "What is the difference between `scalar_one()` and `scalar_one_or_none()`?",
+      "options": [
+        "`scalar_one()` raises an exception if there are 0 or multiple results, while `scalar_one_or_none()` returns None if there are 0 results and raises only if there are multiple",
+        "`scalar_one()` returns a list, `scalar_one_or_none()` returns a single value",
+        "`scalar_one()` is for async queries, `scalar_one_or_none()` is for sync queries",
+        "They are identical"
+      ],
+      "correct": 0,
+      "explanation": "`scalar_one()` requires exactly one result (raises if 0 or multiple). `scalar_one_or_none()` allows 0 or 1 results (returns None if 0, raises only if multiple)."
+    },
+    {
+      "id": "q5",
+      "question": "What does `backref` do in a SQLAlchemy relationship?",
+      "options": [
+        "It encrypts the relationship data",
+        "It creates a reverse relationship on the related model automatically",
+        "It prevents the relationship from being loaded",
+        "It makes the relationship required"
+      ],
+      "correct": 1,
+      "explanation": "`backref` automatically creates a reverse relationship. For example, if `User.role` has `backref='users'`, you can access `role.users` to get all users with that role."
+    },
+    {
+      "id": "q6",
+      "question": "What is SQLAlchemy?",
+      "options": [
+        "A database server",
+        "A testing library",
+        "A web framework",
+        "An Object-Relational Mapping (ORM) library that lets you interact with databases using Python classes"
+      ],
+      "correct": 3,
+      "explanation": "SQLAlchemy is an ORM that maps database tables to Python classes, allowing you to work with databases using Python objects instead of writing raw SQL."
+    },
+    {
+      "id": "q7",
+      "question": "How do you avoid the N+1 problem in SQLAlchemy?",
+      "options": [
+        "Use raw SQL queries only",
+        "Use `joinedload` to eager load relationships in a single query",
+        "Use multiple database connections",
+        "Disable relationship loading"
+      ],
+      "correct": 1,
+      "explanation": "Use `joinedload` in your `select()` statement to load relationships in a single query with a JOIN, avoiding the N+1 problem."
+    }
+  ]
+}

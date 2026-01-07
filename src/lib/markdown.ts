@@ -9,6 +9,7 @@ import smartypants from 'remark-smartypants';
 import { remarkImageGrid } from './remark-imagegrid';
 
 const postsDirectory = path.join(process.cwd(), 'content');
+const quizzesDirectory = path.join(process.cwd(), 'content', 'quizzes');
 
 export interface PostData {
   id: string;
@@ -157,4 +158,33 @@ export function getAllPosts(subdirectory?: string): PostData[] {
       return -1;
     }
   });
+}
+
+export interface QuizQuestion {
+  id: string;
+  question: string;
+  options: string[];
+  correct: number;
+  explanation?: string;
+}
+
+export interface QuizData {
+  questions: QuizQuestion[];
+}
+
+export function getQuizData(slug: string): QuizData | null {
+  const quizPath = path.join(quizzesDirectory, `${slug}.json`);
+  
+  if (!fs.existsSync(quizPath)) {
+    return null;
+  }
+  
+  try {
+    const fileContents = fs.readFileSync(quizPath, 'utf8');
+    const quizData: QuizData = JSON.parse(fileContents);
+    return quizData;
+  } catch (error) {
+    console.error(`Error reading quiz data for ${slug}:`, error);
+    return null;
+  }
 } 

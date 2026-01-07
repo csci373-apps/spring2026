@@ -396,6 +396,46 @@ body {
   color: #d1d5db !important;
 }
 
+/* Quiz dark mode overrides */
+.dark div[class*="bg-white"][class*="border-gray-200"] {
+  background-color: #1f2937 !important;
+  border-color: #374151 !important;
+}
+
+.dark label[class*="bg-white"] {
+  background-color: #1f2937 !important;
+}
+
+.dark label[class*="bg-green-50"] {
+  background-color: rgba(20, 83, 45, 0.3) !important;
+  border-color: #10b981 !important;
+}
+
+.dark label[class*="bg-red-50"] {
+  background-color: rgba(127, 29, 29, 0.3) !important;
+  border-color: #ef4444 !important;
+}
+
+.dark label[class*="bg-blue-50"] {
+  background-color: rgba(30, 58, 138, 0.3) !important;
+  border-color: #3b82f6 !important;
+}
+
+.dark div[class*="bg-blue-50"] {
+  background-color: rgba(30, 58, 138, 0.3) !important;
+  border-color: #3b82f6 !important;
+}
+
+.dark button[class*="bg-gray-100"] {
+  background-color: #374151 !important;
+  border-color: #4b5563 !important;
+  color: #e5e7eb !important;
+}
+
+.dark button[class*="bg-gray-100"]:hover {
+  background-color: #4b5563 !important;
+}
+
 /* Custom global styles */
 html {
   scroll-behavior: smooth;

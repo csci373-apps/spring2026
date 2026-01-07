@@ -1,0 +1,88 @@
+{
+  "questions": [
+    {
+      "id": "q1",
+      "question": "What is the purpose of Pydantic models in FastAPI?",
+      "options": [
+        "To manage authentication tokens",
+        "To handle file uploads",
+        "To validate request bodies and define response schemas (data structure)",
+        "To create database tables"
+      ],
+      "correct": 2,
+      "explanation": "Pydantic models use type hints to automatically validate incoming request data and define the schema (structure) of response data, ensuring type safety and data integrity."
+    },
+    {
+      "id": "q2",
+      "question": "In FastAPI, what happens if a path parameter cannot be converted to the specified type (e.g., `/users/abc` when expecting an `int`)?",
+      "options": [
+        "FastAPI returns a 404 Not Found error",
+        "FastAPI automatically converts it to 0",
+        "FastAPI returns a 422 Unprocessable Entity error",
+        "FastAPI returns a 500 Internal Server Error"
+      ],
+      "correct": 2,
+      "explanation": "FastAPI automatically validates path parameters. If conversion fails, it returns a 422 Unprocessable Entity error with details about the validation failure."
+    },
+    {
+      "id": "q3",
+      "question": "What HTTP status code should you use when raising an exception for a resource that doesn't exist?",
+      "options": [
+        "401 Unauthorized",
+        "400 Bad Request",
+        "500 Internal Server Error",
+        "404 Not Found"
+      ],
+      "correct": 3,
+      "explanation": "404 Not Found is the appropriate status code when a requested resource doesn't exist. Use HTTPException with status_code=404."
+    },
+    {
+      "id": "q4",
+      "question": "What does the `prefix` parameter in `APIRouter` do?",
+      "options": [
+        "It determines the response format",
+        "It limits the number of routes you can define",
+        "It sets the maximum request size",
+        "It adds a prefix to all routes in the router automatically"
+      ],
+      "correct": 3,
+      "explanation": "The `prefix` parameter automatically prepends a path to all routes in the router, so you don't have to repeat it in each route definition."
+    },
+    {
+      "id": "q5",
+      "question": "What does the `response_model` parameter do in a FastAPI endpoint?",
+      "options": [
+        "It defines what fields are included in the response and filters out others",
+        "It determines the HTTP method",
+        "It enables caching",
+        "It sets the request timeout"
+      ],
+      "correct": 0,
+      "explanation": "The `response_model` parameter tells FastAPI to serialize the return value using the specified Pydantic model, which filters out any fields not defined in that model (like passwords)."
+    },
+    {
+      "id": "q6",
+      "question": "What is the primary purpose of FastAPI?",
+      "options": [
+        "Managing Git repositories",
+        "Building REST API endpoints",
+        "Styling web pages",
+        "Creating database models"
+      ],
+      "correct": 1,
+      "explanation": "FastAPI is a Python web framework specifically designed for building REST API endpoints with automatic documentation and data validation."
+    },
+    {
+      "id": "q7",
+      "question": "In FastAPI, query parameters with default values are:",
+      "options": [
+        "Only available in POST requests",
+        "Optional - clients can omit them and defaults will be used",
+        "Ignored - FastAPI doesn't use them",
+        "Required - clients must always provide them"
+      ],
+      "correct": 1,
+      "explanation": "Query parameters with default values (like `skip: int = 0`) are optional. If the client doesn't provide them, FastAPI uses the default value."
+    }
+  ]
+}

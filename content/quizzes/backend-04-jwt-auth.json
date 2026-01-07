@@ -1,0 +1,88 @@
+{
+  "questions": [
+    {
+      "id": "q1",
+      "question": "What does JWT stand for and what is its primary characteristic?",
+      "options": [
+        "JavaScript Web Token - a client-side only token",
+        "Java Web Token - a stateful session token",
+        "JSON Web Transfer - a data transfer protocol",
+        "JSON Web Token - a stateless, self-contained token format"
+      ],
+      "correct": 3,
+      "explanation": "JWT stands for JSON Web Token. It's a stateless, self-contained token format that encodes user identity and permissions in the token itself, without requiring server-side session storage."
+    },
+    {
+      "id": "q2",
+      "question": "Why are JWTs preferred over session-based authentication for mobile apps?",
+      "options": [
+        "JWTs are stateless and don't require server-side session storage, making them ideal for cross-platform authentication",
+        "JWTs are smaller in size",
+        "JWTs are faster to process",
+        "JWTs don't expire"
+      ],
+      "correct": 0,
+      "explanation": "JWTs are stateless and don't require server-side session storage, making them ideal for mobile apps and SPAs where cookies aren't automatically sent. The same backend can authenticate both web and mobile clients."
+    },
+    {
+      "id": "q3",
+      "question": "What HTTP header should clients use to send JWT tokens in requests?",
+      "options": [
+        "`Cookie: token=<token>`",
+        "`X-Auth-Token: <token>`",
+        "`Authorization: Bearer <token>`",
+        "`X-JWT: <token>`"
+      ],
+      "correct": 2,
+      "explanation": "Clients should send JWT tokens in the `Authorization` header with the `Bearer` prefix: `Authorization: Bearer <token>`. This is the standard format for token-based authentication."
+    },
+    {
+      "id": "q4",
+      "question": "What is role-based access control?",
+      "options": [
+        "A database indexing strategy",
+        "A method for encrypting passwords",
+        "A system that restricts access based on a user's role (e.g., admin, manager, user)",
+        "A token refresh mechanism"
+      ],
+      "correct": 2,
+      "explanation": "Role-based access control restricts access to resources based on a user's role. For example, only admins can delete users, while regular users can only view their own data."
+    },
+    {
+      "id": "q5",
+      "question": "What is the security risk of storing sensitive data in JWT payloads?",
+      "options": [
+        "JWT payloads are base64-encoded, not encrypted - anyone with the token can decode and read the contents",
+        "There is no security risk",
+        "JWTs automatically encrypt all data",
+        "JWTs are too large to store sensitive data"
+      ],
+      "correct": 0,
+      "explanation": "JWT payloads are base64-encoded, not encrypted. Anyone who has the token can decode it and read the contents. Never store sensitive data like passwords or credit card numbers in JWT payloads."
+    },
+    {
+      "id": "q6",
+      "question": "What should you do with the `SECRET_KEY` used to sign JWT tokens?",
+      "options": [
+        "Use the same secret key for all applications",
+        "Hardcode it in the source code for easy access",
+        "Store it as an environment variable and never commit it to version control",
+        "Share it in documentation"
+      ],
+      "correct": 2,
+      "explanation": "The `SECRET_KEY` must be kept secret. Store it as an environment variable and never commit it to version control. If compromised, attackers could forge tokens."
+    },
+    {
+      "id": "q7",
+      "question": "What should you use to hash passwords before storing them in the database?",
+      "options": [
+        "Plain text - it's easier to debug",
+        "Base64 encoding - it's reversible",
+        "bcrypt - a secure password hashing algorithm that handles salting automatically",
+        "MD5 - it's fast and secure"
+      ],
+      "correct": 2,
+      "explanation": "Use bcrypt (or similar secure hashing algorithms) to hash passwords. bcrypt automatically handles salting, which prevents rainbow table attacks. Never store passwords in plain text."
+    }
+  ]
+}

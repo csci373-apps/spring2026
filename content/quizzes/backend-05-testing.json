@@ -1,0 +1,88 @@
+{
+  "questions": [
+    {
+      "id": "q1",
+      "question": "What are fixtures in pytest?",
+      "options": [
+        "Mock objects",
+        "Test assertions",
+        "Reusable test setup functions that provide test data or resources to test functions",
+        "Database tables"
+      ],
+      "correct": 2,
+      "explanation": "Fixtures are functions decorated with `@pytest.fixture` that provide test data or setup code. They work like dependency injection - you request a fixture by including it as a parameter, and pytest automatically provides it."
+    },
+    {
+      "id": "q2",
+      "question": "What HTTP status code should a test expect when trying to create a resource with a duplicate unique field (e.g., duplicate username)?",
+      "options": [
+        "400 Bad Request - for business logic errors",
+        "401 Unauthorized - for authentication errors",
+        "500 Internal Server Error - for server errors",
+        "422 Unprocessable Entity - for validation errors"
+      ],
+      "correct": 0,
+      "explanation": "400 Bad Request is used for business logic errors (like duplicate usernames). 422 Unprocessable Entity is for validation errors (like missing required fields or wrong types)."
+    },
+    {
+      "id": "q3",
+      "question": "What HTTP status code should a test expect when testing an endpoint that requires authentication but no token is provided?",
+      "options": [
+        "401 Unauthorized",
+        "403 Forbidden",
+        "500 Internal Server Error",
+        "404 Not Found"
+      ],
+      "correct": 0,
+      "explanation": "401 Unauthorized is the correct status code when authentication is required but not provided. 403 Forbidden is used when authentication is provided but the user doesn't have permission."
+    },
+    {
+      "id": "q4",
+      "question": "How should you verify that a POST endpoint actually created a resource in a contract-level test?",
+      "options": [
+        "Query the database directly",
+        "Check the response status code only",
+        "Use a GET request through the API to verify the resource exists",
+        "Inspect the server logs"
+      ],
+      "correct": 2,
+      "explanation": "Contract-level tests verify behavior through the API interface. To verify a POST created a resource, use a GET request through the API (not direct database access) to confirm the resource exists."
+    },
+    {
+      "id": "q5",
+      "question": "What is the purpose of dependency overrides in FastAPI testing?",
+      "options": [
+        "To disable validation",
+        "To skip authentication",
+        "To speed up tests",
+        "To replace real dependencies (like database connections) with test versions"
+      ],
+      "correct": 3,
+      "explanation": "Dependency overrides allow you to replace real dependencies (like `get_db`) with test versions (like an in-memory test database). This is FastAPI's built-in testing feature."
+    },
+    {
+      "id": "q6",
+      "question": "What should contract-level tests verify about API responses?",
+      "options": [
+        "Status codes, response format, and that sensitive data (like passwords) is not included",
+        "Only status codes",
+        "Only that the endpoint doesn't crash",
+        "Only response format"
+      ],
+      "correct": 0,
+      "explanation": "Contract-level tests should verify status codes, response format/structure, and that sensitive data (like passwords) is never included in responses. This ensures the API contract is correct and secure."
+    },
+    {
+      "id": "q7",
+      "question": "What are contract-level tests?",
+      "options": [
+        "Tests that check code formatting",
+        "Tests that verify API endpoints behave correctly from the client's perspective, testing the API contract without testing implementation details",
+        "Tests that measure performance",
+        "Tests that verify database schema"
+      ],
+      "correct": 1,
+      "explanation": "Contract-level tests verify that API endpoints behave correctly from the client's perspective. They test the API contract (request/response format, status codes, error handling) without testing implementation details."
+    }
+  ]
+}
