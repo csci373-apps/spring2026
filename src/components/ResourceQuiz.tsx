@@ -568,7 +568,7 @@ export default function ResourceQuiz({ quizData, resourceSlug }: ResourceQuizPro
             <button
               onClick={handleNext}
               disabled={shuffledQuestions.length > 0 && currentQuestionIndex >= shuffledQuestions.length - 1 && !completed}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 dark:bg-green-500 hover:bg-green-700 dark:hover:bg-green-600 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 text-sm font-medium text-white bg-green-600 dark:bg-green-500 hover:bg-green-700 dark:hover:bg-green-600 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {shuffledQuestions.length > 0 && currentQuestionIndex >= shuffledQuestions.length - 1 && completed 
                 ? 'View Summary →' 

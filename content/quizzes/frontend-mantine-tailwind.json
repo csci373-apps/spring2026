@@ -1,0 +1,245 @@
+{
+  "questions": [
+    {
+      "id": "q1",
+      "question": "What is a design system?",
+      "options": [
+        "A testing framework",
+        "A database design tool",
+        "A collection of reusable components, design patterns, and guidelines that ensure consistency across an application",
+        "A version control system"
+      ],
+      "correct": 2,
+      "explanation": "A design system is a collection of reusable components, design patterns, and guidelines that ensure consistency, efficiency, accessibility, and maintainability across an application."
+    },
+    {
+      "id": "q2",
+      "question": "What are design tokens?",
+      "options": [
+        "Git commit tokens",
+        "Named constants for colors, spacing, typography, and other design values that can be referenced throughout the codebase",
+        "Authentication tokens for API access",
+        "Database connection tokens"
+      ],
+      "correct": 1,
+      "explanation": "Design tokens are foundational design decisions (colors, spacing, typography, etc.) stored as named constants. Instead of hardcoding values like `#3b82f6`, you use `designTokens.app.primary`. This makes it easier to maintain consistency and update the design system globally."
+    },
+    {
+      "id": "q3",
+      "question": "Consider the following code snippet:\n\n```typescript\n<Button \n    style={{ \n        backgroundColor: \"#3b82f6\", \n        padding: \"16px\" \n    }}>\n```\n\nWhat is the problem with this approach?",
+      "options": [
+        "It's using inline styles which are always bad",
+        "It's hardcoding design values instead of using design tokens, making it difficult to maintain consistency and update globally",
+        "It's using the wrong color format",
+        "There's no problem with this approach"
+      ],
+      "correct": 1,
+      "explanation": "Hardcoding values like `#3b82f6` and `16px` makes it difficult to maintain consistency and update the design system globally. Instead, you should use design tokens like `designTokens.app.primary` and `designTokens.spacing.md`."
+    },
+    {
+      "id": "q4",
+      "question": "What is Tailwind CSS?",
+      "options": [
+        "A component library like Mantine",
+        "A utility-first CSS framework that provides low-level utility classes to build custom designs directly in your markup",
+        "A JavaScript framework",
+        "A database system"
+      ],
+      "correct": 1,
+      "explanation": "Tailwind CSS is a utility-first CSS framework that provides low-level utility classes (like `flex`, `pt-4`, `text-center`, `bg-blue-500`) that you compose together to create your design. Unlike component libraries, it gives you utilities rather than pre-built components."
+    },
+    {
+      "id": "q5",
+      "question": "What is the core philosophy of Tailwind CSS?",
+      "options": [
+        "Component-first - build complex components",
+        "Utility-first - compose simple utility classes to build designs",
+        "Framework-first - use pre-built templates",
+        "CSS-first - write all styles in separate CSS files"
+      ],
+      "correct": 1,
+      "explanation": "Tailwind's core philosophy is utility-first. Instead of writing custom CSS, you use utility classes like `flex`, `pt-4`, `text-center`, and `bg-blue-500` directly in your HTML/JSX, composing them together to build complex designs."
+    },
+    {
+      "id": "q6",
+      "question": "Consider the following code snippet:\n\n```tsx\n<div className=\"text-sm md:text-base lg:text-lg\">\n  Responsive text\n</div>\n```\n\nWhat does this demonstrate?",
+      "options": [
+        "Tailwind's responsive design using mobile-first breakpoint prefixes",
+        "Multiple text sizes on the same element",
+        "A syntax error",
+        "Custom CSS classes"
+      ],
+      "correct": 0,
+      "explanation": "This demonstrates Tailwind's responsive design using mobile-first breakpoint prefixes. `text-sm` applies on mobile, `md:text-base` applies at medium screens and up, and `lg:text-lg` applies at large screens and up. Tailwind's responsive design is mobile-first."
+    },
+    {
+      "id": "q7",
+      "question": "When should you use Mantine vs Tailwind?",
+      "options": [
+        "Always use Mantine, never Tailwind",
+        "Always use Tailwind, never Mantine",
+        "Use Mantine for complex interactive components (forms, modals, data tables) and Tailwind for layout, spacing, typography, and custom styling",
+        "They can't be used together"
+      ],
+      "correct": 2,
+      "explanation": "Many projects use both: Mantine for complex, interactive components (forms, modals, data tables, charts) that need built-in functionality and accessibility, and Tailwind for layout, spacing, typography, simple styling, and custom component styling."
+    },
+    {
+      "id": "q8",
+      "question": "Where are design tokens located in the starter code?",
+      "options": [
+        "In `ui/src/theme.ts`",
+        "In `ui/src/designTokens.ts` - this is the single source of truth for all design values",
+        "In `package.json`",
+        "In a separate design system repository"
+      ],
+      "correct": 1,
+      "explanation": "Design tokens are located in `ui/src/designTokens.ts`. This file serves as the single source of truth for all colors, spacing, typography, and other design values used throughout the application."
+    },
+    {
+      "id": "q9",
+      "question": "The design team requests changing the primary button color from `#009EB1` to `#0066CC`. What is the first step in the workflow?",
+      "options": [
+        "Update the color directly in all components that use it",
+        "Locate the design tokens file (`ui/src/designTokens.ts`) and identify the relevant token",
+        "Create a new CSS file",
+        "Ask the design team to provide the exact component names"
+      ],
+      "correct": 1,
+      "explanation": "The first step is to locate the design tokens file (`ui/src/designTokens.ts`) and identify the relevant token. In this case, you would find `designTokens.app.primary` which is the single source of truth for the primary button color."
+    },
+    {
+      "id": "q10",
+      "question": "After updating `designTokens.app.primary` from `#009EB1` to `#0066CC`, what should you also update?",
+      "options": [
+        "Nothing else - the primary token is sufficient",
+        "Update related tokens like `primaryHover` and `primaryDark` to maintain visual hierarchy",
+        "Update all other color tokens",
+        "Create a new token file"
+      ],
+      "correct": 1,
+      "explanation": "When changing a color, you should also update related variants (hover, dark, light) to maintain visual hierarchy. For example, if you change `primary`, you should also update `primaryHover` and `primaryDark` to ensure the hover and active states still look correct."
+    },
+    {
+      "id": "q11",
+      "question": "Consider the following workflow steps:\n\n1. Receive feedback from design team\n2. Locate design tokens file\n3. Identify the token\n4. Update the token\n5. Update related tokens\n6. Check dependencies\n7. Test changes\n8. Update documentation\n9. Commit changes\n\nWhat should you do in step 6 (Check dependencies)?",
+      "options": [
+        "Check if other developers are using the token",
+        "Review the comments in `designTokens.ts` to see where tokens are used (e.g., `theme.ts` uses app colors, `ColorPicker.tsx` uses module colors)",
+        "Check the package.json dependencies",
+        "Ask the design team for approval"
+      ],
+      "correct": 1,
+      "explanation": "In step 6, you should review the comments in `designTokens.ts` to see where tokens are used. For example, `theme.ts` uses app colors for Mantine theme, `ColorPicker.tsx` uses module colors, and components may reference tokens directly. This helps you understand the impact of your changes."
+    },
+    {
+      "id": "q12",
+      "question": "After updating a design token, what should you do to verify the changes?",
+      "options": [
+        "Just commit the changes - no testing needed",
+        "Run the application and visually verify the changes, check all components that use the modified token, and verify responsive behavior and dark mode (if applicable)",
+        "Only check one component",
+        "Ask the design team to test it"
+      ],
+      "correct": 1,
+      "explanation": "After updating a design token, you should run the application and visually verify the changes, check all components that use the modified token, and verify responsive behavior and dark mode (if applicable). This ensures the change works correctly across the entire application."
+    },
+    {
+      "id": "q13",
+      "question": "Why is updating a design token in `designTokens.ts` better than updating colors directly in individual components?",
+      "options": [
+        "It's not better - updating components directly is fine",
+        "A single change in the design token automatically updates all components that reference it, ensuring consistency and making global updates easier",
+        "Design tokens are faster",
+        "Design tokens reduce file size"
+      ],
+      "correct": 1,
+      "explanation": "Updating a design token in `designTokens.ts` is better because it's the single source of truth. A single change automatically updates all components that reference it throughout the application, ensuring consistency and making global design updates much easier than updating each component individually."
+    },
+    {
+      "id": "q14",
+      "question": "Consider the following code snippet:\n\n```typescript\n// designTokens.ts\napp: {\n  primary: '#0066CC',\n  primaryHover: '#0052A3',\n  primaryDark: '#003D7A',\n}\n```\n\nIf you change `primary` to `#FF0000` (red), what should you do with `primaryHover` and `primaryDark`?",
+      "options": [
+        "Leave them unchanged",
+        "Update them to darker shades of red to maintain the visual hierarchy (e.g., `#CC0000` and `#990000`)",
+        "Change them to the same red color",
+        "Delete them"
+      ],
+      "correct": 1,
+      "explanation": "You should update `primaryHover` and `primaryDark` to darker shades of the new primary color to maintain visual hierarchy. Hover states should be slightly darker, and active/dark states should be even darker. This ensures buttons and interactive elements have proper visual feedback."
+    },
+    {
+      "id": "q15",
+      "question": "What Mantine hook is useful for managing modal or drawer open/close state?",
+      "options": [
+        "`useDisclosure` - provides open, close, and toggle functions",
+        "`useModal` - a custom hook",
+        "`useState` - the standard React hook",
+        "`useToggle` - a different hook"
+      ],
+      "correct": 0,
+      "explanation": "Mantine's `useDisclosure` hook is specifically designed for managing open/close state for modals, drawers, and similar components. It provides `open`, `close`, and `toggle` functions, making it more convenient than using `useState` directly."
+    },
+    {
+      "id": "q16",
+      "question": "What icon library does Mantine work with in the starter code?",
+      "options": [
+        "Tabler Icons - already installed and ready to use",
+        "Font Awesome",
+        "Custom icon set",
+        "Material Icons"
+      ],
+      "correct": 0,
+      "explanation": "Mantine works with Tabler Icons, which is already installed in the starter code. You can import icons like `IconPlus`, `IconEdit`, etc. from `@tabler/icons-react` and use them with Mantine components."
+    },
+    {
+      "id": "q17",
+      "question": "Consider the following Tailwind classes:\n\n```tsx\n<div className=\"flex items-center justify-between p-4 bg-white rounded-lg shadow-md\">\n```\n\nWhat does this create?",
+      "options": [
+        "A vertical stack",
+        "A flex container with centered items, space between content, padding, white background, rounded corners, and shadow",
+        "A grid layout",
+        "A centered block element"
+      ],
+      "correct": 1,
+      "explanation": "This creates a flex container (`flex`) with vertically centered items (`items-center`), space between content (`justify-between`), padding (`p-4`), white background (`bg-white`), rounded corners (`rounded-lg`), and a shadow (`shadow-md`). This demonstrates Tailwind's composability - combining simple utilities to create complex designs."
+    },
+    {
+      "id": "q18",
+      "question": "What is Tailwind's Just-in-Time (JIT) compilation?",
+      "options": [
+        "A way to compile JavaScript",
+        "Tailwind only generates the CSS you actually use, keeping file sizes small even with thousands of utility classes available",
+        "A method for optimizing images",
+        "A database query optimization technique"
+      ],
+      "correct": 1,
+      "explanation": "Tailwind's Just-in-Time (JIT) compilation means Tailwind only generates the CSS you actually use in your code. Even though Tailwind has thousands of utility classes available, only the ones you use are included in the final CSS bundle, keeping file sizes small."
+    },
+    {
+      "id": "q19",
+      "question": "The design team wants to change the spacing between form elements. Which design token category should you modify?",
+      "options": [
+        "`designTokens.app.primary`",
+        "`designTokens.spacing` (e.g., `spacing.md`, `spacing.lg`)",
+        "`designTokens.typography.fontSize`",
+        "`designTokens.semantic.error`"
+      ],
+      "correct": 1,
+      "explanation": "Spacing changes should be made in `designTokens.spacing`. This includes tokens like `spacing.xs`, `spacing.sm`, `spacing.md`, `spacing.lg`, etc. These tokens define consistent spacing values used throughout the application."
+    },
+    {
+      "id": "q20",
+      "question": "After updating design tokens based on design team feedback, what should be included in your commit message?",
+      "options": [
+        "Just 'Updated design tokens'",
+        "A clear message describing the design token update (e.g., 'Update primary button color from #009EB1 to #0066CC per design team feedback')",
+        "No commit message needed",
+        "Just the file name"
+      ],
+      "correct": 1,
+      "explanation": "Your commit message should clearly describe the design token update, including what was changed and why. For example: 'Update primary button color from #009EB1 to #0066CC per design team feedback'. This helps other developers understand the change and provides context for future reference."
+    }
+  ]
+}
+
