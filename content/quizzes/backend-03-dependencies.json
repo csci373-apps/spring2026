@@ -83,6 +83,126 @@
       ],
       "correct": 0,
       "explanation": "If a dependency raises an `HTTPException`, FastAPI automatically converts it to an HTTP error response with the specified status code and detail message, stopping execution before the endpoint is called."
+    },
+    {
+      "id": "q8",
+      "question": "Consider the following code snippet:\n\n```python\ndef log_calls(func):\n    def wrapper(*args, **kwargs):\n        print(f\"Calling {func.__name__}\")\n        result = func(*args, **kwargs)\n        print(f\"{func.__name__} returned {result}\")\n        return result\n    return wrapper\n\n@log_calls\ndef greet(name):\n    return f\"Hello, {name}!\"\n\nresult = greet(\"Alice\")\n```\n\nWhat will be printed when `greet(\"Alice\")` is called?",
+      "options": [
+        "Only \"Hello, Alice!\"",
+        "\"Calling greet\", then \"greet returned Hello, Alice!\"",
+        "\"Calling wrapper\", then \"Hello, Alice!\"",
+        "An error because decorators don't work this way"
+      ],
+      "correct": 1,
+      "explanation": "The `@log_calls` decorator wraps the `greet` function. When `greet(\"Alice\")` is called, it actually calls `wrapper`, which prints \"Calling greet\", calls the original `greet` function (which returns \"Hello, Alice!\" but doesn't print it), then prints \"greet returned Hello, Alice!\", and returns the result. The string \"Hello, Alice!\" itself is not printed - it's just returned and stored in `result`. This demonstrates how decorators add behavior before and after function execution."
+    },
+    {
+      "id": "q9",
+      "question": "Consider the following code snippet:\n\n```python\ndef require_auth(func):\n    def wrapper(*args, **kwargs):\n        token = kwargs.get('token')\n        if not token or token != \"secret\":\n            raise HTTPException(status_code=401, detail=\"Unauthorized\")\n        return func(*args, **kwargs)\n    return wrapper\n\n@require_auth\n@app.get(\"/protected\")\ndef protected_route(token: str):\n    return {\"message\": \"Access granted\"}\n```\n\nWhat happens if a client makes a GET request to `/protected` without a token?",
+      "options": [
+        "The endpoint returns `{\"message\": \"Access granted\"}`",
+        "FastAPI returns a 401 Unauthorized error before the endpoint is called",
+        "The endpoint returns `None`",
+        "An error is raised but not handled"
+      ],
+      "correct": 1,
+      "explanation": "The `@require_auth` decorator wraps the endpoint function. When the request comes in, the decorator's `wrapper` function runs first. If there's no token or it's invalid, it raises an `HTTPException`, which FastAPI converts to a 401 response. The original endpoint function is never called."
+    },
+    {
+      "id": "q10",
+      "question": "Consider the following code snippet:\n\n```python\ndef timing_decorator(func):\n    import time\n    def wrapper(*args, **kwargs):\n        start = time.time()\n        result = func(*args, **kwargs)\n        end = time.time()\n        print(f\"{func.__name__} took {end - start:.2f} seconds\")\n        return result\n    return wrapper\n\n@timing_decorator\ndef slow_function():\n    time.sleep(1)\n    return \"Done\"\n```\n\nWhat is the purpose of this decorator?",
+      "options": [
+        "It makes the function run faster",
+        "It measures and prints how long the function takes to execute",
+        "It prevents the function from running",
+        "It converts the function to async"
+      ],
+      "correct": 1,
+      "explanation": "This decorator adds timing functionality. It records the start time before calling the function, calls the function, records the end time, and prints the elapsed time. This is a common use case for decorators - adding cross-cutting concerns like logging, timing, or authentication without modifying the original function."
+    },
+    {
+      "id": "q11",
+      "question": "Consider the following code snippet:\n\n```python\ndef cache_result(func):\n    cache = {}\n    def wrapper(*args, **kwargs):\n        key = str(args) + str(kwargs)\n        if key in cache:\n            return cache[key]\n        result = func(*args, **kwargs)\n        cache[key] = result\n        return result\n    return wrapper\n\n@cache_result\ndef expensive_calculation(n):\n    return sum(range(n))\n```\n\nWhat happens when you call `expensive_calculation(1000)` twice?",
+      "options": [
+        "The calculation runs twice, taking the same time both times",
+        "The first call calculates and caches the result; the second call returns the cached value immediately",
+        "An error occurs because caching doesn't work with decorators",
+        "The function is called but the result is ignored"
+      ],
+      "correct": 1,
+      "explanation": "The `@cache_result` decorator stores function results in a dictionary. On the first call with `n=1000`, it calculates the sum and stores it in `cache`. On the second call with the same argument, it finds the result in `cache` and returns it immediately without recalculating. The cache persists across all invocations because `cache = {}` is created once when the decorator is applied (at function definition time), not on each function call. The `wrapper` function is a closure that captures the `cache` variable from the enclosing scope, so all calls to `expensive_calculation` share the same `cache` dictionary."
+    },
+    {
+      "id": "q13",
+      "question": "Consider the following code snippet:\n\n```python\nfrom fastapi import Depends\n\ndef get_db():\n    db = SessionLocal()\n    try:\n        yield db\n    finally:\n        db.close()\n\n@app.get(\"/users\")\ndef get_users(db = Depends(get_db)):\n    return db.query(User).all()\n```\n\nWhat does `Depends(get_db)` do?",
+      "options": [
+        "It creates a new database connection",
+        "It injects the database session returned by `get_db()` into the endpoint",
+        "It closes the database connection",
+        "It validates the request body"
+      ],
+      "correct": 1,
+      "explanation": "`Depends(get_db)` tells FastAPI to call `get_db()` before calling the endpoint, and inject the returned value (the database session) as the `db` parameter. FastAPI handles the dependency injection automatically, and because `get_db` uses `yield`, it also handles cleanup (closing the session) after the endpoint finishes."
+    },
+    {
+      "id": "q14",
+      "question": "Consider the following code snippet:\n\n```python\nfrom fastapi import Depends, HTTPException\nfrom fastapi.security import HTTPBearer\n\nsecurity = HTTPBearer()\n\ndef get_current_user(token = Depends(security)):\n    if token.credentials != \"secret-token\":\n        raise HTTPException(status_code=401, detail=\"Invalid token\")\n    return {\"user_id\": 1, \"username\": \"alice\"}\n\n@app.get(\"/profile\")\ndef get_profile(current_user = Depends(get_current_user)):\n    return current_user\n```\n\nWhat happens when a client makes a GET request to `/profile` with a valid Bearer token?",
+      "options": [
+        "FastAPI returns a 401 error",
+        "FastAPI calls `security` to extract the token, then calls `get_current_user` to validate it, then calls `get_profile` with the user data",
+        "The endpoint is called but `current_user` is `None`",
+        "An error occurs because dependencies can't depend on other dependencies"
+      ],
+      "correct": 1,
+      "explanation": "This demonstrates dependency chaining. FastAPI first calls `security` (from `Depends(security)` in `get_current_user`) to extract the Bearer token from the request. Then it calls `get_current_user` to validate the token. Finally, it calls `get_profile` with the user data. Dependencies can depend on other dependencies, creating a chain."
+    },
+    {
+      "id": "q15",
+      "question": "Consider the following code snippet:\n\n```python\nfrom fastapi import Depends\nfrom typing import Optional\n\ndef get_query_params(\n    skip: int = 0,\n    limit: int = 10\n):\n    return {\"skip\": skip, \"limit\": limit}\n\n@app.get(\"/items\")\ndef get_items(params = Depends(get_query_params)):\n    return {\"items\": [], **params}\n```\n\nWhat will be returned if a client makes a GET request to `/items?skip=5&limit=20`?",
+      "options": [
+        "{\"items\": [], \"skip\": 0, \"limit\": 10}",
+        "{\"items\": [], \"skip\": 5, \"limit\": 20}",
+        "An error because dependencies can't use query parameters",
+        "{\"items\": []}"
+      ],
+      "correct": 1,
+      "explanation": "Dependency functions can accept query parameters, path parameters, and other FastAPI features. When `get_query_params` is called as a dependency, FastAPI automatically extracts `skip=5` and `limit=20` from the query string and passes them to the function. The dependency returns a dictionary with these values, which is then injected into the endpoint."
+    },
+    {
+      "id": "q16",
+      "question": "Consider the following code snippet:\n\n```python\nfrom fastapi import Depends\nfrom sqlalchemy.orm import Session\n\ndef get_db():\n    db = SessionLocal()\n    try:\n        yield db\n    finally:\n        db.close()\n\n@app.post(\"/users\")\ndef create_user(user_data: UserCreate, db: Session = Depends(get_db)):\n    user = User(**user_data.dict())\n    db.add(user)\n    db.commit()\n    return user\n```\n\nWhy does `get_db` use `yield` instead of `return`?",
+      "options": [
+        "`yield` is required for all dependencies",
+        "`yield` allows cleanup code (like `db.close()`) to run after the endpoint finishes executing",
+        "`yield` makes the function async",
+        "`yield` is faster than `return`"
+      ],
+      "correct": 1,
+      "explanation": "Using `yield` makes `get_db` a generator function. FastAPI calls it up to the `yield` statement (creating the database session), passes the yielded value to the endpoint, and then continues execution after `yield` (in the `finally` block) when the endpoint finishes. This ensures the database session is properly closed even if an error occurs."
+    },
+    {
+      "id": "q17",
+      "question": "Consider the following code snippet:\n\n```python\nfrom fastapi import Depends, Header\n\ndef get_user_agent(user_agent: str = Header(None)):\n    return user_agent\n\n@app.get(\"/info\")\ndef get_info(ua = Depends(get_user_agent)):\n    return {\"user_agent\": ua}\n```\n\nWhat does this dependency do?",
+      "options": [
+        "It extracts the `User-Agent` header from the HTTP request and injects it into the endpoint",
+        "It creates a new user agent",
+        "It validates the request body",
+        "It sets a cookie"
+      ],
+      "correct": 0,
+      "explanation": "This dependency function uses `Header(None)` to extract the `User-Agent` header from the HTTP request. FastAPI automatically extracts header values and passes them to dependency functions. The dependency then returns the header value, which is injected into the endpoint as `ua`. This shows how dependencies can extract and process HTTP request data."
+    },
+    {
+      "id": "q18",
+      "question": "Consider the following code snippet:\n\n```python\nfrom fastapi import Depends\nfrom typing import List\n\nclass PaginationParams:\n    def __init__(self, skip: int = 0, limit: int = 10):\n        self.skip = skip\n        self.limit = limit\n\ndef get_pagination(skip: int = 0, limit: int = 10) -> PaginationParams:\n    return PaginationParams(skip=skip, limit=limit)\n\n@app.get(\"/items\")\ndef get_items(pagination: PaginationParams = Depends(get_pagination)):\n    return db.query(Item).offset(pagination.skip).limit(pagination.limit).all()\n```\n\nWhat is the benefit of using a class-based dependency like this?",
+      "options": [
+        "It makes queries faster",
+        "It groups related parameters together and provides a clean interface for the endpoint",
+        "It prevents the endpoint from being called",
+        "It automatically validates all query parameters"
+      ],
+      "correct": 1,
+      "explanation": "Using a class to group related dependency parameters provides better organization and a cleaner API. Instead of having multiple separate parameters (`skip`, `limit`), the endpoint receives a single `PaginationParams` object with properties. This makes the code more maintainable and the endpoint signature cleaner. The dependency function can also add validation or default values."
     }
   ]
 }

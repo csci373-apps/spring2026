@@ -10,19 +10,19 @@
         "Nothing - duplicates are automatically removed"
       ],
       "correct": 1,
-      "explanation": "When using `joinedload` with one-to-many relationships, the JOIN can create duplicate rows. Call `.unique()` on the result to remove duplicates."
+      "explanation": "When using `joinedload` with one-to-many relationships, the JOIN can create duplicate rows. Call `.unique()` on the result to remove duplicates. Use `.unique()` (not `.distinct()`) because `.unique()` works at the Python/ORM level using SQLAlchemy's identity map to deduplicate objects based on their identity, which is more efficient and works correctly with ORM objects. `.distinct()` is a SQL-level operation that adds `DISTINCT` to the query, which can be inefficient and doesn't properly handle ORM object deduplication."
     },
     {
       "id": "q2",
-      "question": "What is the N+1 problem?",
+      "question": "Consider the following code snippet:\n\n```python\nfrom sqlalchemy import Column, Integer, String, ForeignKey\nfrom sqlalchemy.orm import relationship\n\nclass User(Base):\n    __tablename__ = \"users\"\n    id = Column(Integer, primary_key=True)\n    name = Column(String(100))\n    email = Column(String(255), unique=True)\n    posts = relationship(\"Post\", backref=\"user\")\n```\n\nWhat is the purpose of this model, and what will the table name and database columns be?",
       "options": [
-        "When you fetch N records and then make N additional queries to get related data, resulting in N+1 total queries",
-        "When you have N+1 foreign key relationships",
-        "When you query the database N+1 times for the same record",
-        "When you have N+1 database connections open"
+        "Purpose: Represents a user. Table: `users`. Columns: `id` (INTEGER PRIMARY KEY), `name` (VARCHAR(100)), `email` (VARCHAR(255) UNIQUE)",
+        "Purpose: Represents a post. Table: `posts`. Columns: `id`, `name`, `email`",
+        "Purpose: Represents a user. Table: `User`. Columns: `id`, `name`, `email`, `posts`",
+        "Purpose: Represents a relationship. Table: `users_posts`. Columns: `id`, `name`, `email`"
       ],
       "correct": 0,
-      "explanation": "The N+1 problem occurs when you fetch N records (1 query) and then access relationships for each record in a loop (N additional queries), resulting in N+1 total queries instead of a single query with a JOIN."
+      "explanation": "This model represents a User entity. The `__tablename__ = \"users\"` defines the table name as `users`. The database columns are: `id` (INTEGER PRIMARY KEY), `name` (VARCHAR(100)), and `email` (VARCHAR(255) UNIQUE). The `posts` relationship is not a database column - it's a Python-side relationship that allows accessing related Post objects. The `backref=\"user\"` creates a reverse relationship on the Post model."
     },
     {
       "id": "q3",
@@ -83,6 +83,210 @@
       ],
       "correct": 1,
       "explanation": "Use `joinedload` in your `select()` statement to load relationships in a single query with a JOIN, avoiding the N+1 problem."
+    },
+    {
+      "id": "q8",
+      "question": "Consider the following code snippet:\n\n```python\nfrom sqlalchemy import Column, Integer, String, ForeignKey\nfrom sqlalchemy.orm import relationship\n\nclass User(Base):\n    __tablename__ = \"users\"\n    id = Column(Integer, primary_key=True)\n    name = Column(String)\n    posts = relationship(\"Post\", backref=\"user\")\n\nclass Post(Base):\n    __tablename__ = \"posts\"\n    id = Column(Integer, primary_key=True)\n    title = Column(String)\n    user_id = Column(Integer, ForeignKey(\"users.id\"))\n```\n\nWhat does `backref=\"user\"` do?",
+      "options": [
+        "It creates a `user` attribute on the `Post` class that references the parent `User`",
+        "It creates a `posts` attribute on the `User` class",
+        "It prevents the relationship from being loaded",
+        "It makes the `user_id` foreign key required"
+      ],
+      "correct": 0,
+      "explanation": "`backref=\"user\"` automatically creates a `user` attribute on the `Post` class, so you can access `post.user` to get the User that owns the post. It also creates the reverse `posts` relationship on `User`. Note: The forward relationship (`User.posts`) is created by the `relationship(\"Post\", ...)` call itself - if `backref` is omitted, the forward relationship still works, but you won't have the reverse relationship (`post.user`) unless you define it separately."
+    },
+    {
+      "id": "q9",
+      "question": "Consider the following code snippet:\n\n```python\nfrom sqlalchemy.orm import Session\n\nasync def get_user(db: Session, user_id: int):\n    result = await db.execute(\n        select(User).where(User.id == user_id)\n    )\n    return result.scalar_one_or_none()\n```\n\nWhat will this function return if `user_id` doesn't exist in the database?",
+      "options": [
+        "It will raise a `NoResultFound` exception",
+        "It will return `None`",
+        "It will return an empty list",
+        "It will raise a `MultipleResultsFound` exception"
+      ],
+      "correct": 1,
+      "explanation": "`scalar_one_or_none()` returns `None` if no results are found, and only raises an exception if multiple results are found. This is different from `scalar_one()` which raises an exception if there are 0 or multiple results."
+    },
+    {
+      "id": "q10",
+      "question": "Consider the following code snippet:\n\n```python\nfrom sqlalchemy.orm import joinedload\n\nresult = await db.execute(\n    select(User)\n    .options(joinedload(User.posts))\n    .where(User.id == 1)\n)\nuser = result.scalar_one()\n```\n\nWhat will happen when you access `user.posts`?",
+      "options": [
+        "It will make a separate database query to fetch posts",
+        "The posts are already loaded in memory from the initial query",
+        "It will raise an error because posts weren't loaded",
+        "It will return an empty list"
+      ],
+      "correct": 1,
+      "explanation": "`joinedload(User.posts)` eagerly loads the `posts` relationship using a JOIN in the initial query. When you access `user.posts`, the data is already in memory and no additional query is made."
+    },
+    {
+      "id": "q11",
+      "question": "Consider the following code snippet:\n\n```python\nnew_user = User(name=\"Alice\")\ndb.add(new_user)\nawait db.commit()\nawait db.refresh(new_user)\n```\n\nWhat does `db.refresh(new_user)` do?",
+      "options": [
+        "It deletes the user from the database",
+        "It reloads the user object from the database, updating it with any database-generated values (like auto-increment IDs)",
+        "It saves the user to the database",
+        "It rolls back the transaction"
+      ],
+      "correct": 1,
+      "explanation": "`refresh()` reloads the object from the database, updating it with any values that were generated by the database (like auto-increment IDs, default values, or triggers). This is useful after `commit()` to get the database-generated `id`."
+    },
+    {
+      "id": "q12",
+      "question": "Consider the following code snippet:\n\n```python\nresult = await db.execute(\n    select(User)\n    .where(User.name == \"Alice\")\n)\nusers = result.scalars().all()\n```\n\nWhat does `result.scalars().all()` return?",
+      "options": [
+        "A single `User` object",
+        "A list of all `User` objects matching the query",
+        "The first `User` object or `None`",
+        "A dictionary of user data"
+      ],
+      "correct": 1,
+      "explanation": "`scalars()` extracts scalar values from the result, and `.all()` returns all matching rows as a list. This returns a list of `User` objects where `name == \"Alice\"`."
+    },
+    {
+      "id": "q13",
+      "question": "Consider the following code snippet:\n\n```python\nfrom sqlalchemy.orm import relationship, back_populates\n\nclass User(Base):\n    __tablename__ = \"users\"\n    id = Column(Integer, primary_key=True)\n    posts = relationship(\"Post\", back_populates=\"user\")\n\nclass Post(Base):\n    __tablename__ = \"posts\"\n    id = Column(Integer, primary_key=True)\n    user_id = Column(Integer, ForeignKey(\"users.id\"))\n    user = relationship(\"User\", back_populates=\"posts\")\n```\n\nWhat is the difference between `backref` and `back_populates`?",
+      "options": [
+        "`backref` creates both sides automatically, while `back_populates` requires you to define both sides explicitly",
+        "`backref` is for async queries, `back_populates` is for sync queries",
+        "`backref` is deprecated and should never be used",
+        "There is no difference - they are identical"
+      ],
+      "correct": 0,
+      "explanation": "`backref` automatically creates both sides of the relationship (you only define it on one side). `back_populates` requires you to explicitly define the relationship on both models, giving you more control and making the relationship definition more explicit."
+    },
+    {
+      "id": "q14",
+      "question": "Consider the following code snippet:\n\n```python\nresult = await db.execute(\n    select(User)\n    .options(joinedload(User.posts))\n    .where(User.id.in_([1, 2, 3]))\n)\nusers = result.scalars().unique().all()\n```\n\nWhy is `.unique()` needed here?",
+      "options": [
+        "To remove duplicate User objects from the result",
+        "To ensure only unique user IDs are returned",
+        "Because `joinedload` with one-to-many relationships creates duplicate rows in the result set",
+        "To sort the results by user ID"
+      ],
+      "correct": 2,
+      "explanation": "When using `joinedload` with one-to-many relationships, the JOIN can create duplicate rows (one row per related post). `.unique()` removes these duplicates, ensuring each User object appears only once in the result. Use `.unique()` (not `.distinct()`) because `.unique()` works at the Python/ORM level using SQLAlchemy's identity map to deduplicate objects based on their identity. `.distinct()` is a SQL-level operation that adds `DISTINCT` to the query, which can be inefficient and doesn't properly handle ORM object deduplication."
+    },
+    {
+      "id": "q15",
+      "question": "Consider the following code snippet:\n\n```python\nuser = User(name=\"Bob\")\ndb.add(user)\n# No commit() called\n```\n\nWhat happens to this user?",
+      "options": [
+        "The user is immediately saved to the database",
+        "The user exists only in memory and will be lost if the session ends without commit",
+        "The user is saved to a temporary table",
+        "An error is raised because commit() wasn't called"
+      ],
+      "correct": 1,
+      "explanation": "Without `commit()`, the user object exists only in the session's memory. If the session ends, the transaction is rolled back, and the user is never saved to the database. You must call `commit()` to persist changes."
+    },
+    {
+      "id": "q16",
+      "question": "Consider the following code snippet:\n\n```python\nresult = await db.execute(\n    select(User)\n    .where(User.name.like(\"%Alice%\"))\n)\nusers = result.scalars().all()\n```\n\nWhat does this query do?",
+      "options": [
+        "Finds users with name exactly equal to \"Alice\"",
+        "Finds users with name starting with \"Alice\"",
+        "Finds users with name containing \"Alice\" anywhere in the string",
+        "Finds users with name ending with \"Alice\""
+      ],
+      "correct": 2,
+      "explanation": "The `like(\"%Alice%\")` pattern uses SQL LIKE with wildcards. `%` matches any sequence of characters, so `%Alice%` matches any string containing \"Alice\" anywhere (e.g., \"Alice\", \"Alicia\", \"Malice\"). The `scalars().all()` returns all matching User objects as a list."
+    },
+    {
+      "id": "q17",
+      "question": "Consider the following code snippet:\n\n```python\nfrom sqlalchemy.orm import selectinload\n\nresult = await db.execute(\n    select(User)\n    .options(selectinload(User.posts))\n    .where(User.id == 1)\n)\nuser = result.scalar_one()\n```\n\nHow does `selectinload` differ from `joinedload`?",
+      "options": [
+        "`selectinload` uses a separate SELECT query with IN clause, while `joinedload` uses a JOIN",
+        "`selectinload` is faster for all cases",
+        "`selectinload` doesn't require `.unique()` for one-to-many relationships",
+        "`selectinload` only works with async queries"
+      ],
+      "correct": 0,
+      "explanation": "`selectinload` uses a separate SELECT query with an IN clause to load related objects, avoiding duplicate rows. `joinedload` uses a JOIN which can create duplicates with one-to-many relationships (requiring `.unique()`). `selectinload` is often preferred for one-to-many relationships."
+    },
+    {
+      "id": "q18",
+      "question": "Consider the following code snippet:\n\n```python\nuser = await db.get(User, 1)\nuser.name = \"Alice Updated\"\nawait db.commit()\n```\n\nWhat happens to the user's name?",
+      "options": [
+        "The name is updated in the database",
+        "The name change is ignored because `db.get()` returns a read-only object",
+        "An error is raised because you must call `db.update()` first",
+        "The name is updated only in memory, not in the database"
+      ],
+      "correct": 0,
+      "explanation": "SQLAlchemy tracks changes to objects loaded in the session. When you modify `user.name` and then call `commit()`, SQLAlchemy automatically generates an UPDATE statement to save the change to the database."
+    },
+    {
+      "id": "q19",
+      "question": "Consider the following code snippet:\n\n```python\nresult = await db.execute(\n    select(User, Post)\n    .join(Post, User.id == Post.user_id)\n    .where(Post.title == \"My Post\")\n)\nrow = result.first()\n```\n\nWhat does `result.first()` return?",
+      "options": [
+        "A tuple containing (User, Post) objects",
+        "A single User object",
+        "A single Post object",
+        "A dictionary with user and post data"
+      ],
+      "correct": 0,
+      "explanation": "When you `select()` multiple entities, the result contains tuples. `result.first()` returns the first row as a tuple `(User, Post)`, or `None` if no rows match."
+    },
+    {
+      "id": "q20",
+      "question": "Consider the following code snippet:\n\n```python\nfrom sqlalchemy import Column, Integer, String, DateTime, func\n\nclass Post(Base):\n    __tablename__ = \"posts\"\n    id = Column(Integer, primary_key=True)\n    title = Column(String)\n    created_at = Column(DateTime, server_default=func.now())\n```\n\nWhat does `server_default=func.now()` do?",
+      "options": [
+        "It sets the default value in Python when creating a Post object",
+        "It tells the database to set the default value using the database's current timestamp function",
+        "It prevents the column from being updated",
+        "It makes the column required"
+      ],
+      "correct": 1,
+      "explanation": "`server_default=func.now()` tells the database to use its own timestamp function (like `NOW()` in PostgreSQL or `CURRENT_TIMESTAMP` in SQLite) as the default value. This happens at the database level, not in Python."
+    },
+    {
+      "id": "q21",
+      "question": "Consider the following code snippet:\n\n```python\nresult = await db.execute(\n    select(User)\n    .where(User.id == 1)\n)\nuser = result.scalar_one()\n\n# Later, in a different function:\nresult2 = await db.execute(\n    select(User)\n    .where(User.id == 1)\n)\nuser2 = result2.scalar_one()\n```\n\nAre `user` and `user2` the same object in memory?",
+      "options": [
+        "Yes, SQLAlchemy's identity map ensures the same object instance is returned",
+        "No, they are different objects even though they represent the same database row",
+        "Only if you use `db.merge()`",
+        "Only if the session is the same"
+      ],
+      "correct": 0,
+      "explanation": "SQLAlchemy's identity map pattern ensures that within the same session, querying for the same primary key returns the same object instance. This prevents duplicate objects and ensures changes are tracked correctly."
+    },
+    {
+      "id": "q22",
+      "question": "Consider the following code snippet:\n\n```python\ntry:\n    user = User(name=\"Alice\")\n    db.add(user)\n    await db.commit()\nexcept Exception:\n    await db.rollback()\n    raise\n```\n\nWhat does `db.rollback()` do?",
+      "options": [
+        "It saves all pending changes to the database",
+        "It discards all uncommitted changes and resets the session to its last committed state",
+        "It closes the database connection",
+        "It deletes all records in the database"
+      ],
+      "correct": 1,
+      "explanation": "`rollback()` discards all uncommitted changes in the current transaction and resets the session. This is useful in error handling to ensure the database remains in a consistent state."
+    },
+    {
+      "id": "q23",
+      "question": "Consider the following code snippet:\n\n```python\nfrom sqlalchemy.orm import relationship\nfrom sqlalchemy import Column, Integer, String, Table, ForeignKey\n\npost_tags = Table(\n    'post_tags',\n    Base.metadata,\n    Column('post_id', Integer, ForeignKey('posts.id')),\n    Column('tag_id', Integer, ForeignKey('tags.id'))\n)\n\nclass Post(Base):\n    __tablename__ = \"posts\"\n    id = Column(Integer, primary_key=True)\n    tags = relationship(\"Tag\", secondary=post_tags, backref=\"posts\")\n```\n\nWhat type of relationship is this?",
+      "options": [
+        "One-to-one",
+        "One-to-many",
+        "Many-to-many",
+        "Many-to-one"
+      ],
+      "correct": 2,
+      "explanation": "This is a many-to-many relationship. The `secondary` parameter points to an association table (`post_tags`) that connects posts and tags. A post can have many tags, and a tag can belong to many posts. The `Table` function creates a simple association table with only foreign keys - use `Table` when you don't need to store additional data on the relationship. If you need extra columns (like timestamps or metadata), use a class-based model instead."
+    },
+    {
+      "id": "q24",
+      "question": "Consider the following code snippet:\n\n```python\nresult = await db.execute(\n    select(User)\n    .order_by(User.name.desc())\n    .limit(10)\n    .offset(20)\n)\nusers = result.scalars().all()\n```\n\nWhat does this query do?",
+      "options": [
+        "Returns the first 10 users ordered by name",
+        "Returns users 21-30 (skipping first 20, taking next 10) ordered by name descending",
+        "Returns all users ordered by name, then takes the first 10",
+        "Returns the last 10 users in the database"
+      ],
+      "correct": 1,
+      "explanation": "`.order_by(User.name.desc())` sorts by name descending. `.offset(20)` skips the first 20 results. `.limit(10)` takes the next 10 results. So this returns users 21-30 when sorted by name descending."
     }
   ]
 }

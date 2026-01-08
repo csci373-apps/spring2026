@@ -2,7 +2,7 @@
 title: "Mantine UI Components"
 group: "Front-End"
 group_order: 4
-order: 2
+order: 3
 ---
 
 ## What is a Design System?

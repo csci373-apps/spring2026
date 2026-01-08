@@ -83,6 +83,102 @@
       ],
       "correct": 2,
       "explanation": "Use bcrypt (or similar secure hashing algorithms) to hash passwords. bcrypt automatically handles salting, which prevents rainbow table attacks. Never store passwords in plain text."
+    },
+    {
+      "id": "q8",
+      "question": "A JWT token consists of three parts separated by periods (`.`). What are these three parts?",
+      "options": [
+        "Header, Payload, Signature",
+        "Username, Password, Token",
+        "Key, Value, Hash",
+        "Request, Response, Status"
+      ],
+      "correct": 0,
+      "explanation": "A JWT has three parts separated by periods: Header (algorithm and token type), Payload (claims/data like user ID and roles), and Signature (verifies the token hasn't been tampered with). The format is: `header.payload.signature`."
+    },
+    {
+      "id": "q9",
+      "question": "Consider the following code snippet:\n\n```python\nfrom fastapi import Depends, HTTPException, status\nfrom fastapi.security import HTTPBearer, HTTPAuthorizationCredentials\nfrom jose import jwt\n\nsecurity = HTTPBearer()\n\nasync def get_current_user(\n    credentials: HTTPAuthorizationCredentials = Depends(security)\n):\n    token = credentials.credentials\n    try:\n        payload = jwt.decode(token, SECRET_KEY, algorithms=[\"HS256\"])\n        user_id = payload.get(\"sub\")\n        if user_id is None:\n            raise HTTPException(status_code=401, detail=\"Invalid token\")\n        return {\"user_id\": user_id, \"role\": payload.get(\"role\")}\n    except jwt.JWTError:\n        raise HTTPException(status_code=401, detail=\"Invalid token\")\n```\n\nWhat does this code do?",
+      "options": [
+        "It creates a new JWT token",
+        "It extracts the JWT from the Authorization header, decodes it, and returns the user information",
+        "It encrypts user passwords",
+        "It stores tokens in a database"
+      ],
+      "correct": 1,
+      "explanation": "This dependency function extracts the JWT token from the `Authorization: Bearer <token>` header using `HTTPBearer()`, decodes it using the secret key, and extracts user information (user_id and role) from the payload. If the token is invalid or missing, it raises a 401 error."
+    },
+    {
+      "id": "q10",
+      "question": "Consider the following code snippet:\n\n```python\nfrom jose import jwt\nfrom datetime import datetime, timedelta\n\nSECRET_KEY = \"your-secret-key\"\n\ndef create_access_token(user_id: int, role: str):\n    payload = {\n        \"sub\": str(user_id),\n        \"role\": role,\n        \"exp\": datetime.utcnow() + timedelta(hours=1)\n    }\n    token = jwt.encode(payload, SECRET_KEY, algorithm=\"HS256\")\n    return token\n```\n\nWhat does the `exp` claim in the payload represent?",
+      "options": [
+        "The expiration time of the token - when it will no longer be valid",
+        "The export format of the token",
+        "The expected user role",
+        "The expiration time of the user's password"
+      ],
+      "correct": 0,
+      "explanation": "The `exp` (expiration) claim specifies when the token expires. In this example, the token expires 1 hour after creation. After expiration, the token is no longer valid and the user must authenticate again to get a new token."
+    },
+    {
+      "id": "q11",
+      "question": "What happens if someone steals your JWT token?",
+      "options": [
+        "Nothing - tokens are encrypted and cannot be used by others",
+        "The attacker can use the token to impersonate you until it expires, accessing any resources your role allows",
+        "The token automatically becomes invalid",
+        "The server detects the theft and blocks the token"
+      ],
+      "correct": 1,
+      "explanation": "If a JWT token is stolen, the attacker can use it to impersonate you until it expires. This is why JWTs should have short expiration times, and sensitive operations should require re-authentication. Unlike session tokens, you cannot revoke a JWT before it expires without maintaining a blacklist (which defeats the purpose of stateless tokens)."
+    },
+    {
+      "id": "q12",
+      "question": "Consider the following JWT token structure:\n\n```\neyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwicm9sZSI6InVzZXIifQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c\n```\n\nWhat does the first part (before the first period) contain?",
+      "options": [
+        "The user's password",
+        "The header - metadata about the token (algorithm, type)",
+        "The payload - user data and claims",
+        "The signature - used to verify the token"
+      ],
+      "correct": 1,
+      "explanation": "The first part is the Header, which is base64-encoded JSON containing metadata about the token, such as the algorithm used (HS256) and the token type (JWT). When decoded, it looks like: `{\"alg\":\"HS256\",\"typ\":\"JWT\"}`."
+    },
+    {
+      "id": "q13",
+      "question": "Consider the following code snippet:\n\n```python\nfrom fastapi import Depends, HTTPException\nfrom fastapi.security import HTTPBearer\nfrom jose import jwt\n\nsecurity = HTTPBearer()\n\nasync def get_current_user(\n    credentials: HTTPAuthorizationCredentials = Depends(security)\n):\n    token = credentials.credentials\n    payload = jwt.decode(token, SECRET_KEY, algorithms=[\"HS256\"])\n    return payload\n\n@app.get(\"/protected\")\nasync def protected_route(current_user = Depends(get_current_user)):\n    return {\"message\": f\"Hello, user {current_user['sub']}\"}\n```\n\nWhat happens if a client makes a request to `/protected` without an Authorization header?",
+      "options": [
+        "The endpoint returns `{\"message\": \"Hello, user None\"}`",
+        "FastAPI returns a 401 Unauthorized error because `HTTPBearer()` requires the Authorization header",
+        "The endpoint executes normally with `current_user` set to `None`",
+        "FastAPI returns a 500 Internal Server Error"
+      ],
+      "correct": 1,
+      "explanation": "`HTTPBearer()` automatically validates that the `Authorization: Bearer <token>` header is present. If the header is missing or malformed, FastAPI returns a 401 Unauthorized error before the dependency function or endpoint is called."
+    },
+    {
+      "id": "q14",
+      "question": "What is the purpose of the JWT signature (the third part of the token)?",
+      "options": [
+        "It encrypts the payload data",
+        "It verifies that the token hasn't been tampered with and was issued by the server",
+        "It stores the user's password",
+        "It determines the token's expiration time"
+      ],
+      "correct": 1,
+      "explanation": "The signature is created by hashing the header and payload with the secret key. When the server receives a token, it recalculates the signature and compares it to the token's signature. If they match, the token is authentic and hasn't been modified. If they don't match, the token is rejected."
+    },
+    {
+      "id": "q15",
+      "question": "Consider the following code snippet:\n\n```python\nfrom fastapi import Depends\n\nasync def require_admin(current_user = Depends(get_current_user)):\n    if current_user.get(\"role\") != \"admin\":\n        raise HTTPException(status_code=403, detail=\"Admin access required\")\n    return current_user\n\n@app.delete(\"/users/{user_id}\")\nasync def delete_user(user_id: int, admin = Depends(require_admin)):\n    # Delete user logic\n    return {\"message\": \"User deleted\"}\n```\n\nWhat does this demonstrate?",
+      "options": [
+        "How to create JWT tokens",
+        "How to use dependency chaining to enforce role-based access control",
+        "How to hash passwords",
+        "How to store tokens in a database"
+      ],
+      "correct": 1,
+      "explanation": "This demonstrates dependency chaining. `require_admin` depends on `get_current_user`, which extracts and validates the JWT. `require_admin` then checks if the user's role is \"admin\". If not, it raises a 403 Forbidden error. This pattern allows you to reuse authentication logic and add authorization checks on top."
     }
   ]
 }

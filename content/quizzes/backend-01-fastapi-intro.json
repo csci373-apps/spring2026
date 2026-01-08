@@ -83,6 +83,162 @@
       ],
       "correct": 1,
       "explanation": "Query parameters with default values (like `skip: int = 0`) are optional. If the client doesn't provide them, FastAPI uses the default value."
+    },
+    {
+      "id": "q8",
+      "question": "Consider the following code snippet:\n\n```python\nfrom pydantic import BaseModel\n\nclass UserCreate(BaseModel):\n    email: str\n    age: int\n    name: str = \"Unknown\"\n\n@app.post(\"/users\")\ndef create_user(user: UserCreate):\n    return user\n```\n\nIf a client sends a POST request to `/users` with the body `{\"email\": \"test@example.com\", \"age\": \"twenty-five\"}`, what will happen?",
+      "options": [
+        "The request will succeed and `age` will be converted to 25",
+        "FastAPI will return a 422 Unprocessable Entity error because `age` cannot be converted to an int",
+        "The request will succeed with `age` set to 0",
+        "FastAPI will return a 500 Internal Server Error"
+      ],
+      "correct": 1,
+      "explanation": "FastAPI uses Pydantic for validation. Since `\"twenty-five\"` cannot be converted to an integer, Pydantic will raise a validation error, and FastAPI will return a 422 error with details about the validation failure."
+    },
+    {
+      "id": "q9",
+      "question": "Consider the following code snippet:\n\n```python\n@app.get(\"/users/{user_id}\")\ndef get_user(user_id: int):\n    if user_id < 1:\n        raise HTTPException(status_code=404, detail=\"User not found\")\n    return {\"id\": user_id, \"name\": \"Alice\"}\n```\n\nWhat will happen if a client makes a GET request to `/users/abc`?",
+      "options": [
+        "The function will execute and `user_id` will be 0",
+        "FastAPI will return a 404 Not Found error",
+        "FastAPI will return a 422 Unprocessable Entity error",
+        "The function will execute and `user_id` will be None"
+      ],
+      "correct": 2,
+      "explanation": "FastAPI automatically validates path parameters. Since `\"abc\"` cannot be converted to an `int`, FastAPI will return a 422 Unprocessable Entity error before the function is even called."
+    },
+    {
+      "id": "q10",
+      "question": "Consider the following code snippet:\n\n```python\n@app.get(\"/items\")\ndef get_items(skip: int = 0, limit: int = 10):\n    return {\"skip\": skip, \"limit\": limit}\n```\n\nWhat will be returned if a client makes a GET request to `/items?limit=5`?",
+      "options": [
+        "{\"skip\": 0, \"limit\": 5}",
+        "{\"skip\": None, \"limit\": 5}",
+        "A 422 error because `skip` is missing",
+        "A 400 error because `skip` is required"
+      ],
+      "correct": 0,
+      "explanation": "Query parameters with default values are optional. Since `skip` has a default value of 0, it will use that default when not provided. The `limit` parameter will be 5 as specified in the query string."
+    },
+    {
+      "id": "q11",
+      "question": "Consider the following code snippet:\n\n```python\nfrom pydantic import BaseModel\n\nclass UserIn(BaseModel):\n    email: str\n    password: str\n\nclass UserOut(BaseModel):\n    email: str\n    id: int\n\n@app.post(\"/users\", response_model=UserOut)\ndef create_user(user: UserIn):\n    return {\"email\": user.email, \"password\": user.password, \"id\": 1}\n```\n\nWhat will be included in the response body?",
+      "options": [
+        "{\"email\": \"...\", \"password\": \"...\", \"id\": 1}",
+        "{\"email\": \"...\", \"id\": 1}",
+        "{\"email\": \"...\", \"password\": \"...\"}",
+        "A 500 error because the response doesn't match the model"
+      ],
+      "correct": 1,
+      "explanation": "The `response_model=UserOut` parameter tells FastAPI to serialize the response using only the fields defined in `UserOut`. The `password` field will be filtered out, leaving only `email` and `id`."
+    },
+    {
+      "id": "q12",
+      "question": "Consider the following code snippet:\n\n```python\nfrom fastapi import APIRouter, HTTPException\n\nrouter = APIRouter(prefix=\"/api/v1\")\n\n@router.get(\"/users\")\ndef get_users():\n    return [{\"id\": 1, \"name\": \"Alice\"}]\n\n@router.get(\"/users/{user_id}\")\ndef get_user(user_id: int):\n    if user_id == 999:\n        raise HTTPException(status_code=404, detail=\"User not found\")\n    return {\"id\": user_id, \"name\": \"Bob\"}\n```\n\nIf this router is included in the main app with `app.include_router(router)`, what URL would access the `get_user` function?",
+      "options": [
+        "/users/{user_id}",
+        "/api/v1/users/{user_id}",
+        "/api/users/{user_id}",
+        "/v1/users/{user_id}"
+      ],
+      "correct": 1,
+      "explanation": "The `prefix=\"/api/v1\"` parameter in `APIRouter` automatically prepends `/api/v1` to all routes in the router. So `/users/{user_id}` becomes `/api/v1/users/{user_id}`."
+    },
+    {
+      "id": "q13",
+      "question": "Consider the following code snippet:\n\n```python\nfrom pydantic import BaseModel\n\nclass Item(BaseModel):\n    name: str\n    price: float\n    quantity: int = 1\n\n@app.post(\"/items\")\ndef create_item(item: Item):\n    return item\n```\n\nIf a client sends a POST request to `/items` with the body `{\"name\": \"Widget\", \"price\": 9.99}`, what will be returned?",
+      "options": [
+        "{\"name\": \"Widget\", \"price\": 9.99, \"quantity\": 1}",
+        "{\"name\": \"Widget\", \"price\": 9.99}",
+        "A 422 error because `quantity` is missing",
+        "A 400 error because `quantity` is required"
+      ],
+      "correct": 0,
+      "explanation": "Since `quantity` has a default value of 1 in the Pydantic model, it will be included in the response with that default value when not provided in the request body."
+    },
+    {
+      "id": "q14",
+      "question": "Consider the following code snippet:\n\n```python\nfrom fastapi import FastAPI, HTTPException\n\napp = FastAPI()\n\n@app.get(\"/users/{user_id}\")\ndef get_user(user_id: int):\n    users = {1: \"Alice\", 2: \"Bob\"}\n    if user_id not in users:\n        raise HTTPException(status_code=404, detail=\"User not found\")\n    return {\"id\": user_id, \"name\": users[user_id]}\n```\n\nWhat will happen if a client makes a GET request to `/users/3`?",
+      "options": [
+        "The function will return `{\"id\": 3, \"name\": None}`",
+        "FastAPI will return a 422 Unprocessable Entity error",
+        "FastAPI will return a 404 Not Found error with detail \"User not found\"",
+        "The function will return an empty dictionary"
+      ],
+      "correct": 2,
+      "explanation": "Since `user_id` 3 is not in the `users` dictionary, the `if` condition is true, and `HTTPException` with `status_code=404` is raised. FastAPI will return a 404 response with the detail message."
+    },
+    {
+      "id": "q15",
+      "question": "Consider the following code snippet:\n\n```python\nfrom pydantic import BaseModel, EmailStr\n\nclass UserCreate(BaseModel):\n    email: EmailStr\n    age: int\n    name: str\n\n@app.post(\"/users\")\ndef create_user(user: UserCreate):\n    return {\"id\": 1, **user.dict()}\n```\n\nIf a client sends a POST request to `/users` with the body `{\"email\": \"not-an-email\", \"age\": 25, \"name\": \"Alice\"}`, what will happen?",
+      "options": [
+        "The request will succeed and `email` will be stored as \"not-an-email\"",
+        "FastAPI will return a 422 error because `EmailStr` validates that the string is a valid email format",
+        "The request will succeed but `email` will be converted to an empty string",
+        "FastAPI will return a 500 Internal Server Error"
+      ],
+      "correct": 1,
+      "explanation": "`EmailStr` is a Pydantic type that validates email format. Since `\"not-an-email\"` is not a valid email address, Pydantic will raise a validation error, and FastAPI will return a 422 Unprocessable Entity error."
+    },
+    {
+      "id": "q16",
+      "question": "Consider the following code snippet:\n\n```python\n@app.get(\"/items\")\ndef get_items(skip: int = 0, limit: int = 10, search: str = None):\n    return {\"skip\": skip, \"limit\": limit, \"search\": search}\n```\n\nWhat will be returned if a client makes a GET request to `/items?search=widget`?",
+      "options": [
+        "{\"skip\": 0, \"limit\": 10, \"search\": \"widget\"}",
+        "{\"skip\": 0, \"limit\": 10, \"search\": None}",
+        "A 422 error because `search` is not provided",
+        "A 400 error because `search` must be an integer"
+      ],
+      "correct": 0,
+      "explanation": "Query parameters with default values (including `None`) are optional. When provided, they use the value from the query string. `skip` and `limit` use their defaults (0 and 10), while `search` uses the provided value \"widget\"."
+    },
+    {
+      "id": "q17",
+      "question": "Consider the following code snippet:\n\n```python\nfrom pydantic import BaseModel\nfrom typing import Optional\n\nclass UserUpdate(BaseModel):\n    email: Optional[str] = None\n    name: Optional[str] = None\n\n@app.put(\"/users/{user_id}\")\ndef update_user(user_id: int, user: UserUpdate):\n    return {\"id\": user_id, **user.dict(exclude_none=True)}\n```\n\nIf a client sends a PUT request to `/users/1` with the body `{\"name\": \"Alice\"}`, what will be returned?",
+      "options": [
+        "{\"id\": 1, \"email\": None, \"name\": \"Alice\"}",
+        "{\"id\": 1, \"name\": \"Alice\"}",
+        "A 422 error because `email` is missing",
+        "A 400 error because all fields are required"
+      ],
+      "correct": 1,
+      "explanation": "Using `Optional[str] = None` makes fields optional. The `exclude_none=True` parameter in `user.dict()` excludes fields that are `None`, so only `name` is included in the response."
+    },
+    {
+      "id": "q18",
+      "question": "Consider the following code snippet:\n\n```python\nfrom fastapi import FastAPI, Query\n\napp = FastAPI()\n\n@app.get(\"/items\")\ndef get_items(page: int = Query(1, ge=1), size: int = Query(10, ge=1, le=100)):\n    return {\"page\": page, \"size\": size}\n```\n\nWhat will happen if a client makes a GET request to `/items?page=0&size=50`?",
+      "options": [
+        "The request will succeed with `page=0` and `size=50`",
+        "FastAPI will return a 422 error because `page=0` violates the `ge=1` constraint",
+        "FastAPI will return a 422 error because `size=50` violates the `le=100` constraint",
+        "The request will succeed but `page` will be set to 1 automatically"
+      ],
+      "correct": 1,
+      "explanation": "The `Query(1, ge=1)` means `page` must be greater than or equal to 1. Since `page=0` violates this constraint, FastAPI will return a 422 Unprocessable Entity error. The `size=50` is valid (between 1 and 100)."
+    },
+    {
+      "id": "q19",
+      "question": "Consider the following code snippet:\n\n```python\nfrom fastapi import FastAPI, Path\n\napp = FastAPI()\n\n@app.get(\"/users/{user_id}/posts/{post_id}\")\ndef get_post(user_id: int = Path(..., gt=0), post_id: int = Path(..., gt=0)):\n    return {\"user_id\": user_id, \"post_id\": post_id}\n```\n\nWhat does the `...` (Ellipsis) in `Path(..., gt=0)` mean?",
+      "options": [
+        "It means the parameter is optional",
+        "It means the parameter is required (no default value)",
+        "It means the parameter accepts any type",
+        "It means the parameter can be None"
+      ],
+      "correct": 1,
+      "explanation": "In Pydantic and FastAPI, `...` (Ellipsis) indicates that a parameter is required and has no default value. `Path(..., gt=0)` means the path parameter is required and must be greater than 0."
+    },
+    {
+      "id": "q20",
+      "question": "Consider the following code snippet:\n\n```python\nfrom pydantic import BaseModel\nfrom typing import List\n\nclass Item(BaseModel):\n    name: str\n    price: float\n\nclass OrderCreate(BaseModel):\n    items: List[Item]\n    total: float\n\n@app.post(\"/orders\")\ndef create_order(order: OrderCreate):\n    return order\n```\n\nIf a client sends a POST request to `/orders` with the body `{\"items\": [{\"name\": \"Widget\", \"price\": 9.99}], \"total\": 9.99}`, what will happen?",
+      "options": [
+        "The request will succeed and return the order",
+        "FastAPI will return a 422 error because `List[Item]` is not supported",
+        "FastAPI will return a 422 error if any item in the list is invalid",
+        "The request will succeed but `items` will be converted to a string"
+      ],
+      "correct": 2,
+      "explanation": "FastAPI supports `List[Item]` for request bodies. If all items in the list are valid `Item` objects, the request succeeds. If any item is invalid (e.g., missing `name` or `price`), FastAPI returns a 422 error with details about which item failed validation."
     }
   ]
 }

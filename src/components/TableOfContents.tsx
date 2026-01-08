@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 
 interface TocItem {
   id: string;
@@ -34,7 +34,7 @@ export default function TableOfContents({ maxLevel = 2 }: TableOfContentsProps) 
     return () => observer.disconnect();
   }, []);
 
-  useEffect(() => {
+  const scanHeadings = useCallback(() => {
     // Build selector based on maxLevel (e.g., maxLevel 2 = "h2", maxLevel 3 = "h2, h3")
     const headingSelectors = [];
     for (let i = 2; i <= maxLevel; i++) {
@@ -90,26 +90,121 @@ export default function TableOfContents({ maxLevel = 2 }: TableOfContentsProps) 
     });
 
     setTocItems(items);
+  }, [maxLevel]);
 
-    // Set up intersection observer for active section highlighting
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveId(entry.target.id);
-          }
-        });
-      },
-      {
-        rootMargin: '-80px 0px -80% 0px', // Account for fixed header
-        threshold: 0.1
+  useEffect(() => {
+    let intersectionObserver: IntersectionObserver | null = null;
+    
+    const performScan = () => {
+      // Build selector based on maxLevel
+      const headingSelectors = [];
+      for (let i = 2; i <= maxLevel; i++) {
+        headingSelectors.push(`h${i}`);
       }
-    );
+      const selector = headingSelectors.join(', ');
+      
+      // Find all heading elements
+      const allHeadings = document.querySelectorAll(selector);
+      const headings: Element[] = [];
+      
+      allHeadings.forEach((heading) => {
+        const instructorNotesSection = heading.closest('[data-instructor-notes="true"]');
+        if (!instructorNotesSection) {
+          headings.push(heading);
+        }
+      });
+      
+      const items: TocItem[] = [];
+      const usedIds = new Set<string>();
 
-    headings.forEach((heading) => observer.observe(heading));
+      headings.forEach((heading, index) => {
+        let id = heading.id;
+        
+        if (!id) {
+          const baseId = heading.textContent?.toLowerCase()
+            .replace(/[^a-z0-9\s]/g, '')
+            .replace(/\s+/g, '-') || `heading-${index}`;
+          
+          id = baseId;
+          let counter = 1;
+          while (usedIds.has(id)) {
+            id = `${baseId}-${counter}`;
+            counter++;
+          }
+          
+          heading.id = id;
+        }
+        
+        usedIds.add(id);
+
+        const level = parseInt(heading.tagName.charAt(1));
+        if (level <= maxLevel) {
+          items.push({
+            id: heading.id,
+            text: heading.textContent || '',
+            level: level
+          });
+        }
+      });
+
+      setTocItems(items);
+
+      // Clean up old observer
+      if (intersectionObserver) {
+        headings.forEach((heading) => intersectionObserver!.unobserve(heading));
+      }
+
+      // Set up new intersection observer
+      intersectionObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              setActiveId(entry.target.id);
+            }
+          });
+        },
+        {
+          rootMargin: '-80px 0px -80% 0px',
+          threshold: 0.1
+        }
+      );
+
+      headings.forEach((heading) => intersectionObserver!.observe(heading));
+    };
+    
+    // Initial scan
+    performScan();
+    
+    // Re-scan periodically to catch dynamically added headings (like quiz)
+    const interval = setInterval(performScan, 1000);
+    
+    // Listen for custom event to trigger re-scan
+    const handleRescan = () => {
+      performScan();
+    };
+    window.addEventListener('toc-rescan', handleRescan);
+    
+    // Use MutationObserver to watch for new headings
+    const mutationObserver = new MutationObserver(() => {
+      performScan();
+    });
+    
+    // Observe the main content area
+    const mainContent = document.querySelector('[data-resources-layout]') || document.body;
+    mutationObserver.observe(mainContent, {
+      childList: true,
+      subtree: true
+    });
 
     return () => {
-      headings.forEach((heading) => observer.unobserve(heading));
+      clearInterval(interval);
+      window.removeEventListener('toc-rescan', handleRescan);
+      mutationObserver.disconnect();
+      if (intersectionObserver) {
+        // Clean up observer on unmount
+        const allHeadings = document.querySelectorAll('h2, h3, h4, h5, h6');
+        allHeadings.forEach((heading) => intersectionObserver!.unobserve(heading));
+      }
     };
   }, [maxLevel]);
 

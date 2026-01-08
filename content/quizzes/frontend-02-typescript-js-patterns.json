@@ -1,0 +1,161 @@
+{
+  "questions": [
+    {
+      "id": "q1",
+      "question": "What is TypeScript?",
+      "options": [
+        "A JavaScript framework",
+        "A superset of JavaScript that adds static type checking",
+        "A CSS preprocessor",
+        "A database system"
+      ],
+      "correct": 1,
+      "explanation": "TypeScript is a superset of JavaScript that adds static type checking. It helps catch errors before runtime and makes code more maintainable by providing type safety, better IDE support, and self-documenting code."
+    },
+    {
+      "id": "q2",
+      "question": "Consider the following code snippet:\n\n```tsx\ninterface UserProps {\n  name: string;\n  age: number;\n  email?: string;\n}\n\nfunction User({ name, age, email }: UserProps) {\n  return <div>{name}, {age}</div>;\n}\n```\n\nWhat does the `?` in `email?: string` mean?",
+      "options": [
+        "The email prop is required",
+        "The email prop is optional - it may or may not be provided",
+        "The email prop must be a string or number",
+        "The email prop is deprecated"
+      ],
+      "correct": 1,
+      "explanation": "In TypeScript, the `?` makes a property optional. `email?: string` means the `email` prop is optional - the parent component may or may not provide it. Optional properties are useful when not all props are required."
+    },
+    {
+      "id": "q3",
+      "question": "Consider the following code snippet:\n\n```tsx\nconst user = { name: \"Alice\", age: 25 };\nconst { name, age } = user;\n```\n\nWhat does this demonstrate?",
+      "options": [
+        "Array destructuring",
+        "Object destructuring - extracting properties from an object into variables",
+        "Function calling",
+        "Type casting"
+      ],
+      "correct": 1,
+      "explanation": "This demonstrates object destructuring. Instead of writing `const name = user.name; const age = user.age;`, you can extract multiple properties at once using `const { name, age } = user;`. This is very common in React for extracting props."
+    },
+    {
+      "id": "q4",
+      "question": "Consider the following code snippet:\n\n```tsx\nconst [count, setCount] = useState(0);\n```\n\nWhat does this demonstrate?",
+      "options": [
+        "Object destructuring",
+        "Array destructuring - extracting values from an array returned by useState",
+        "Function definition",
+        "Type annotation"
+      ],
+      "correct": 1,
+      "explanation": "This demonstrates array destructuring. `useState(0)` returns an array `[currentValue, setterFunction]`. The destructuring syntax `const [count, setCount] = ...` extracts the first element as `count` and the second as `setCount`. This is the standard pattern for using `useState`."
+    },
+    {
+      "id": "q5",
+      "question": "Consider the following code snippet:\n\n```tsx\nconst user = { name: \"Alice\", age: 25 };\nconst updatedUser = { ...user, age: 26 };\n```\n\nWhat does `{ ...user, age: 26 }` do?",
+      "options": [
+        "It creates a new object with all properties from `user` and updates `age` to 26",
+        "It modifies the original `user` object",
+        "It deletes the `age` property",
+        "It creates an error"
+      ],
+      "correct": 0,
+      "explanation": "The spread operator `...user` copies all properties from `user` into a new object. Then `age: 26` overrides the `age` property. This creates a new object `{ name: \"Alice\", age: 26 }` without modifying the original `user`. This is the immutable way to update objects in React."
+    },
+    {
+      "id": "q6",
+      "question": "Consider the following code snippet:\n\n```tsx\nfunction Greeting({ isLoggedIn }: { isLoggedIn: boolean }) {\n  return (\n    <div>\n      {isLoggedIn ? <h1>Welcome back!</h1> : <h1>Please log in</h1>}\n    </div>\n  );\n}\n```\n\nWhat does the `? :` syntax do?",
+      "options": [
+        "It's a TypeScript type annotation",
+        "It's a ternary operator - conditionally renders one element or another",
+        "It's an optional property",
+        "It's a function call"
+      ],
+      "correct": 1,
+      "explanation": "The `? :` is a ternary operator (conditional operator). `condition ? valueIfTrue : valueIfFalse` evaluates the condition and returns the first value if true, or the second value if false. In React, it's commonly used for conditional rendering."
+    },
+    {
+      "id": "q7",
+      "question": "Consider the following code snippet:\n\n```tsx\nfunction UserProfile({ user }: { user: User | null }) {\n  return (\n    <div>\n      {user && <div>Welcome, {user.name}!</div>}\n    </div>\n  );\n}\n```\n\nWhat does `user && <div>...</div>` do?",
+      "options": [
+        "It always renders the div",
+        "It conditionally renders the div only if `user` is truthy",
+        "It causes an error",
+        "It renders the word \"user\""
+      ],
+      "correct": 1,
+      "explanation": "The `&&` operator is used for conditional rendering in React. If `user` is truthy (not null, undefined, false, 0, or empty string), React renders the JSX element. If `user` is falsy, React renders nothing. This is a common pattern for showing content only when data is available."
+    },
+    {
+      "id": "q8",
+      "question": "Consider the following code snippet:\n\n```tsx\nfunction Counter({ count }: { count: number }) {\n  return (\n    <div>\n      {count && <div>You have {count} items</div>}\n    </div>\n  );\n}\n```\n\nWhat problem does this code have?",
+      "options": [
+        "It will render \"0\" if count is 0, instead of rendering nothing",
+        "It will cause a syntax error",
+        "It will always render the div",
+        "There is no problem"
+      ],
+      "correct": 0,
+      "explanation": "When `count` is `0`, the expression `count && <div>...</div>` evaluates to `0` (because `0 && anything` is `0`), and React will render the number `0` on the screen. To fix this, use `{count > 0 && <div>...</div>}` or `{count ? <div>...</div> : null}`."
+    },
+    {
+      "id": "q9",
+      "question": "Consider the following code snippet:\n\n```tsx\nconst name = \"Alice\";\nconst greeting = `Hello, ${name}!`;\n```\n\nWhat does this demonstrate?",
+      "options": [
+        "String concatenation",
+        "Template literals - using backticks and ${} for string interpolation",
+        "Type casting",
+        "Function calling"
+      ],
+      "correct": 1,
+      "explanation": "This demonstrates template literals. Template literals use backticks (``) instead of quotes and allow string interpolation using `${expression}`. The `${name}` is replaced with the value of `name`, resulting in `\"Hello, Alice!\"`. This is cleaner than concatenation: `\"Hello, \" + name + \"!\"`."
+    },
+    {
+      "id": "q10",
+      "question": "Consider the following code snippet:\n\n```tsx\nconst user = { profile: { name: \"Alice\" } };\nconst name = user.profile?.name;\n```\n\nWhat does `?.` do?",
+      "options": [
+        "It's a syntax error",
+        "It's optional chaining - safely accesses nested properties without errors if intermediate values are null/undefined",
+        "It's a ternary operator",
+        "It's a spread operator"
+      ],
+      "correct": 1,
+      "explanation": "The `?.` is optional chaining. If `user.profile` is `null` or `undefined`, instead of throwing an error, `user.profile?.name` returns `undefined`. This prevents runtime errors when accessing nested properties that might not exist. It's very useful in React when dealing with data that might not be loaded yet."
+    },
+    {
+      "id": "q11",
+      "question": "Consider the following code snippet:\n\n```tsx\nconst [user, setUser] = useState({ name: \"Alice\", age: 25 });\nsetUser({ ...user, age: 26 });\n```\n\nWhy use the spread operator here instead of `setUser({ name: user.name, age: 26 })`?",
+      "options": [
+        "The spread operator is required",
+        "The spread operator preserves all existing properties while updating only the ones you specify, which is important for immutable updates",
+        "It's faster",
+        "It prevents errors"
+      ],
+      "correct": 1,
+      "explanation": "Using the spread operator `{ ...user, age: 26 }` creates a new object with all properties from `user` and updates `age`. This is important for immutable updates in React. If `user` had many properties, you'd only need to specify the ones you're changing. It also ensures you don't accidentally lose properties if the object structure changes."
+    },
+    {
+      "id": "q12",
+      "question": "Consider the following code snippet:\n\n```tsx\nfunction UserCard({ name, age, email }: { name: string; age: number; email?: string }) {\n  return (\n    <div>\n      <h1>{name}</h1>\n      <p>Age: {age}</p>\n      {email && <p>Email: {email}</p>}\n    </div>\n  );\n}\n```\n\nWhat does the destructuring in the function parameters do?",
+      "options": [
+        "It creates new variables",
+        "It extracts properties from the props object directly into function parameters",
+        "It modifies the props",
+        "It's required by React"
+      ],
+      "correct": 1,
+      "explanation": "Destructuring in function parameters extracts properties from the props object. Instead of writing `function UserCard(props) { const name = props.name; ... }`, you can destructure directly: `function UserCard({ name, age, email })`. This is the standard pattern in React and makes the code cleaner and more readable."
+    },
+    {
+      "id": "q13",
+      "question": "Consider the following code snippet:\n\n```tsx\nconst props = { name: \"Alice\", age: 25, email: \"alice@example.com\" };\n<UserCard {...props} />\n```\n\nWhat does `{...props}` do?",
+      "options": [
+        "It creates an error",
+        "It spreads all properties from `props` as individual props to `UserCard`",
+        "It passes the entire props object as a single prop",
+        "It deletes all props"
+      ],
+      "correct": 1,
+      "explanation": "The spread operator `{...props}` spreads all properties from the `props` object as individual props. This is equivalent to `<UserCard name=\"Alice\" age={25} email=\"alice@example.com\" />`. It's useful when you have many props or when passing props through multiple component levels."
+    }
+  ]
+}
+

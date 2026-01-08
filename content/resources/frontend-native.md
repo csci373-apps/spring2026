@@ -2,7 +2,7 @@
 title: "React Native + Expo + Paper"
 group: "Front-End"
 group_order: 4
-order: 2
+order: 4
 ---
 
 TBD
