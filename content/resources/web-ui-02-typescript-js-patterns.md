@@ -1,6 +1,6 @@
 ---
 title: "TypeScript & JavaScript Patterns"
-group: "Front-End"
+group: "Web UI"
 group_order: 4
 order: 2
 ---

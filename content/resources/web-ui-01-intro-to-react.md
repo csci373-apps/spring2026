@@ -1,6 +1,6 @@
 ---
 title: "Intro to React"
-group: "Front-End"
+group: "Web UI"
 group_order: 4
 order: 1
 ---

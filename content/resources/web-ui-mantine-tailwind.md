@@ -1,6 +1,6 @@
 ---
 title: "Front-End Design with Mantine UI & Tailwind"
-group: "Front-End"
+group: "Web UI"
 group_order: 4
 order: 3
 ---
