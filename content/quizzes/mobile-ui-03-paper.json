@@ -1,0 +1,185 @@
+{
+  "questions": [
+    {
+      "id": "q1",
+      "question": "What is React Native Paper?",
+      "options": [
+        "A web component library",
+        "A Material Design 3 component library for React Native",
+        "A database system",
+        "A CSS framework"
+      ],
+      "correct": 1,
+      "explanation": "React Native Paper is a Material Design 3 component library for React Native. It provides pre-built, styled components that follow Google's Material Design guidelines."
+    },
+    {
+      "id": "q2",
+      "question": "Why should you use a component library like React Native Paper?",
+      "options": [
+        "It's required by React Native",
+        "It provides pre-built components, consistent design, accessibility features, theming, and well-tested components",
+        "It's faster than writing your own components",
+        "It's the only way to style React Native apps"
+      ],
+      "correct": 1,
+      "explanation": "Component libraries like React Native Paper provide: pre-built components (Buttons, Cards, TextInputs, etc.), consistent design (all components follow Material Design), built-in accessibility features, easy theming, and well-tested components used by thousands of apps."
+    },
+    {
+      "id": "q3",
+      "question": "Consider the following code snippet:\n\n```tsx\n<Button mode=\"contained\" onPress={handlePress}>\n  Click me\n</Button>\n```\n\nWhat does `mode=\"contained\"` do?",
+      "options": [
+        "It's required for all buttons",
+        "It sets the button style variant (contained, outlined, text, or elevated)",
+        "It makes the button disabled",
+        "It sets the button color"
+      ],
+      "correct": 1,
+      "explanation": "The `mode` prop sets the button style variant. React Native Paper Button supports multiple modes: `contained` (filled button), `outlined` (outlined button), `text` (text button), and `elevated` (elevated button with shadow)."
+    },
+    {
+      "id": "q4",
+      "question": "Consider the following code snippet:\n\n```tsx\n<Card>\n  <Card.Title title=\"Card Title\" subtitle=\"Card Subtitle\" />\n  <Card.Content>\n    <Text>Card content goes here</Text>\n  </Card.Content>\n  <Card.Actions>\n    <Button>Cancel</Button>\n    <Button>Ok</Button>\n  </Card.Actions>\n</Card>\n```\n\nWhat components make up a Card?",
+      "options": [
+        "Just Card.Title",
+        "Card.Title, Card.Content, and Card.Actions (all optional)",
+        "Only Card.Content is required",
+        "Card must have all three sections"
+      ],
+      "correct": 1,
+      "explanation": "A Card can have three optional sections: `Card.Title` (header with title and optional subtitle), `Card.Content` (main content area), and `Card.Actions` (action buttons at the bottom). All sections are optional - you can use just the ones you need."
+    },
+    {
+      "id": "q5",
+      "question": "Consider the following code snippet:\n\n```tsx\n<TextInput\n  label=\"Email\"\n  value={email}\n  onChangeText={setEmail}\n  mode=\"outlined\"\n  error={hasError}\n  helperText={hasError ? \"Invalid email\" : \"\"}\n/>\n```\n\nWhat does the `error` prop do?",
+      "options": [
+        "It makes the input disabled",
+        "It shows an error state (typically red border/underline) and displays the `helperText` as an error message",
+        "It clears the input value",
+        "It hides the input"
+      ],
+      "correct": 1,
+      "explanation": "The `error` prop shows an error state on the TextInput (typically a red border or underline) and displays the `helperText` as an error message. This is useful for form validation feedback."
+    },
+    {
+      "id": "q6",
+      "question": "What is a Snackbar used for?",
+      "options": [
+        "Displaying loading states",
+        "Temporary message notifications that appear at the bottom of the screen",
+        "Showing error dialogs",
+        "Displaying form inputs"
+      ],
+      "correct": 1,
+      "explanation": "A Snackbar is used for temporary message notifications that appear at the bottom of the screen. It's perfect for showing success messages, brief error notifications, or action confirmations. It automatically dismisses after a set duration."
+    },
+    {
+      "id": "q7",
+      "question": "Consider the following code snippet:\n\n```tsx\n<Dialog visible={visible} onDismiss={hideDialog}>\n  <Dialog.Title>Alert</Dialog.Title>\n  <Dialog.Content>\n    <Text>This is a dialog message</Text>\n  </Dialog.Content>\n  <Dialog.Actions>\n    <Button onPress={hideDialog}>Cancel</Button>\n    <Button onPress={handleConfirm}>OK</Button>\n  </Dialog.Actions>\n</Dialog>\n```\n\nWhat does the `visible` prop control?",
+      "options": [
+        "The dialog's background color",
+        "Whether the dialog is shown or hidden",
+        "The dialog's size",
+        "The dialog's position"
+      ],
+      "correct": 1,
+      "explanation": "The `visible` prop controls whether the Dialog is shown or hidden. When `visible={true}`, the dialog appears as a modal overlay. When `visible={false}`, it's hidden. The `onDismiss` callback is called when the user tries to dismiss the dialog (e.g., by tapping outside or pressing back)."
+    },
+    {
+      "id": "q8",
+      "question": "What icon library does React Native Paper work with?",
+      "options": [
+        "Font Awesome",
+        "Material Community Icons (Material Design Icons)",
+        "Custom icons only",
+        "No icons are supported"
+      ],
+      "correct": 1,
+      "explanation": "React Native Paper works with Material Community Icons (also known as Material Design Icons). These are already installed in the starter code. You can import icons like `import Icon from 'react-native-vector-icons/MaterialCommunityIcons'` and use them with Paper components."
+    },
+    {
+      "id": "q9",
+      "question": "How do you access the Paper theme in a component?",
+      "options": [
+        "Import it directly from `theme.ts`",
+        "Use the `useTheme` hook from `react-native-paper`",
+        "Access it via `props.theme`",
+        "It's not accessible in components"
+      ],
+      "correct": 1,
+      "explanation": "Use the `useTheme` hook from `react-native-paper` to access the theme in a component. For example: `const theme = useTheme();` then use `theme.colors.primary` to access theme colors."
+    },
+    {
+      "id": "q10",
+      "question": "Where is the React Native Paper theme configured in the starter code?",
+      "options": [
+        "In `package.json`",
+        "In `mobile/theme.ts` and the provider wraps the app in `mobile/app/_layout.tsx`",
+        "In `app.json`",
+        "It's not configured"
+      ],
+      "correct": 1,
+      "explanation": "The theme is configured in `mobile/theme.ts` and the `PaperProvider` wraps the app in `mobile/app/_layout.tsx`. The theme uses design tokens for consistency across the application."
+    },
+    {
+      "id": "q11",
+      "question": "What is an ActivityIndicator used for?",
+      "options": [
+        "Displaying error messages",
+        "Showing a loading spinner indicator",
+        "Displaying form inputs",
+        "Showing success messages"
+      ],
+      "correct": 1,
+      "explanation": "An ActivityIndicator is used to show a loading spinner indicator. It's perfect for indicating that an operation is in progress, such as loading data, processing a request, or waiting for an async operation to complete."
+    },
+    {
+      "id": "q12",
+      "question": "What is a List component used for?",
+      "options": [
+        "Creating forms",
+        "Displaying lists of items with icons, avatars, and actions",
+        "Showing dialogs",
+        "Creating buttons"
+      ],
+      "correct": 1,
+      "explanation": "A List component is used for displaying lists of items with icons, avatars, and actions. It's perfect for navigation menus, settings screens, or any list of interactive items that need consistent styling and Material Design appearance."
+    },
+    {
+      "id": "q13",
+      "question": "What is a Chip component?",
+      "options": [
+        "A button variant",
+        "A compact element representing input, attribute, or action (like tags or filters)",
+        "A loading indicator",
+        "A dialog component"
+      ],
+      "correct": 1,
+      "explanation": "A Chip is a compact element representing input, attribute, or action. It's commonly used for tags, filters, or selectable items. Chips are small, rounded elements that can be interactive or display-only."
+    },
+    {
+      "id": "q14",
+      "question": "What is a DataTable component used for?",
+      "options": [
+        "Creating forms",
+        "Displaying structured data in a table format",
+        "Showing dialogs",
+        "Creating navigation menus"
+      ],
+      "correct": 1,
+      "explanation": "A DataTable component is used for displaying structured data in a table format. It's perfect for showing tabular data with headers, rows, and columns, following Material Design table patterns."
+    },
+    {
+      "id": "q15",
+      "question": "What is a Portal component used for?",
+      "options": [
+        "Creating navigation",
+        "Rendering children outside the component tree (useful for modals and overlays)",
+        "Displaying lists",
+        "Creating buttons"
+      ],
+      "correct": 1,
+      "explanation": "A Portal component renders children outside the component tree. This is useful for modals, dialogs, and overlays that need to appear on top of everything else, regardless of their position in the component hierarchy."
+    }
+  ]
+}
+

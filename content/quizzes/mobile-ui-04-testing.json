@@ -1,0 +1,269 @@
+{
+  "questions": [
+    {
+      "id": "q1",
+      "question": "What is Jest?",
+      "options": [
+        "A CSS framework",
+        "A JavaScript testing framework developed by Facebook, popular for JavaScript and React Native applications",
+        "A database system",
+        "A component library"
+      ],
+      "correct": 1,
+      "explanation": "Jest is a JavaScript testing framework developed by Facebook. It's the most popular testing framework for JavaScript and React Native applications, with features like zero configuration, fast parallel execution, built-in assertions, mocking capabilities, and watch mode."
+    },
+    {
+      "id": "q2",
+      "question": "What makes a function \"pure\"?",
+      "options": [
+        "It uses only pure JavaScript",
+        "Same input always produces same output, no side effects (no database calls, no API calls, no file system access), no dependencies on external state",
+        "It's written in TypeScript",
+        "It doesn't use any variables"
+      ],
+      "correct": 1,
+      "explanation": "A pure function has: same input always produces same output, no side effects (no database calls, no API calls, no file system access), and no dependencies on external state. Pure functions are the easiest to test because they're predictable and don't require mocking."
+    },
+    {
+      "id": "q3",
+      "question": "Where are test files located in the mobile project?",
+      "options": [
+        "In a separate `tests/` directory at the root",
+        "In `__tests__/` directories next to the code they test",
+        "In `src/tests/`",
+        "Tests are not supported"
+      ],
+      "correct": 1,
+      "explanation": "Tests are organized in `__tests__/` directories next to the code they test. For example, `utils/__tests__/storage.test.ts` tests `utils/storage.ts`. This keeps tests close to the code they're testing, making it easy to find and maintain them."
+    },
+    {
+      "id": "q4",
+      "question": "Consider the following test structure:\n\n```typescript\ndescribe('typeGuards', () => {\n    describe('toBoolean', () => {\n        it('should return boolean as-is', () => {\n            expect(toBoolean(true)).toBe(true);\n        });\n    });\n});\n```\n\nWhat does `describe` do?",
+      "options": [
+        "It runs the test",
+        "It groups related tests together",
+        "It imports dependencies",
+        "It mocks functions"
+      ],
+      "correct": 1,
+      "explanation": "`describe` groups related tests together. The first `describe` creates a test suite (usually named after the module), and nested `describe` blocks organize tests by function or feature. This helps organize and structure your tests."
+    },
+    {
+      "id": "q5",
+      "question": "What does `it` do in a Jest test?",
+      "options": [
+        "It imports a module",
+        "It defines a single test case",
+        "It mocks a function",
+        "It runs all tests"
+      ],
+      "correct": 1,
+      "explanation": "`it` defines a single test case. The string describes what the test verifies (e.g., \"should return boolean as-is\"). Each `it` block should test one specific behavior, making it clear what's being tested."
+    },
+    {
+      "id": "q6",
+      "question": "Consider the following assertion:\n\n```typescript\nexpect(value).toBe(4);\n```\n\nWhat does `toBe` check?",
+      "options": [
+        "Deep equality for objects",
+        "Exact equality (===)",
+        "Type equality only",
+        "Approximate equality"
+      ],
+      "correct": 1,
+      "explanation": "`toBe` checks exact equality using `===`. For objects, use `toEqual` for deep equality. `toBe` is perfect for primitives (numbers, strings, booleans) and reference equality."
+    },
+    {
+      "id": "q7",
+      "question": "How do you test an async function in Jest?",
+      "options": [
+        "You can't test async functions",
+        "Use `async`/`await` in your test, mock async dependencies, and await the result before asserting",
+        "Use `.then()` only",
+        "Async functions don't need testing"
+      ],
+      "correct": 1,
+      "explanation": "To test async functions: use `async`/`await` in your test function, mock async dependencies before calling the function, and await the result before asserting. For example: `it('should return value', async () => { const result = await getItem('key'); expect(result).toBe('value'); });`"
+    },
+    {
+      "id": "q8",
+      "question": "What is mocking?",
+      "options": [
+        "A way to skip tests",
+        "Replacing the real implementation of a dependency with a fake one that you control",
+        "A way to speed up tests",
+        "A type of assertion"
+      ],
+      "correct": 1,
+      "explanation": "Mocking means replacing the real implementation of a dependency with a fake one that you control. This allows you to: control return values, test error cases, verify function calls, and run tests faster (no actual I/O operations)."
+    },
+    {
+      "id": "q9",
+      "question": "Consider the following code:\n\n```typescript\njest.mock('expo-secure-store', () => ({\n    getItemAsync: jest.fn(),\n}));\n```\n\nWhat does this do?",
+      "options": [
+        "It imports the real module",
+        "It tells Jest to replace the real 'expo-secure-store' module with a fake one containing mock functions",
+        "It runs the tests",
+        "It clears the cache"
+      ],
+      "correct": 1,
+      "explanation": "`jest.mock()` tells Jest to replace the real module with a fake one. When any code imports 'expo-secure-store', Jest will use your fake version instead. `jest.fn()` creates a mock function that you can control and configure."
+    },
+    {
+      "id": "q10",
+      "question": "Consider the following code:\n\n```typescript\n(SecureStore.getItemAsync as jest.MockedFunction<typeof SecureStore.getItemAsync>)\n    .mockResolvedValue('my-value');\n```\n\nWhat does `mockResolvedValue` do?",
+      "options": [
+        "It makes the function throw an error",
+        "It configures the mock async function to return a Promise that resolves to 'my-value'",
+        "It runs the real function",
+        "It clears the mock"
+      ],
+      "correct": 1,
+      "explanation": "`mockResolvedValue('my-value')` configures the mock async function to return a Promise that resolves to 'my-value'. This is used for testing async functions that should succeed. For failures, use `mockRejectedValue(error)`."
+    },
+    {
+      "id": "q11",
+      "question": "What does `toHaveBeenCalledWith` verify?",
+      "options": [
+        "That a function was called at all",
+        "That a function was called with specific arguments",
+        "That a function returned a value",
+        "That a function threw an error"
+      ],
+      "correct": 1,
+      "explanation": "`toHaveBeenCalledWith('expected', 'args')` verifies that a mock function was called with specific arguments. This is useful for ensuring your code calls dependencies with the correct parameters."
+    },
+    {
+      "id": "q12",
+      "question": "What command runs tests in watch mode?",
+      "options": [
+        "`npm test`",
+        "`npm run test:watch`",
+        "`npm run test:verbose`",
+        "`jest --watch`"
+      ],
+      "correct": 1,
+      "explanation": "Run `npm run test:watch` to run tests in watch mode. This watches for file changes and automatically re-runs tests, making it great for development. Tests run once with `npm test`."
+    },
+    {
+      "id": "q13",
+      "question": "What is the purpose of the TypeScript type assertion `as jest.MockedFunction<typeof SecureStore.getItemAsync>`?",
+      "options": [
+        "It imports the function",
+        "It tells TypeScript that this is a mock function, so it has methods like `mockResolvedValue()`",
+        "It runs the function",
+        "It clears the mock"
+      ],
+      "correct": 1,
+      "explanation": "The type assertion `as jest.MockedFunction<...>` tells TypeScript that this is a Jest mock function, so it has special methods like `mockResolvedValue()`, `mockRejectedValue()`, `toHaveBeenCalledWith()`, etc. Without it, TypeScript would complain that these methods don't exist on the original function type."
+    },
+    {
+      "id": "q14",
+      "question": "What should you test for pure functions?",
+      "options": [
+        "Only the happy path",
+        "Normal use cases, edge cases (null, undefined, empty strings), and error cases (invalid inputs)",
+        "Only error cases",
+        "Nothing - pure functions don't need testing"
+      ],
+      "correct": 1,
+      "explanation": "For pure functions, test: normal use cases (expected inputs), edge cases (null, undefined, empty strings, boundary values), and error cases (invalid inputs). Don't just test the happy path - edge cases often reveal bugs."
+    },
+    {
+      "id": "q15",
+      "question": "Consider the following pure function:\n\n```typescript\nfunction toNumber(value: string | number): number {\n    if (typeof value === 'number') return value;\n    const parsed = parseInt(value, 10);\n    return isNaN(parsed) ? 0 : parsed;\n}\n```\n\nWhich tests would be appropriate for this function?",
+      "options": [
+        "Only test that it returns a number",
+        "Test normal cases (valid strings like '123'), edge cases (empty string, '0'), and error cases (invalid strings like 'abc')",
+        "Only test with valid numbers",
+        "No tests needed - it's too simple"
+      ],
+      "correct": 1,
+      "explanation": "For this function, you should test: normal cases (valid strings like '123', '42'), edge cases (empty string '', '0', numbers passed directly), and error cases (invalid strings like 'abc', 'not a number'). This ensures the function handles all scenarios correctly."
+    },
+    {
+      "id": "q16",
+      "question": "Consider the following pure function:\n\n```typescript\nfunction getFullName(firstName: string | null, lastName: string | null): string {\n    const first = firstName || '';\n    const last = lastName || '';\n    return `${first} ${last}`.trim();\n}\n```\n\nWhich tests would be most important for this function?",
+      "options": [
+        "Only test with both names provided",
+        "Test normal cases (both names), edge cases (one name null, both null, empty strings), and boundary cases (very long names)",
+        "Only test error cases",
+        "No tests needed - string concatenation is simple"
+      ],
+      "correct": 1,
+      "explanation": "For this function, test: normal cases (both names: 'John', 'Doe'), edge cases (one null: null, 'Doe' or 'John', null), both null, empty strings, and boundary cases (very long names). The `.trim()` behavior with spaces is also important to verify."
+    },
+    {
+      "id": "q17",
+      "question": "Consider the following pure function:\n\n```typescript\nfunction clamp(value: number, min: number, max: number): number {\n    if (value < min) return min;\n    if (value > max) return max;\n    return value;\n}\n```\n\nWhich tests would be appropriate?",
+      "options": [
+        "Only test that it returns a number",
+        "Test normal cases (value within range), edge cases (value equals min, equals max), and boundary cases (value below min, above max)",
+        "Only test with positive numbers",
+        "Test only the happy path"
+      ],
+      "correct": 1,
+      "explanation": "For this function, test: normal cases (value within range, e.g., clamp(5, 0, 10) returns 5), edge cases (value equals min or max), and boundary cases (value below min returns min, value above max returns max). Also test with negative numbers and zero."
+    },
+    {
+      "id": "q18",
+      "question": "Consider the following test:\n\n```typescript\nit('should return value from SecureStore', async () => {\n    (SecureStore.getItemAsync as jest.MockedFunction<typeof SecureStore.getItemAsync>)\n        .mockResolvedValue('stored-value');\n    \n    const result = await getItem('test-key');\n    expect(result).toBe('stored-value');\n    expect(SecureStore.getItemAsync).toHaveBeenCalledWith('test-key');\n});\n```\n\nWhat does the last assertion verify?",
+      "options": [
+        "That the function returned a value",
+        "That the mock function was called with the correct argument ('test-key')",
+        "That the function didn't throw an error",
+        "That the function was called multiple times"
+      ],
+      "correct": 1,
+      "explanation": "The last assertion `expect(SecureStore.getItemAsync).toHaveBeenCalledWith('test-key')` verifies that the mock function was called with the correct argument. This ensures your code (`getItem`) correctly passes the key to the underlying storage function."
+    },
+    {
+      "id": "q19",
+      "question": "What is the difference between `mockResolvedValue` and `mockRejectedValue`?",
+      "options": [
+        "There is no difference",
+        "`mockResolvedValue` makes an async function succeed (return a resolved Promise), while `mockRejectedValue` makes it fail (return a rejected Promise)",
+        "They both make functions succeed",
+        "They both make functions fail"
+      ],
+      "correct": 1,
+      "explanation": "`mockResolvedValue(value)` configures a mock async function to succeed - it returns a Promise that resolves to the value. `mockRejectedValue(error)` configures it to fail - it returns a Promise that rejects with the error. Use these to test both success and error paths."
+    },
+    {
+      "id": "q20",
+      "question": "What should test names be like?",
+      "options": [
+        "Short and cryptic (e.g., 'test1', 'works')",
+        "Clear and descriptive, describing what they verify (e.g., 'should return null when value is null')",
+        "Random names",
+        "Test names don't matter"
+      ],
+      "correct": 1,
+      "explanation": "Test names should be clear and descriptive, describing what they verify. Good examples: 'should return null when value is null', 'should convert string \"true\" to boolean true'. Bad examples: 'test1', 'works'. Clear names make it immediately obvious what's broken when a test fails."
+    },
+    {
+      "id": "q21",
+      "question": "What does `npm run test:verbose` do?",
+      "options": [
+        "Runs tests in watch mode",
+        "Shows individual test names instead of just test suites, making it easier to see which specific tests pass or fail",
+        "Skips failing tests",
+        "Runs only one test"
+      ],
+      "correct": 1,
+      "explanation": "`npm run test:verbose` shows individual test names instead of just test suites. This makes it easier to see which specific tests pass or fail, providing more detailed output for debugging."
+    },
+    {
+      "id": "q22",
+      "question": "What should you NOT test (for now) according to the testing philosophy?",
+      "options": [
+        "Pure functions",
+        "React Native components, Context providers, API integration, and E2E flows",
+        "Utility functions",
+        "Everything should be tested"
+      ],
+      "correct": 1,
+      "explanation": "According to the minimal but practical testing approach, you should NOT test (for now): React Native components (more complex, requires React Native Testing Library), Context providers, API integration (use backend tests for that), and E2E flows. These can be added later as you learn more advanced testing techniques."
+    }
+  ]
+}
+

@@ -193,30 +193,51 @@ export default function ResourceQuiz({ quizData, resourceSlug }: ResourceQuizPro
   const [completed, setCompleted] = useState<boolean>(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [shuffledQuestions, setShuffledQuestions] = useState<QuizQuestion[]>([]);
+  const [randomMode, setRandomMode] = useState<boolean>(false);
   const isDark = useDarkMode();
   
   const storageKey = `quiz-${resourceSlug}`;
+  const randomModeKey = `quiz-random-${resourceSlug}`;
 
-  // Shuffle questions and options on mount
+  // Load random mode preference from localStorage
   useEffect(() => {
-    // Shuffle questions
-    const shuffled = shuffleArray(quizData.questions);
+    try {
+      const saved = localStorage.getItem(randomModeKey);
+      if (saved !== null) {
+        setRandomMode(JSON.parse(saved));
+      }
+    } catch (error) {
+      console.error('Error loading random mode preference:', error);
+    }
+  }, [randomModeKey]);
+
+  // Prepare questions based on random mode
+  useEffect(() => {
+    let questionsToUse: QuizQuestion[];
     
-    // Shuffle options within each question and update correct index
-    const shuffledWithOptions = shuffled.map(question => {
-      const correctOption = question.options[question.correct];
-      const shuffledOptions = shuffleArray(question.options);
-      const newCorrectIndex = shuffledOptions.indexOf(correctOption);
+    if (randomMode) {
+      // Shuffle questions
+      const shuffled = shuffleArray(quizData.questions);
       
-      return {
-        ...question,
-        options: shuffledOptions,
-        correct: newCorrectIndex
-      };
-    });
+      // Shuffle options within each question and update correct index
+      questionsToUse = shuffled.map(question => {
+        const correctOption = question.options[question.correct];
+        const shuffledOptions = shuffleArray(question.options);
+        const newCorrectIndex = shuffledOptions.indexOf(correctOption);
+        
+        return {
+          ...question,
+          options: shuffledOptions,
+          correct: newCorrectIndex
+        };
+      });
+    } else {
+      // Use original order without shuffling
+      questionsToUse = quizData.questions.map(question => ({ ...question }));
+    }
     
-    setShuffledQuestions(shuffledWithOptions);
-  }, [quizData.questions]);
+    setShuffledQuestions(questionsToUse);
+  }, [quizData.questions, randomMode]);
 
   // Load quiz state from localStorage on mount (after questions are shuffled)
   useEffect(() => {
@@ -284,20 +305,28 @@ export default function ResourceQuiz({ quizData, resourceSlug }: ResourceQuizPro
     } catch (error) {
       console.error('Error clearing quiz state:', error);
     }
-    // Reshuffle questions on reset
-    const shuffled = shuffleArray(quizData.questions);
-    const shuffledWithOptions = shuffled.map(question => {
-      const correctOption = question.options[question.correct];
-      const shuffledOptions = shuffleArray(question.options);
-      const newCorrectIndex = shuffledOptions.indexOf(correctOption);
-      
-      return {
-        ...question,
-        options: shuffledOptions,
-        correct: newCorrectIndex
-      };
-    });
-    setShuffledQuestions(shuffledWithOptions);
+    // Questions will be reshuffled/reordered based on randomMode via the useEffect
+  };
+
+  const handleToggleRandomMode = () => {
+    const newRandomMode = !randomMode;
+    setRandomMode(newRandomMode);
+    // Save preference to localStorage
+    try {
+      localStorage.setItem(randomModeKey, JSON.stringify(newRandomMode));
+    } catch (error) {
+      console.error('Error saving random mode preference:', error);
+    }
+    // Clear quiz state when toggling random mode
+    setSelectedAnswers({});
+    setScore(0);
+    setCompleted(false);
+    setCurrentQuestionIndex(0);
+    try {
+      localStorage.removeItem(storageKey);
+    } catch (error) {
+      console.error('Error clearing quiz state:', error);
+    }
   };
 
   const handleNext = () => {
@@ -382,6 +411,27 @@ export default function ResourceQuiz({ quizData, resourceSlug }: ResourceQuizPro
               Score: {score} / {shuffledQuestions.length}
             </span>
           )}
+          <button
+            onClick={handleToggleRandomMode}
+            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors border flex items-center gap-2 ${
+              randomMode
+                ? 'text-white bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 border-blue-700 dark:border-blue-600'
+                : 'text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 border-gray-300 dark:border-gray-600'
+            }`}
+            style={isDark && !randomMode ? { backgroundColor: '#374151', borderColor: '#4b5563', color: '#e5e7eb' } : undefined}
+            title={randomMode ? 'Random mode: Questions and options are shuffled' : 'Click to enable random mode: Questions and options will be shuffled'}
+          >
+            <svg 
+              width="20" 
+              height="20" 
+              viewBox="0 0 24 24" 
+              fill="currentColor"
+              className={randomMode ? 'opacity-100' : 'opacity-60'}
+            >
+              <path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/>
+            </svg>
+            Random
+          </button>
           <button
             onClick={handleClearQuiz}
             className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md transition-colors border border-gray-300 dark:border-gray-600"

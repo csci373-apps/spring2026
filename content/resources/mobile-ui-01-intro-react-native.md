@@ -129,7 +129,7 @@ function Button() {
 
 ### Expo Features
 
-- **Expo Router** - File-based routing (like Next.js)
+- **Expo Router** - File-based routing where your folder structure determines navigation
 - **Expo Go** - Test apps on real devices without building
 - **Expo SDK** - Pre-built modules for common features:
   - `expo-secure-store` - Secure storage
@@ -153,7 +153,7 @@ In this course, we use:
 4. **React Native Paper** - UI component library
 5. **TypeScript** - Type safety
 6. **React Query** - Data fetching and caching
-7. **Axios** - HTTP client for API calls
+7. **Fetch API** - HTTP client for API calls (native browser/React Native API)
 
 ## How It All Works Together
 

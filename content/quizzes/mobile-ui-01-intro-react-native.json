@@ -1,0 +1,185 @@
+{
+  "questions": [
+    {
+      "id": "q1",
+      "question": "What is React Native?",
+      "options": [
+        "A web framework for building websites",
+        "A framework for building mobile applications using React",
+        "A database management system",
+        "A styling framework"
+      ],
+      "correct": 1,
+      "explanation": "React Native is a framework for building mobile applications using React. Instead of rendering to the web browser's DOM, React Native renders to native mobile components."
+    },
+    {
+      "id": "q2",
+      "question": "What is the key difference between React (Web) and React Native?",
+      "options": [
+        "React Native uses HTML elements",
+        "React (Web) renders to DOM; React Native renders to native mobile components",
+        "React Native doesn't support JavaScript",
+        "There is no difference"
+      ],
+      "correct": 1,
+      "explanation": "React (Web) renders to the DOM (HTML elements), while React Native renders to native mobile components (iOS UIView or Android View). Both use the same React concepts, but the underlying rendering is completely different."
+    },
+    {
+      "id": "q3",
+      "question": "What do React (Web) and React Native have in common?",
+      "options": [
+        "They use the same components (div, button, etc.)",
+        "They use the same core React concepts (components, props, state, hooks, JSX)",
+        "They both use CSS for styling",
+        "They both run in browsers"
+      ],
+      "correct": 1,
+      "explanation": "Both React (Web) and React Native use the same core React concepts: components, props, state, hooks (useState, useEffect, useContext, etc.), and JSX syntax. The main differences are in rendering targets and styling approaches."
+    },
+    {
+      "id": "q4",
+      "question": "Consider the following code snippet:\n\n```tsx\nimport { View, Text, TouchableOpacity, StyleSheet } from 'react-native';\n\nfunction Button() {\n  return (\n    <TouchableOpacity \n      style={styles.button}\n      onPress={() => console.log('pressed')}\n    >\n      <Text style={styles.buttonText}>Click me</Text>\n    </TouchableOpacity>\n  );\n}\n```\n\nWhat is the difference between this and web React?",
+      "options": [
+        "Uses `onClick` instead of `onPress`",
+        "Uses `className` instead of `style`",
+        "Uses `onPress` instead of `onClick`, and `style` prop takes a JavaScript object instead of a CSS string",
+        "There is no difference"
+      ],
+      "correct": 2,
+      "explanation": "React Native uses `onPress` instead of `onClick`, and the `style` prop takes a JavaScript object (StyleSheet) instead of a CSS string. There's no `className` prop in React Native."
+    },
+    {
+      "id": "q5",
+      "question": "What is Expo?",
+      "options": [
+        "A database system",
+        "A framework and platform built on top of React Native that makes mobile development easier",
+        "A CSS framework",
+        "A version control system"
+      ],
+      "correct": 1,
+      "explanation": "Expo is a framework and platform built on top of React Native that makes mobile development easier. It provides features like Expo Router, Expo Go, and pre-built SDK modules for common device features."
+    },
+    {
+      "id": "q6",
+      "question": "What are the benefits of using Expo?",
+      "options": [
+        "No native code required, easy setup, built-in features, fast development",
+        "Requires Xcode and Android Studio",
+        "Only works on Mac",
+        "Requires writing native code"
+      ],
+      "correct": 0,
+      "explanation": "Expo provides: no native code required (write JavaScript/TypeScript only), easy setup (works on Windows, Mac, and Linux), built-in features (camera, location, file system, etc.), and fast development with hot reload."
+    },
+    {
+      "id": "q7",
+      "question": "What is Expo Router?",
+      "options": [
+        "A database router",
+        "A file-based routing system where the folder structure in the `app/` directory determines your app's navigation and screens",
+        "A CSS framework",
+        "A testing framework"
+      ],
+      "correct": 1,
+      "explanation": "Expo Router is a file-based routing system where the folder structure in the `app/` directory determines your app's navigation and screens. For example, `app/(tabs)/courses.tsx` creates a courses screen, and `app/(tabs)/courses/[id].tsx` creates a dynamic route for individual courses."
+    },
+    {
+      "id": "q8",
+      "question": "What is Expo Go?",
+      "options": [
+        "A code editor",
+        "An app that allows you to test React Native apps on real devices without building",
+        "A database system",
+        "A version control tool"
+      ],
+      "correct": 1,
+      "explanation": "Expo Go is a mobile app (available on iOS App Store and Google Play) that allows you to test React Native apps on real devices without building. You can scan a QR code to load your app instantly."
+    },
+    {
+      "id": "q9",
+      "question": "What is React Native Paper?",
+      "options": [
+        "A web component library",
+        "A Material Design 3 component library for React Native",
+        "A database system",
+        "A CSS framework"
+      ],
+      "correct": 1,
+      "explanation": "React Native Paper is a Material Design 3 component library for React Native. It provides pre-built, styled components that follow Google's Material Design guidelines."
+    },
+    {
+      "id": "q10",
+      "question": "Consider the following code snippet:\n\n```tsx\nimport { Platform } from 'react-native';\n\nconst padding = Platform.OS === 'ios' ? 20 : 10;\n```\n\nWhat does this demonstrate?",
+      "options": [
+        "How to use CSS in React Native",
+        "How to write platform-specific code for iOS vs. Android",
+        "How to import components",
+        "How to use hooks"
+      ],
+      "correct": 1,
+      "explanation": "This demonstrates platform-specific code. Sometimes you need different code for iOS vs. Android. The `Platform.OS` property allows you to check which platform the app is running on and adjust behavior accordingly."
+    },
+    {
+      "id": "q11",
+      "question": "How is navigation different in mobile apps compared to web apps?",
+      "options": [
+        "Mobile apps use URLs and browser navigation",
+        "Mobile apps use stack navigation (push/pop screens), tab navigation (bottom tabs), and drawer navigation (side menu)",
+        "There is no difference",
+        "Mobile apps don't support navigation"
+      ],
+      "correct": 1,
+      "explanation": "Web apps use URLs and browser navigation. Mobile apps use different navigation patterns: stack navigation (push/pop screens like browser history), tab navigation (bottom tabs like browser tabs), and drawer navigation (side menu). Expo Router handles this with file-based routing."
+    },
+    {
+      "id": "q12",
+      "question": "Why are many mobile APIs async?",
+      "options": [
+        "Because it's a new trend in mobile development",
+        "Reading from storage, making network requests, and accessing device features (camera, location) are I/O bound operations",
+        "Mobile APIs don't support synchronous operations",
+        "Because mobile devices are slow"
+      ],
+      "correct": 1,
+      "explanation": "Many mobile APIs are async because they involve I/O operations: reading from storage, making network requests, and accessing device features (camera, location). Always use `async/await` or `.then()` when working with these APIs."
+    },
+    {
+      "id": "q13",
+      "question": "What is the tech stack used in this course for mobile development?",
+      "options": [
+        "React Native, Expo, Expo Router, React Native Paper, TypeScript, React Query, Fetch API",
+        "Just React Native",
+        "HTML, CSS, JavaScript",
+        "Python and Django"
+      ],
+      "correct": 0,
+      "explanation": "The tech stack includes: React Native (core framework), Expo (development platform), Expo Router (file-based routing), React Native Paper (UI component library), TypeScript (type safety), React Query (data fetching and caching), and Fetch API (native HTTP client)."
+    },
+    {
+      "id": "q14",
+      "question": "If you know React for web, what percentage of React Native knowledge do you already have :)?",
+      "options": [
+        "20%",
+        "50%",
+        "80%",
+        "100%"
+      ],
+      "correct": 2,
+      "explanation": "If you know React for web, you're already 80% there! The React concepts (hooks, state, props, context) are exactly the same. The main differences are: components (use Paper instead of HTML), styling (use StyleSheet instead of CSS), navigation (use Expo Router instead of React Router), and platform APIs (use Expo SDK instead of browser APIs)."
+    },
+    {
+      "id": "q15",
+      "question": "What does React Native NOT use?",
+      "options": [
+        "JavaScript",
+        "React components",
+        "HTML and CSS",
+        "TypeScript"
+      ],
+      "correct": 2,
+      "explanation": "React Native doesn't use HTML or CSS. Instead, it uses React Native components (View, Text, etc.) and styles with JavaScript objects (StyleSheet API) or component library props (like Paper's `mode=\"contained\"`)."
+    }
+  ]
+}
+

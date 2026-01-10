@@ -1,0 +1,185 @@
+{
+  "questions": [
+    {
+      "id": "q1",
+      "question": "What Node.js version is required for the mobile project?",
+      "options": [
+        "Node.js 16.0.0",
+        "Node.js 18.17.0",
+        "Node.js 20.0.0",
+        "Any version"
+      ],
+      "correct": 1,
+      "explanation": "The project requires Node.js 18.17.0. You can check your version with `node --version`. The project includes an `.nvmrc` file with the correct version for easy version management."
+    },
+    {
+      "id": "q2",
+      "question": "How do you create the `.env` file for the mobile project?",
+      "options": [
+        "Create it manually from scratch",
+        "Copy from `.env.example` using `cp .env.example .env`",
+        "It's automatically created",
+        "Download it from the internet"
+      ],
+      "correct": 1,
+      "explanation": "Create the `.env` file by copying from `.env.example` using `cp .env.example .env`. Then open `.env` and uncomment the `EXPO_PUBLIC_API_URL` line."
+    },
+    {
+      "id": "q3",
+      "question": "What IP address should you use for the Android emulator to connect to `localhost:8000`?",
+      "options": [
+        "`http://localhost:8000`",
+        "`http://10.0.2.2:8000` (special IP to access host machine)",
+        "`http://127.0.0.1:8000`",
+        "`http://192.168.1.1:8000`"
+      ],
+      "correct": 1,
+      "explanation": "For the Android emulator, use `http://10.0.2.2:8000` - this is a special IP address that the Android emulator uses to access the host machine's localhost. The script automatically handles this."
+    },
+    {
+      "id": "q4",
+      "question": "What IP address should you use for a physical device to connect to your computer's API?",
+      "options": [
+        "`http://localhost:8000`",
+        "`http://10.0.2.2:8000`",
+        "Your computer's local network IP address (e.g., `http://192.168.1.100:8000`)",
+        "`http://127.0.0.1:8000`"
+      ],
+      "correct": 2,
+      "explanation": "For physical devices, you need to use your computer's local network IP address (e.g., `http://192.168.1.100:8000`). The project includes a script (`npm run update-ip`) that automatically detects and updates this in your `.env` file."
+    },
+    {
+      "id": "q5",
+      "question": "How do you automatically update the IP address in your `.env` file?",
+      "options": [
+        "Manually edit the file",
+        "Run `npm run update-ip`",
+        "Restart your computer",
+        "It updates automatically"
+      ],
+      "correct": 1,
+      "explanation": "Run `npm run update-ip` to automatically detect your computer's IP address and update the `EXPO_PUBLIC_API_URL` in your `.env` file. You may need to run this again when switching to a new network."
+    },
+    {
+      "id": "q6",
+      "question": "How do you start the iOS Simulator on Mac?",
+      "options": [
+        "Run `npx expo start` and press `a`",
+        "Run `npx expo start` and press `i`",
+        "Run `npx expo start` and press `w`",
+        "Open Xcode first, then run Expo"
+      ],
+      "correct": 1,
+      "explanation": "Run `npx expo start` and then press `i` to open the iOS Simulator. Expo will automatically launch the simulator and load your app. Make sure Xcode is installed first."
+    },
+    {
+      "id": "q7",
+      "question": "What is the command to start the Expo development server?",
+      "options": [
+        "`expo run`",
+        "`npx expo start`",
+        "`expo dev`",
+        "`npm run dev`"
+      ],
+      "correct": 1,
+      "explanation": "Run `npx expo start` to start the Expo development server. This starts the Metro bundler, shows a QR code for Expo Go, and provides options to open in simulator/emulator. Note: `npm start` also works if configured in package.json, but `npx expo start` is the direct command."
+    },
+    {
+      "id": "q8",
+      "question": "Consider the following TypeScript error:\n\n```\nerror TS2339: Property 'file_url' does not exist on type 'Course'\n```\n\nWhat does this mean and how do you fix it?",
+      "options": [
+        "The property exists but TypeScript can't find it - restart your editor",
+        "The `Course` type doesn't have a `file_url` property - add it to the type definition in `types/api.ts`",
+        "The property is misspelled - fix the spelling",
+        "TypeScript is wrong - ignore the error"
+      ],
+      "correct": 1,
+      "explanation": "This error means the `Course` type doesn't have a `file_url` property, but your code is trying to use it. Fix it by adding the missing property to the type definition in `types/api.ts`."
+    },
+    {
+      "id": "q9",
+      "question": "What command checks for TypeScript errors without generating JavaScript files?",
+      "options": [
+        "`npx tsc`",
+        "`npx tsc --noEmit`",
+        "`npm run type-check`",
+        "`tsc --check`"
+      ],
+      "correct": 1,
+      "explanation": "Run `npx tsc --noEmit` to check for TypeScript errors without generating JavaScript files. The `--noEmit` flag tells the compiler to only check for errors and not generate output files."
+    },
+    {
+      "id": "q10",
+      "question": "Where are test files located in the mobile project structure?",
+      "options": [
+        "In a separate `tests/` directory at the root",
+        "In `__tests__/` directories next to the code they test",
+        "In `src/tests/`",
+        "Tests are not supported"
+      ],
+      "correct": 1,
+      "explanation": "Tests are organized in `__tests__/` directories next to the code they test. For example, `utils/__tests__/storage.test.ts` tests `utils/storage.ts`. This keeps tests close to the code they're testing."
+    },
+    {
+      "id": "q11",
+      "question": "What is the standard command to run all tests once and exit?",
+      "options": [
+        "`jest --watch",
+        "`npm run test`",
+        "`npm test app`",
+        "`jest --watch`"
+      ],
+      "correct": 1,
+      "explanation": "Run `npm test` to run all tests once and exit. This is the standard command. Use `npm run test:watch` for watch mode (automatically re-runs on file changes), `npm run test:coverage` for coverage reporting, and `jest --watch` for watch mode. All of these run tests, but `npm test` is the standard/default command."
+    },
+    {
+      "id": "q12",
+      "question": "How do you clear the Metro bundler cache if you're experiencing issues?",
+      "options": [
+        "Delete `node_modules`",
+        "Run `npx expo start -- --reset-cache`",
+        "Restart your computer",
+        "Clear your browser cache"
+      ],
+      "correct": 1,
+      "explanation": "Run `npx expo start -- --reset-cache` to clear the Metro bundler cache and restart. This can fix issues with stale code or module resolution problems."
+    },
+    {
+      "id": "q13",
+      "question": "What should you do if port 8081 (Metro bundler) is already in use?",
+      "options": [
+        "Use a different port",
+        "Kill the process using the port: `lsof -ti:8081 | xargs kill -9` (Mac/Linux), then restart",
+        "Restart your computer",
+        "Nothing - it will work anyway"
+      ],
+      "correct": 1,
+      "explanation": "If port 8081 is already in use, kill the process using the port with `lsof -ti:8081 | xargs kill -9` (Mac/Linux), then restart Expo with `npx expo start`."
+    },
+    {
+      "id": "q14",
+      "question": "What does the `EXPO_PUBLIC_API_URL` environment variable do?",
+      "options": [
+        "Sets the Expo version",
+        "Configures the API endpoint URL that the mobile app uses to connect to the backend",
+        "Sets the app name",
+        "Configures the database connection"
+      ],
+      "correct": 1,
+      "explanation": "`EXPO_PUBLIC_API_URL` configures the API endpoint URL that the mobile app uses to connect to the backend. It needs to be set to your computer's IP address for physical devices, or use `localhost`/`10.0.2.2` for emulators."
+    },
+    {
+      "id": "q15",
+      "question": "What is the project structure for the `app/` directory in Expo Router?",
+      "options": [
+        "All files in one flat directory",
+        "File-based routing where folder structure determines routes (e.g., `(auth)/login.tsx`, `(tabs)/courses.tsx`)",
+        "Routes are defined in a separate config file",
+        "Routes are defined in `package.json`"
+      ],
+      "correct": 1,
+      "explanation": "Expo Router uses file-based routing where the folder structure determines routes. For example, `app/(auth)/login.tsx` creates a login route, and `app/(tabs)/courses.tsx` creates a courses tab route. Parentheses create route groups."
+    }
+  ]
+}
+
