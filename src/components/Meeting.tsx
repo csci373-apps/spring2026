@@ -185,10 +185,10 @@ export default function Meeting({
 
   return (
     <div 
-      className={clsx("flex justify-between gap-4 border-b border-black dark:border-gray-700 pt-4 pb-2", {
+      className={clsx("flex justify-between gap-4 border-b border-black dark:border-gray-800 pt-4 pb-2", {
         'bg-gray-100 dark:bg-gray-800': isHoliday
       })}
-      style={isDark ? (isHoliday ? { borderColor: '#374151', backgroundColor: '#1f2937' } : { borderColor: '#374151' }) : undefined}
+      style={isDark ? (isHoliday ? { borderColor: '#1f2937', backgroundColor: '#1f2937' } : { borderColor: '#1f2937' }) : undefined}
     >
         <div className={clsx("flex gap-4", {
             'flex-col': showDetails,

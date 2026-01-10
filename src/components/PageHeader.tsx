@@ -11,7 +11,7 @@ interface PageHeaderProps {
 export default function PageHeader({ title, excerpt, type, group }: PageHeaderProps) {
   const className = '!border-transparent hover:border-b-2';
   return (
-    <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
+    <div className="border-b border-gray-200 dark:border-gray-800 pb-4">
       <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
         {type && type === 'activity' ? (<><Link href="/" className={className}>Schedule</Link> &gt; </>) : ''}
         {type && ['homework', 'lab', 'assignment'].includes(type) ? (<><Link href="/assignments" className={className}>Assignments</Link> &gt; </>) : ''}

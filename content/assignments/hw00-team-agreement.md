@@ -4,7 +4,7 @@ date: "2026-01-15"
 type: "assignment"
 num: "0"
 draft: 0
-due_date: "2026-01-20"
+due_date: "2026-01-10"
 heading_max_level: 3
 ---
 

@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { Inter, Abril_Fatface, Outfit } from "next/font/google";
 import Navigation from "@/components/Nav";
 import LayoutWrapper from "@/components/LayoutWrapper";
-import Footer from "@/components/Footer";
+import ConditionalFooter from "@/components/ConditionalFooter";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -61,11 +61,11 @@ export default function RootLayout({
       <body className={`${inter.className} ${abril.variable} ${outfit.variable}`}>
         <Navigation />
         <LayoutWrapper>
-          <main className="max-w-4xl mx-auto px-4">
+          <main>
             {children}
           </main>
         </LayoutWrapper>
-        <Footer />
+        <ConditionalFooter />
       </body>
     </html>
   );

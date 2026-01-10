@@ -1,0 +1,379 @@
+{
+  "title": "Mobile App Workflow",
+  "questions": [
+
+      {
+        "id": "q1",
+      "question": "What does the `AuthProvider` provide to child components?",
+      "options": [
+        "Only the user object",
+        "Authentication state (user, login, logout)",
+        "Only the login function",
+        "Theme and styling"
+      ],
+      "correct": 1,
+      "explanation": "The `AuthProvider` provides authentication state including the user object, login function, logout function, and other auth-related functionality to all child components."
+    },
+      {
+        "id": "q2",
+      "question": "In `app/index.tsx`, what happens if a user is authenticated?",
+      "options": [
+        "The app navigates to `/(auth)/home`",
+        "The app navigates to `/(tabs)/home`",
+        "The app shows a loading screen indefinitely",
+        "The app navigates to `/(tabs)/courses`"
+      ],
+      "correct": 1,
+      "explanation": "If the user is authenticated, the app navigates to `/(tabs)/home` using `router.replace('/(tabs)/home')`. If not authenticated, it navigates to `/(auth)/home`."
+    },
+      {
+        "id": "q3",
+      "question": "What happens during the login process after the API call succeeds?",
+      "options": [
+        "The token is stored and user data is fetched",
+        "The app immediately navigates without storing the token",
+        "Only the token is stored, user data is not fetched",
+        "The token is stored in a cookie"
+      ],
+      "correct": 0,
+      "explanation": "After a successful login API call, the token is stored securely (in SecureStore for native or localStorage for web), and then user data is fetched via `/api/auth/me` and stored in the auth context."
+    },
+      {
+        "id": "q4",
+      "question": "What does the `ProtectedRoute` component do?",
+      "options": [
+        "It encrypts the route data",
+        "It checks if the user is authenticated and redirects to login if not",
+        "It prevents the route from being accessed",
+        "It logs all route access"
+      ],
+      "correct": 1,
+      "explanation": "The `ProtectedRoute` component checks if the user is authenticated. If not, it redirects to the login screen. If yes, it renders the protected screen."
+    },
+      {
+        "id": "q5",
+      "question": "Where are authentication tokens stored in the mobile app?",
+      "options": [
+        "Only in memory",
+        "In SecureStore (native) or localStorage (web)",
+        "In a database",
+        "In cookies"
+      ],
+      "correct": 1,
+      "explanation": "Tokens are stored securely using SecureStore on native platforms (iOS/Android) or localStorage on web. This provides secure storage for sensitive authentication data."
+    },
+      {
+        "id": "q6",
+      "question": "What is Expo Router?",
+      "options": [
+        "A database router",
+        "A file-based routing system where the folder structure determines navigation",
+        "A CSS framework",
+        "A testing framework"
+      ],
+      "correct": 1,
+      "explanation": "Expo Router is a file-based routing system. The folder structure in the `app/` directory determines your app's navigation and screens. For example, `app/(tabs)/courses.tsx` creates a courses screen."
+    },
+      {
+        "id": "q7",
+      "question": "In the tab navigation, how do you hide a detail screen from the tab bar?",
+      "options": [
+        "Use `display: none` in CSS",
+        "Set `options={{ href: null }}` on the Tabs.Screen",
+        "Don't include it in the Tabs component",
+        "Use `hidden: true` prop"
+      ],
+      "correct": 1,
+      "explanation": "To hide a detail screen from the tab bar while keeping it accessible via navigation, you set `options={{ href: null }}` on the `Tabs.Screen` component. This is used for screens like `courses/[id]`."
+    },
+      {
+        "id": "q8",
+      "question": "What is the difference between `router.push()` and `router.replace()`?",
+      "options": [
+        "`push()` adds to history, `replace()` replaces current screen in history",
+        "`push()` replaces history, `replace()` adds to history",
+        "They are identical",
+        "`push()` only works for tabs, `replace()` only works for detail screens"
+      ],
+      "correct": 0,
+      "explanation": "`router.push()` adds a new screen to the navigation history (user can go back), while `router.replace()` replaces the current screen in history (user cannot go back to the previous screen)."
+    },
+      {
+        "id": "q9",
+      "question": "In the screen workflow example, what happens when a user taps a course card?",
+      "options": [
+        "The course data is immediately available from cache",
+        "React Query checks cache first, then fetches if needed",
+        "The app always makes a new API call",
+        "The app shows an error if the course isn't cached"
+      ],
+      "correct": 1,
+      "explanation": "When navigating to a course detail screen, React Query first checks its cache for the data using the query key `['course', id]`. If the data is cached, it uses that. If not, it calls the service function to fetch from the API."
+    },
+      {
+        "id": "q10",
+      "question": "What is React Query's primary benefit?",
+      "options": [
+        "It provides UI components",
+        "It simplifies fetching, caching, and updating server state automatically",
+        "It handles authentication",
+        "It manages file-based routing"
+      ],
+      "correct": 1,
+      "explanation": "React Query's primary benefit is simplifying server state management. It automatically handles fetching, caching, loading states, error states, background refetching, and deduplication, eliminating the need to manually manage these with `useState` and `useEffect`."
+    },
+      {
+        "id": "q11",
+      "question": "What does React Query's deduplication feature do?",
+      "options": [
+        "It removes duplicate data from arrays",
+        "It makes only one network request when multiple components request the same data",
+        "It prevents duplicate query keys",
+        "It removes duplicate components"
+      ],
+      "correct": 1,
+      "explanation": "Deduplication means if multiple components request the same data simultaneously (using the same query key), React Query makes only one network request and shares the result with all components, preventing unnecessary API calls."
+    },
+      {
+        "id": "q12",
+      "question": "What is a query key in React Query?",
+      "options": [
+        "A password for API access",
+        "A unique identifier for cached data",
+        "A database key",
+        "A navigation route"
+      ],
+      "correct": 1,
+      "explanation": "A query key is a unique identifier (usually an array like `['userCourses']` or `['course', courseId]`) that React Query uses to identify and cache data. Components using the same query key share the same cached data."
+    },
+      {
+        "id": "q13",
+      "question": "In the `useQuery` hook, what does the `queryFn` parameter do?",
+      "options": [
+        "It defines the query key",
+        "It's the function that fetches the data (usually a service function)",
+        "It handles errors",
+        "It defines the component to render"
+      ],
+      "correct": 1,
+      "explanation": "The `queryFn` is the function that actually fetches the data. It's typically a service function like `getUserCourses` that makes an API call and returns the data. React Query calls this function when it needs to fetch or refetch data."
+    },
+      {
+        "id": "q14",
+      "question": "Where are API calls organized in the mobile app?",
+      "options": [
+        "In the `components/` directory",
+        "In the `services/` directory",
+        "Directly in components",
+        "In the `utils/` directory"
+      ],
+      "correct": 1,
+      "explanation": "API calls are organized in the `services/` directory, with separate files for different domains (e.g., `courses.ts`, `groups.ts`, `users.ts`). This keeps API logic separate from UI components and makes it reusable."
+    },
+      {
+        "id": "q15",
+      "question": "What does the API client (`services/api.ts`) automatically do?",
+      "options": [
+        "It only handles GET requests",
+        "It automatically adds the auth token to request headers",
+        "It caches all responses",
+        "It only works on native platforms"
+      ],
+      "correct": 1,
+      "explanation": "The API client automatically adds the authentication token to request headers, handles platform-aware URLs (emulator vs. physical device), provides standardized error handling, and includes request/response interceptors for logging."
+    },
+      {
+        "id": "q16",
+      "question": "What is the purpose of the service layer?",
+      "options": [
+        "To style components",
+        "To organize and centralize API calls, making them reusable across components",
+        "To handle navigation",
+        "To manage authentication"
+      ],
+      "correct": 1,
+      "explanation": "The service layer organizes API calls into reusable functions. Instead of making API calls directly in components, you create service functions (like `getUserCourses()`) that components can use with React Query, keeping API logic separate and maintainable."
+    },
+      {
+        "id": "q17",
+      "question": "When should you use React Context for state management?",
+      "options": [
+        "For all state in the app",
+        "For truly global state that needs to be shared across many screens (like authentication)",
+        "For component-specific UI state",
+        "For server data from APIs"
+      ],
+      "correct": 1,
+      "explanation": "React Context should be used for truly global state that needs to be shared across many screens, like authentication. For server data, use React Query. For component-specific UI state (modals, form inputs), use local `useState`."
+    },
+      {
+        "id": "q18",
+      "question": "When should you use React Query for state management?",
+      "options": [
+        "For authentication state",
+        "For data from APIs (server state)",
+        "For form input state",
+        "For modal visibility state"
+      ],
+      "correct": 1,
+      "explanation": "React Query is designed for server state - data that comes from APIs. It provides automatic caching, refetching, and synchronization. Use React Context for global client state (like auth) and `useState` for local component state."
+    },
+      {
+        "id": "q19",
+      "question": "What is local state (`useState`) best used for?",
+      "options": [
+        "Server data from APIs",
+        "Global authentication state",
+        "Component-specific UI state (form inputs, modals, loading indicators)",
+        "Shared data across multiple screens"
+      ],
+      "correct": 2,
+      "explanation": "Local state with `useState` is best for component-specific UI state that doesn't need to be shared, such as form inputs, modal visibility, local loading indicators, or other UI state that's only relevant to a single component."
+    },
+      {
+        "id": "q20",
+      "question": "How does the API client handle errors?",
+      "options": [
+        "It ignores all errors",
+        "It provides standardized error responses and error handling",
+        "It only handles 404 errors",
+        "It crashes the app on errors"
+      ],
+      "correct": 1,
+      "explanation": "The API client provides standardized error responses and error handling. It includes request/response interceptors for logging and error transformation, making error handling consistent across the app."
+    },
+      {
+        "id": "q21",
+      "question": "How do you access error information from a React Query hook?",
+      "options": [
+        "From the `error` property returned by `useQuery`",
+        "Errors are automatically displayed",
+        "You must check the console only",
+        "Errors are ignored by React Query"
+      ],
+      "correct": 0,
+      "explanation": "React Query provides an `error` property in the object returned by `useQuery`. You can check `if (error)` and display error messages to users, like `return <Text>Error: {error.message}</Text>`."
+    },
+      {
+        "id": "q22",
+      "question": "What does the `ErrorBoundary` component do?",
+      "options": [
+        "It prevents all errors",
+        "It catches unhandled errors and displays them gracefully",
+        "It only catches API errors",
+        "It logs errors but doesn't display them"
+      ],
+      "correct": 1,
+      "explanation": "The `ErrorBoundary` component is a React error boundary that catches unhandled JavaScript errors anywhere in the component tree below it and displays a fallback UI gracefully, preventing the entire app from crashing."
+    },
+      {
+        "id": "q23",
+      "question": "What is pull-to-refresh?",
+      "options": [
+        "A way to delete data",
+        "A pattern where users drag down on a scrollable list to manually refresh data",
+        "A navigation pattern",
+        "An error handling technique"
+      ],
+      "correct": 1,
+      "explanation": "Pull-to-refresh is a common mobile pattern where users drag down on a scrollable list to manually trigger a data refresh. It gives users control over when to fetch fresh data from the server."
+    },
+      {
+        "id": "q24",
+      "question": "How do you implement pull-to-refresh with React Query?",
+      "options": [
+        "You can't use React Query for pull-to-refresh",
+        "Use `RefreshControl` with `refetch` and `isRefetching` from `useQuery`",
+        "Use a separate API call",
+        "Use `useState` to track refresh state"
+      ],
+      "correct": 1,
+      "explanation": "You implement pull-to-refresh by using React Query's `refetch` function and `isRefetching` state. Wrap your `ScrollView` with a `RefreshControl` that calls `refetch` on refresh and uses `isRefetching` for the `refreshing` prop."
+    },
+      {
+        "id": "q25",
+      "question": "Why are loading states important?",
+      "options": [
+        "They're not necessary",
+        "They show users that data is being fetched, preventing confusion",
+        "They speed up the app",
+        "They prevent errors"
+      ],
+      "correct": 1,
+      "explanation": "Loading states are important because they show users that data is being fetched, preventing confusion when the screen appears empty or unresponsive. React Query's `isLoading` flag makes it easy to display a spinner or skeleton screen."
+    },
+      {
+        "id": "q26",
+      "question": "What is an empty state?",
+      "options": [
+        "A state with no data",
+        "A helpful message displayed when a list has no items, explaining why and what to do next",
+        "An error state",
+        "A loading state"
+      ],
+      "correct": 1,
+      "explanation": "An empty state is displayed when a list or data collection has no items to show. Instead of showing a blank screen, you provide helpful messaging that explains why there's no data and what the user can do next."
+    },
+      {
+        "id": "q27",
+      "question": "What is a Provider in React?",
+      "options": [
+        "A database provider",
+        "A React component that uses Context to make data available to all child components",
+        "A navigation component",
+        "A styling component"
+      ],
+      "correct": 1,
+      "explanation": "A provider is a React component that uses React Context to make data or functionality available to all its child components. Instead of passing data through props at every level, providers allow you to wrap your app and share data with any child component."
+    },
+      {
+        "id": "q28",
+      "question": "Does the order of providers matter?",
+      "options": [
+        "No, order never matters",
+        "Yes, but with some flexibility - ErrorBoundary must be high, Stack must be inside all providers",
+        "Yes, they must be in alphabetical order",
+        "No, but they must all be at the same level"
+      ],
+      "correct": 1,
+      "explanation": "Provider order matters with some flexibility. Critical rules: ErrorBoundary must be high in the tree to catch errors, and Stack must be inside all providers. However, SafeAreaProvider, PaperProvider, QueryClientProvider, and AuthProvider can be reordered as long as they all wrap Stack."
+    },
+      {
+        "id": "q29",
+      "question": "What does React Query's automatic caching feature do?",
+      "options": [
+        "It caches components",
+        "It automatically caches API responses and reuses them when the same query key is requested",
+        "It only caches errors",
+        "It caches navigation routes"
+      ],
+      "correct": 1,
+      "explanation": "React Query automatically caches API responses using the query key. If you request the same data again (using the same query key), React Query returns the cached data instantly while optionally refetching in the background to ensure freshness."
+    },
+      {
+        "id": "q30",
+      "question": "What happens when React Query refetches data in the background?",
+      "options": [
+        "The app freezes",
+        "It updates the cache and re-renders components with fresh data",
+        "It only updates if the user requests it",
+        "It deletes the old cache"
+      ],
+      "correct": 1,
+      "explanation": "When React Query refetches data in the background (e.g., when the app regains focus or network reconnects), it updates the cache with fresh data and automatically re-renders components that use that data, keeping the UI up-to-date without user interaction."
+    },
+      {
+        "id": "q31",
+      "question": "In the provider hierarchy, why must the Stack be inside all providers?",
+      "options": [
+        "It's a React requirement",
+        "So screens can access all contexts provided by the parent providers",
+        "It improves performance",
+        "It's just a convention"
+      ],
+      "correct": 1,
+      "explanation": "The Stack (Expo Router navigation) must be inside all providers so that all screens can access the contexts provided by the parent providers (like AuthProvider, QueryClientProvider, etc.). If Stack were outside, screens couldn't use hooks like `useAuth()` or React Query."
+    }
+  ]
+}
+

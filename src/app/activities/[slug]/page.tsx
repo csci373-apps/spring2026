@@ -1,7 +1,8 @@
 import { getPostData, getAllPostIds } from '@/lib/markdown';
 import PageHeader from '@/components/PageHeader';
 import MarkdownContent from '@/components/MarkdownContent';
-import TableOfContents from '@/components/TableOfContents';
+import ContentLayout from '@/components/ContentLayout';
+import QuickLinksNav from '@/components/QuickLinksNav';
 import InstructorNotesToggle from '@/components/InstructorNotesToggle';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
@@ -19,31 +20,26 @@ export default async function ActivityPage({ params }: ActivityPageProps) {
     const { heading_max_level } = postData;
     
     return (
-      <div className="space-y-6 assignment-page activity-content">
-        <PageHeader 
-          title={postData.title} 
-          excerpt={postData.excerpt}
-          type="activity"
-        />
-        
-        <div className="flex gap-8">
-          {/* Main content */}
-          <div className="flex-1 min-w-0">
-            <Suspense fallback={<MarkdownContent content={postData.content} />}>
-              <InstructorNotesToggle>
-                <MarkdownContent content={postData.content} />
-              </InstructorNotesToggle>
-            </Suspense>
-          </div>
+      <ContentLayout
+        variant="detail-with-toc"
+        leftNav={<QuickLinksNav />}
+        showToc={postData.toc !== false}
+        tocMaxLevel={heading_max_level || 2}
+      >
+        <div className="space-y-6 assignment-page activity-content">
+          <PageHeader 
+            title={postData.title} 
+            excerpt={postData.excerpt}
+            type="activity"
+          />
           
-          {/* Table of Contents */}
-          {postData.toc !== false && (
-            <div className="hidden lg:block">
-              <TableOfContents maxLevel={heading_max_level || 2} />
-            </div>
-          )}
+          <Suspense fallback={<MarkdownContent content={postData.content} />}>
+            <InstructorNotesToggle>
+              <MarkdownContent content={postData.content} />
+            </InstructorNotesToggle>
+          </Suspense>
         </div>
-      </div>
+      </ContentLayout>
     );
   } catch {
     notFound();

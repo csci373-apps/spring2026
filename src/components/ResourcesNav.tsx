@@ -32,10 +32,10 @@ export default function ResourcesNav({ resourcePages }: ResourcesNavProps) {
   }, {} as Record<string, typeof resourcePages>);
   
   const renderNavigation = () => (
-    <div className="lg:top-8 p-4">
+    <div className="px-3">
       {Object.entries(groupedPages).map(([groupName, pages]) => (
         <div key={groupName} className="mb-6">
-          <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3 uppercase tracking-wide">
+          <h4 className="!text-lg !font-normal">
             {groupName}
           </h4>
           <ol>
@@ -85,7 +85,7 @@ export default function ResourcesNav({ resourcePages }: ResourcesNavProps) {
       </div>
       
       {/* Desktop: Sidebar navigation */}
-      <nav className="hidden lg:block w-64 mt-12 flex-shrink-0 border-r border-black dark:border-gray-800 md:min-h-screen">
+      <nav className="hidden lg:block w-full px-4 py-6">
         {renderNavigation()}
       </nav>
     </>

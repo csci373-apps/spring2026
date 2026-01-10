@@ -3,6 +3,7 @@ title: "Git Workflow for Phase 1"
 group: "How To Guides"
 group_order: 2
 order: 1
+quicklink: 1
 ---
 
 ## Overview

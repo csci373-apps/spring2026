@@ -1,5 +1,6 @@
 import { getAllPosts, PostData } from '@/lib/markdown';
 import PageHeader from '@/components/PageHeader';
+import ContentLayout from '@/components/ContentLayout';
 import Link from 'next/link';
 
 interface ResourceItem {
@@ -60,13 +61,14 @@ export default async function ResourcesPage() {
 
 
   return (
-    <div className="space-y-6">
-      <PageHeader 
-        title="Course How To Guides" 
-        excerpt="Technical guides and documentation for the course technologies"
-      />
-      
-      {chapters.map((chapter) => (
+    <ContentLayout variant="list">
+      <div className="space-y-6">
+        <PageHeader 
+          title="Course How To Guides" 
+          excerpt="Technical guides and documentation for the course technologies"
+        />
+        
+        {chapters.map((chapter) => (
         <div key={chapter.name} className="mb-8">
           {/* Chapter header */}
           <h2 className="text-2xl font-bold text-gray-900 m-0 mb-4">
@@ -87,6 +89,7 @@ export default async function ResourcesPage() {
           </ul>
         </div>
       ))}
-    </div>
+      </div>
+    </ContentLayout>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useDarkMode } from '@/hooks/useDarkMode';
 import hljs from 'highlight.js';
 
@@ -63,7 +63,7 @@ function formatQuestionText(text: string, isDark: boolean): React.ReactNode {
           className="px-1.5 py-0.5 rounded text-sm font-mono"
           style={{
             backgroundColor: isDark ? '#1e293b' : '#fff',
-            border: `1px solid ${isDark ? '#334155' : '#d1d5d9'}`,
+            border: `1px solid ${isDark ? '#1f2937' : '#d1d5d9'}`,
             color: isDark ? '#e2e8f0' : '#24292e',
           }}
         >
@@ -106,7 +106,7 @@ function formatQuestionText(text: string, isDark: boolean): React.ReactNode {
                 className="px-1.5 py-0.5 rounded text-sm font-mono"
                 style={{
                   backgroundColor: isDark ? '#1e293b' : '#fff',
-                  border: `1px solid ${isDark ? '#334155' : '#d1d5d9'}`,
+                  border: `1px solid ${isDark ? '#1f2937' : '#d1d5d9'}`,
                   color: isDark ? '#e2e8f0' : '#24292e',
                 }}
               >
@@ -131,7 +131,7 @@ function formatQuestionText(text: string, isDark: boolean): React.ReactNode {
               className="my-4 p-4 rounded-lg overflow-x-auto text-sm font-mono block"
               style={{
                 backgroundColor: isDark ? '#1e293b' : '#fff',
-                border: `1px solid ${isDark ? '#334155' : '#e1e4e8'}`,
+                border: `1px solid ${isDark ? '#1f2937' : '#e1e4e8'}`,
                 color: isDark ? '#e2e8f0' : '#24292e',
               }}
             >
@@ -175,6 +175,7 @@ interface QuizState {
 interface ResourceQuizProps {
   quizData: QuizData;
   resourceSlug: string;
+  variant?: 'mobile' | 'desktop';
 }
 
 // Fisher-Yates shuffle algorithm
@@ -187,7 +188,7 @@ function shuffleArray<T>(array: T[]): T[] {
   return shuffled;
 }
 
-export default function ResourceQuiz({ quizData, resourceSlug }: ResourceQuizProps) {
+export default function ResourceQuiz({ quizData, resourceSlug, variant = 'desktop' }: ResourceQuizProps) {
   const [selectedAnswers, setSelectedAnswers] = useState<{ [questionId: string]: number }>({});
   const [score, setScore] = useState<number>(0);
   const [completed, setCompleted] = useState<boolean>(false);
@@ -195,6 +196,7 @@ export default function ResourceQuiz({ quizData, resourceSlug }: ResourceQuizPro
   const [shuffledQuestions, setShuffledQuestions] = useState<QuizQuestion[]>([]);
   const [randomMode, setRandomMode] = useState<boolean>(false);
   const isDark = useDarkMode();
+  const headingRef = useRef<HTMLHeadingElement>(null);
   
   const storageKey = `quiz-${resourceSlug}`;
   const randomModeKey = `quiz-random-${resourceSlug}`;
@@ -295,6 +297,7 @@ export default function ResourceQuiz({ quizData, resourceSlug }: ResourceQuizPro
   }, [selectedAnswers, shuffledQuestions, storageKey]);
 
 
+
   const handleClearQuiz = () => {
     setSelectedAnswers({});
     setScore(0);
@@ -368,7 +371,7 @@ export default function ResourceQuiz({ quizData, resourceSlug }: ResourceQuizPro
   // Don't render until questions are shuffled
   if (shuffledQuestions.length === 0) {
     return (
-      <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+      <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800">
         <div className="text-center text-gray-600 dark:text-gray-400" style={isDark ? { color: '#9ca3af' } : undefined}>
           Loading quiz...
         </div>
@@ -388,7 +391,8 @@ export default function ResourceQuiz({ quizData, resourceSlug }: ResourceQuizPro
       <div className="p-6 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800" style={isDark ? { backgroundColor: 'rgba(30, 58, 138, 0.15)', borderColor: '#1e3a8a' } : undefined}>
       <div className="flex justify-between items-center mb-6">
         <h2 
-          id="quiz"
+          ref={headingRef}
+          id={`quiz-${variant}-${resourceSlug}`}
           className="text-2xl font-bold text-gray-900 dark:text-gray-100"
           style={isDark ? { color: '#f9fafb' } : undefined}
         >
@@ -416,9 +420,9 @@ export default function ResourceQuiz({ quizData, resourceSlug }: ResourceQuizPro
             className={`px-4 py-2 text-sm font-medium rounded-md transition-colors border flex items-center gap-2 ${
               randomMode
                 ? 'text-white bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 border-blue-700 dark:border-blue-600'
-                : 'text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 border-gray-300 dark:border-gray-600'
+                : 'text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 border-gray-300 dark:border-gray-800'
             }`}
-            style={isDark && !randomMode ? { backgroundColor: '#374151', borderColor: '#4b5563', color: '#e5e7eb' } : undefined}
+            style={isDark && !randomMode ? { backgroundColor: '#374151', borderColor: '#1f2937', color: '#e5e7eb' } : undefined}
             title={randomMode ? 'Random mode: Questions and options are shuffled' : 'Click to enable random mode: Questions and options will be shuffled'}
           >
             <svg 
@@ -434,8 +438,8 @@ export default function ResourceQuiz({ quizData, resourceSlug }: ResourceQuizPro
           </button>
           <button
             onClick={handleClearQuiz}
-            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md transition-colors border border-gray-300 dark:border-gray-600"
-            style={isDark ? { backgroundColor: '#374151', borderColor: '#4b5563', color: '#e5e7eb' } : undefined}
+            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md transition-colors border border-gray-300 dark:border-gray-800"
+            style={isDark ? { backgroundColor: '#374151', borderColor: '#1f2937', color: '#e5e7eb' } : undefined}
             onMouseEnter={(e) => {
               if (isDark) {
                 e.currentTarget.style.backgroundColor = '#4b5563';
@@ -469,7 +473,7 @@ export default function ResourceQuiz({ quizData, resourceSlug }: ResourceQuizPro
 
       {/* Summary Screen */}
       {showSummary ? (
-        <div className="p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm dark:shadow-none" style={isDark ? { backgroundColor: '#1f2937', borderColor: '#374151' } : undefined}>
+        <div className="p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-lg shadow-sm dark:shadow-none" style={isDark ? { backgroundColor: '#1f2937', borderColor: '#1f2937' } : undefined}>
           <div className="text-center mb-6">
             <h3 
               className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2"
@@ -503,8 +507,8 @@ export default function ResourceQuiz({ quizData, resourceSlug }: ResourceQuizPro
             </button>
             <button
               onClick={handleClearQuiz}
-              className="px-6 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md transition-colors border border-gray-300 dark:border-gray-600"
-              style={isDark ? { backgroundColor: '#374151', borderColor: '#4b5563', color: '#e5e7eb' } : undefined}
+              className="px-6 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md transition-colors border border-gray-300 dark:border-gray-800"
+              style={isDark ? { backgroundColor: '#374151', borderColor: '#1f2937', color: '#e5e7eb' } : undefined}
             >
               Start Over
             </button>
@@ -526,7 +530,7 @@ export default function ResourceQuiz({ quizData, resourceSlug }: ResourceQuizPro
               const correct = isCorrect(currentQuestion.id, optionIndex);
               const showFeedback = answered && (selected || correct);
 
-              let borderColor = 'border-gray-300 dark:border-gray-600';
+              let borderColor = 'border-gray-300 dark:border-gray-800';
               let bgColor = 'bg-white dark:bg-gray-800';
               let inlineStyle: React.CSSProperties | undefined;
               
@@ -551,7 +555,7 @@ export default function ResourceQuiz({ quizData, resourceSlug }: ResourceQuizPro
                   inlineStyle = { borderColor: '#3b82f6', backgroundColor: 'rgba(30, 58, 138, 0.3)' };
                 }
               } else if (isDark) {
-                inlineStyle = { backgroundColor: '#1f2937', borderColor: '#4b5563' };
+                inlineStyle = { backgroundColor: '#1f2937', borderColor: '#1f2937' };
               }
 
               return (
@@ -569,7 +573,7 @@ export default function ResourceQuiz({ quizData, resourceSlug }: ResourceQuizPro
                     checked={selected}
                     onChange={() => handleAnswerSelect(currentQuestion.id, optionIndex)}
                     disabled={answered}
-                    className="mt-1 mr-3 w-4 h-4 text-blue-600 dark:text-blue-400 border-gray-300 dark:border-gray-500 focus:ring-blue-500 dark:focus:ring-blue-400 disabled:opacity-50 dark:disabled:opacity-50"
+                    className="mt-1 mr-3 w-4 h-4 text-blue-600 dark:text-blue-400 border-gray-300 dark:border-gray-700 focus:ring-blue-500 dark:focus:ring-blue-400 disabled:opacity-50 dark:disabled:opacity-50"
                   />
                   <div className="flex-1">
                     <span 
@@ -606,12 +610,12 @@ export default function ResourceQuiz({ quizData, resourceSlug }: ResourceQuizPro
           )}
 
           {/* Navigation buttons */}
-          <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-200 dark:border-gray-700" style={isDark ? { borderColor: '#374151' } : undefined}>
+          <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-200 dark:border-gray-800" style={isDark ? { borderColor: '#1f2937' } : undefined}>
             <button
               onClick={handlePrevious}
               disabled={currentQuestionIndex === 0}
-              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md transition-colors border border-gray-300 dark:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-              style={isDark ? { backgroundColor: '#374151', borderColor: '#4b5563', color: '#e5e7eb' } : undefined}
+              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md transition-colors border border-gray-300 dark:border-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+              style={isDark ? { backgroundColor: '#374151', borderColor: '#1f2937', color: '#e5e7eb' } : undefined}
             >
               ← Previous
             </button>

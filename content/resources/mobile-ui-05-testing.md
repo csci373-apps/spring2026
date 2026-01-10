@@ -2,7 +2,7 @@
 title: "Testing with Jest"
 group: "Mobile UI"
 group_order: 5
-order: 4
+order: 5
 ---
 
 For this course, we follow a **minimal but practical** approach for our front-end tests:

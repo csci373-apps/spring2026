@@ -1,0 +1,208 @@
+{
+  "questions": [
+    {
+      "id": "q1",
+      "question": "What is EAS (Expo Application Services)?",
+      "options": [
+        "A service that allows you to build native apps, create preview builds, publish OTA updates, and submit to app stores",
+        "A CSS framework",
+        "A database system",
+        "A component library"
+      ],
+      "correct": 0,
+      "explanation": "EAS (Expo Application Services) is a service that allows you to build native apps for iOS and Android, create preview builds for testing, publish updates over-the-air (OTA), and submit apps to app stores."
+    },
+    {
+      "id": "q2",
+      "question": "How do you check if EAS CLI is already installed?",
+      "options": [
+        "`npm list eas-cli`",
+        "`eas --version`",
+        "`which eas`",
+        "`eas --help`"
+      ],
+      "correct": 1,
+      "explanation": "Run `eas --version` to check if EAS CLI is installed. If you see a version number, it's installed. If you get a 'command not found' error, you need to install it."
+    },
+    {
+      "id": "q3",
+      "question": "How do you install EAS CLI globally?",
+      "options": [
+        "`npm install eas-cli`",
+        "`npx eas-cli install`",
+        "`yarn add eas-cli`",
+        "`npm install -g eas-cli`"
+      ],
+      "correct": 3,
+      "explanation": "Install EAS CLI globally with `npm install -g eas-cli`. The `-g` flag installs it globally so you can use the `eas` command from anywhere."
+    },
+    {
+      "id": "q4",
+      "question": "What command do you use to log in to your Expo account?",
+      "options": [
+        "`eas login`",
+        "`eas signin`",
+        "`expo login`",
+        "`npx expo login`"
+      ],
+      "correct": 0,
+      "explanation": "Use `eas login` to authenticate with your Expo account. This will prompt you for your email and password, or open a browser for authentication."
+    },
+    {
+      "id": "q5",
+      "question": "What are the three build profiles configured in `eas.json`?",
+      "options": [
+        "test, staging, production",
+        "development, preview, production",
+        "local, preview, release",
+        "dev, test, prod"
+      ],
+      "correct": 1,
+      "explanation": "The three build profiles are: **development** (for development builds with Expo Dev Client), **preview** (for testing on physical devices), and **production** (for app store submissions)."
+    },
+    {
+      "id": "q6",
+      "question": "What does the `preview` build profile create?",
+      "options": [
+        "App store-ready builds",
+        "Simulator-only builds",
+        "Web builds",
+        "Installable `.apk` files for Android and `.ipa` files for iOS for testing on physical devices"
+      ],
+      "correct": 3,
+      "explanation": "The `preview` build profile creates installable `.apk` files for Android and `.ipa` files for iOS that can be installed on physical devices for testing. These are not for app store submission."
+    },
+    {
+      "id": "q7",
+      "question": "What command creates a preview build for Android?",
+      "options": [
+        "`eas build --platform android --profile preview`",
+        "`eas build android --preview`",
+        "`eas build android preview`",
+        "`npx expo build:android`"
+      ],
+      "correct": 0,
+      "explanation": "Use `eas build --platform android --profile preview` to create a preview build for Android. The `--platform` flag specifies the platform, and `--profile` specifies the build profile."
+    },
+    {
+      "id": "q8",
+      "question": "What happens when you run `eas build`?",
+      "options": [
+        "It builds the app locally on your computer",
+        "It uploads your code to Expo's servers, builds your app in the cloud, and provides a download link when complete",
+        "It only validates your code",
+        "It publishes your app to app stores"
+      ],
+      "correct": 1,
+      "explanation": "When you run `eas build`, it uploads your code to Expo's servers, builds your app in the cloud, and provides a download link when complete. This is a cloud-based build service."
+    },
+    {
+      "id": "q9",
+      "question": "What is OTA (Over-The-Air) update?",
+      "options": [
+        "A way to update the native code without rebuilding",
+        "A way to submit to app stores",
+        "A way to test on simulators",
+        "A way to push JavaScript updates to users without rebuilding the app"
+      ],
+      "correct": 3,
+      "explanation": "OTA (Over-The-Air) updates allow you to push JavaScript updates to users without rebuilding the native app. This is useful for bug fixes and feature updates that don't require native code changes."
+    },
+    {
+      "id": "q10",
+      "question": "What command publishes an OTA update?",
+      "options": [
+        "`eas update --branch production --message \"Bug fixes\"`",
+        "`eas publish`",
+        "`eas push`",
+        "`expo publish`"
+      ],
+      "correct": 0,
+      "explanation": "Use `eas update --branch production --message \"Bug fixes\"` to publish an OTA update. The `--branch` flag specifies which branch to update, and `--message` provides a description."
+    },
+    {
+      "id": "q11",
+      "question": "You've fixed a bug in a React component that displays user data. Can you use an OTA update?",
+      "options": [
+        "No, you always need a new build for bug fixes",
+        "Yes, OTA updates are appropriate for JavaScript/React component changes",
+        "No, you need a new build for any code changes",
+        "Only if you update the version number"
+      ],
+      "correct": 1,
+      "explanation": "Yes, OTA updates are appropriate for JavaScript/TypeScript code changes, including React component updates, bug fixes, UI improvements, and business logic changes. You don't need a new build for these."
+    },
+    {
+      "id": "q12",
+      "question": "You've added a new native dependency (`expo-camera`) to your app. Can you use an OTA update?",
+      "options": [
+        "Yes, OTA updates work for all changes",
+        "Yes, but only for Android",
+        "Only if you update the version number",
+        "No, you need a new build because native dependencies require native code compilation"
+      ],
+      "correct": 3,
+      "explanation": "No, you need a new build. Adding or updating packages that include native code (like `expo-camera`, `expo-location`, or other native modules) requires native code compilation, which can only happen during a build, not in an OTA update."
+    },
+    {
+      "id": "q13",
+      "question": "What command do you use to submit your app to the iOS App Store?",
+      "options": [
+        "`eas submit --platform ios`",
+        "`eas submit ios`",
+        "`eas build --platform ios --submit`",
+        "`expo submit:ios`"
+      ],
+      "correct": 0,
+      "explanation": "Use `eas submit --platform ios` to submit your app to the iOS App Store. This command uploads your app to App Store Connect and starts the review process."
+    },
+    {
+      "id": "q14",
+      "question": "What command shows all published updates and their status?",
+      "options": [
+        "`eas update:status`",
+        "`eas update:list`",
+        "`eas updates`",
+        "`eas list:updates`"
+      ],
+      "correct": 1,
+      "explanation": "Use `eas update:list` to view all published updates and their status. This helps you track which updates have been deployed."
+    },
+    {
+      "id": "q15",
+      "question": "How do you set environment variables for production builds?",
+      "options": [
+        "Only in `app.json`",
+        "Only using `eas secret:create`",
+        "In `package.json`",
+        "In `eas.json` under the build profile's `env` section, or using `eas secret:create`"
+      ],
+      "correct": 3,
+      "explanation": "You can set environment variables in `eas.json` under the build profile's `env` section, or use `eas secret:create` for sensitive values. The `eas secret:create` command stores secrets securely."
+    },
+    {
+      "id": "q16",
+      "question": "What command allows you to view build details?",
+      "options": [
+        "`eas build:view [BUILD_ID]`",
+        "`eas build:details [BUILD_ID]`",
+        "`eas view [BUILD_ID]`",
+        "`eas build --view [BUILD_ID]`"
+      ],
+      "correct": 0,
+      "explanation": "Use `eas build:view [BUILD_ID]` to view detailed information about a specific build, including logs and status."
+    },
+    {
+      "id": "q17",
+      "question": "What is required to install an iOS preview build on a physical device?",
+      "options": [
+        "Nothing - it works automatically",
+        "An Apple Developer account ($99/year)",
+        "A Google Play account",
+        "An Expo Pro account"
+      ],
+      "correct": 1,
+      "explanation": "To install an iOS preview build on a physical device, you need an Apple Developer account, which costs $99/year. For Android, you can install the `.apk` directly without any paid account."
+    }
+  ]
+}

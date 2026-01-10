@@ -19,7 +19,7 @@
   --accent: #b8e6fe;
   --background: #0a0a0a;
   --foreground: #ededed;
-  --border: #374151;
+  --border: #1f2937;
   --muted: #9ca3af;
   --card: #1f2937;
   --card-foreground: #f9fafb;
@@ -103,7 +103,7 @@ li {
 }
 
 blockquote {
-  @apply bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 p-4 mb-4;
+  @apply bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-800 p-4 mb-4;
 }
 
 .dark blockquote {
@@ -188,7 +188,7 @@ blockquote {
 
   /* Enhanced checklists */
   input[type="checkbox"] {
-    @apply w-5 h-5 rounded border-2 border-gray-300 dark:border-gray-600;
+    @apply w-5 h-5 rounded border-2 border-gray-300 dark:border-gray-800;
     accent-color: var(--primary);
     margin-right: 0.75rem;
     cursor: pointer;
@@ -342,6 +342,8 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
   line-height: 1.6;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 /* Ensure dark mode backgrounds are applied */
@@ -368,9 +370,9 @@ body {
   color: #d1d5db !important;
 }
 
-/* Force schedule borders and chevrons in dark mode */
+/* Force schedule borders and chevrons in dark mode - make borders darker */
 .dark .border-black {
-  border-color: #374151 !important;
+  border-color: #1f2937 !important;
 }
 
 .dark button[class*="text-black"] {
@@ -380,7 +382,7 @@ body {
 /* Force Next/Previous button backgrounds in dark mode */
 .dark a[class*="bg-white"][class*="border-gray-300"] {
   background-color: #111827 !important;
-  border-color: #374151 !important;
+  border-color: #1f2937 !important;
 }
 
 /* Force Next/Previous button text colors in dark mode */
@@ -399,7 +401,7 @@ body {
 /* Quiz dark mode overrides */
 .dark div[class*="bg-white"][class*="border-gray-200"] {
   background-color: #1f2937 !important;
-  border-color: #374151 !important;
+  border-color: #1f2937 !important;
 }
 
 .dark label[class*="bg-white"] {
@@ -438,7 +440,15 @@ body {
 
 /* Custom global styles */
 html {
+  overflow-x: hidden;
   scroll-behavior: smooth;
+}
+
+/* Disable html overflow on desktop pages using ContentLayout (mobile uses body scroll) */
+@media (min-width: 1024px) {
+  html.content-layout-page {
+    overflow-y: hidden;
+  }
 }
 
 /* Custom scrollbar */
@@ -451,12 +461,20 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--muted);
+  background: #d1d5db;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--foreground);
+  background: #9ca3af;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #4b5563;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
 }
 
 /* Custom utility classes that can't be done with Tailwind */
@@ -487,9 +505,20 @@ html {
   }
 }
 
-/* Resources layout overrides */
-[data-resources-layout] {
+/* Layout overrides - ensure consistent positioning across all pages */
+main[data-layout] {
   max-width: none !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Prevent layout shift - apply immediately for all ContentLayout variants */
+main > div.relative {
+  max-width: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 
 code {
@@ -535,6 +564,32 @@ code {
   font-size: 14px;
   line-height: 1.45;
   margin: 1em 0;
+}
+
+/* Subtle scrollbar for code blocks */
+.hljs::-webkit-scrollbar {
+  height: 10px;
+}
+
+.hljs::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.hljs::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.hljs::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.dark .hljs::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.dark .hljs::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .dark .hljs {

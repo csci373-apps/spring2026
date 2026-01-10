@@ -3,6 +3,7 @@ title: "Starter Code Overview"
 group: "Getting Started"
 group_order: 1
 order: 1
+quicklink: 1
 ---
 
 The starter code is a simplified version of the Three Moves Ahead health application that provides the foundational infrastructure for your semester project. It includes core authentication, basic CRUD operations, and development tooling, but intentionally excludes advanced features that you'll implement during the course.

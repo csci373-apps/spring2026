@@ -1,9 +1,10 @@
 import { getPostData, getAllPostIds, getAllPosts, PostData, getQuizData } from '@/lib/markdown';
 import PageHeader from '@/components/PageHeader';
 import MarkdownContent from '@/components/MarkdownContent';
-import TableOfContents from '@/components/TableOfContents';
 import ResourcesNav from '@/components/ResourcesNav';
 import ResourceQuiz from '@/components/ResourceQuiz';
+import Footer from '@/components/Footer';
+import ContentLayout from '@/components/ContentLayout';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
@@ -61,66 +62,59 @@ export default async function ResourcePage({ params }: PageProps) {
     const nextResource = currentIndex < sortedResources.length - 1 ? sortedResources[currentIndex + 1] : null;
     
     return (
-      <div className="flex flex-col lg:flex-row gap-8 mx-auto">
-        <ResourcesNav resourcePages={resourcePages} />
-        <div className="max-w-4xl w-full">
-          <div className="space-y-6">
-            <PageHeader title={title} excerpt={excerpt} group={group} />
-            
-            <div className="flex gap-8">
-              {/* Main content */}
-              <div className="flex-1 min-w-0">
-                <MarkdownContent content={postData.content} />
-                
-                {/* Quiz */}
-                {quizData && (
-                  <ResourceQuiz quizData={quizData} resourceSlug={slug} />
-                )}
-                
-                {/* Next/Previous Navigation */}
-                {(previousResource || nextResource) && (
-                  <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row justify-between gap-4">
-                    {previousResource ? (
-                      <Link
-                        href={`/resources/${previousResource.id}`}
-                        className="flex items-center gap-3 px-4 py-3 !border bg-white dark:bg-gray-900 !border-gray-300 dark:!border-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 hover:border-blue-500 dark:hover:border-blue-600 transition-all group no-underline w-full sm:w-auto"
-                      >
-                        <ChevronLeftIcon className="w-5 h-5 text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 flex-shrink-0" />
-                        <div className="flex flex-col min-w-0">
-                          <span className="text-xs text-gray-500 dark:text-gray-300 uppercase tracking-wide">Previous</span>
-                          <span className="font-medium text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 truncate">{previousResource.title}</span>
-                        </div>
-                      </Link>
-                    ) : (
-                      <div className="hidden sm:block"></div>
-                    )}
-                    
-                    {nextResource ? (
-                      <Link
-                        href={`/resources/${nextResource.id}`}
-                        className="flex items-center gap-3 px-4 py-3 bg-white dark:bg-gray-900 !border !border-gray-300 dark:!border-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 hover:border-blue-500 dark:hover:border-blue-600 transition-all group sm:text-right sm:ml-auto no-underline w-full sm:w-auto"
-                      >
-                        <div className="flex flex-col min-w-0 flex-1 sm:flex-none">
-                          <span className="text-xs text-gray-500 dark:text-gray-300 uppercase tracking-wide">Next</span>
-                          <span className="font-medium text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 truncate">{nextResource.title}</span>
-                        </div>
-                        <ChevronRightIcon className="w-5 h-5 text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 flex-shrink-0 ml-auto sm:ml-0" />
-                      </Link>
-                    ) : null}
+      <ContentLayout
+        variant="resources-detail"
+        leftNav={<ResourcesNav resourcePages={resourcePages} />}
+        showToc={toc !== false}
+        tocMaxLevel={heading_max_level || 2}
+      >
+        <PageHeader title={title} excerpt={excerpt} group={group} />
+        
+        <div>
+          <MarkdownContent content={postData.content} />
+          
+          {/* Quiz */}
+          {quizData && (
+            <ResourceQuiz key={`quiz-${slug}`} quizData={quizData} resourceSlug={slug} variant="desktop" />
+          )}
+          
+          {/* Next/Previous Navigation */}
+          {(previousResource || nextResource) && (
+            <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800 flex flex-col sm:flex-row justify-between gap-4">
+              {previousResource ? (
+                <Link
+                  href={`/resources/${previousResource.id}`}
+                  className="flex items-center gap-3 px-4 py-3 !border bg-white dark:bg-gray-900 !border-gray-300 dark:!border-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 hover:border-blue-500 dark:hover:border-blue-600 transition-all group no-underline w-full sm:w-auto"
+                >
+                  <ChevronLeftIcon className="w-5 h-5 text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 flex-shrink-0" />
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-xs text-gray-500 dark:text-gray-300 uppercase tracking-wide">Previous</span>
+                    <span className="font-medium text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 truncate">{previousResource.title}</span>
                   </div>
-                )}
-              </div>
-              
-              {/* Table of Contents */}
-              {toc !== false && (
-                <div className="hidden lg:block">
-                  <TableOfContents maxLevel={heading_max_level || 2} />
-                </div>
+                </Link>
+              ) : (
+                <div className="hidden sm:block"></div>
               )}
+              
+              {nextResource ? (
+                <Link
+                  href={`/resources/${nextResource.id}`}
+                  className="flex items-center gap-3 px-4 py-3 bg-white dark:bg-gray-900 !border !border-gray-300 dark:!border-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 hover:border-blue-500 dark:hover:border-blue-600 transition-all group sm:text-right sm:ml-auto no-underline w-full sm:w-auto"
+                >
+                  <div className="flex flex-col min-w-0 flex-1 sm:flex-none">
+                    <span className="text-xs text-gray-500 dark:text-gray-300 uppercase tracking-wide">Next</span>
+                    <span className="font-medium text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 truncate">{nextResource.title}</span>
+                  </div>
+                  <ChevronRightIcon className="w-5 h-5 text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 flex-shrink-0 ml-auto sm:ml-0" />
+                </Link>
+              ) : null}
             </div>
-          </div>
+          )}
+          
+          {/* Footer */}
+          <Footer />
         </div>
-      </div>
+      </ContentLayout>
     );
   } catch {
     notFound();

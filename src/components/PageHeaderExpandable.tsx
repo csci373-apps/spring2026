@@ -67,7 +67,7 @@ export default function PageHeader({ title, excerpt, type, group, setMeetingStat
 
   
   return (
-    <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
+    <div className="border-b border-gray-200 dark:border-gray-800 pb-4">
       <div className="flex flex-row justify-between items-center">
         <h1 className="font-bold text-gray-900 dark:text-gray-100">
           {type && type === 'activity' ? (<><Link href="/" className={className}>Schedule</Link> &gt; </>) : ''}
@@ -76,8 +76,8 @@ export default function PageHeader({ title, excerpt, type, group, setMeetingStat
         </h1>
         <button
           onClick={toggleAll}
-          className="px-4 py-2 border-2 border-black dark:border-gray-700 text-gray-700 dark:text-gray-300 transition-colors text-sm md:text-medium"
-          style={isDark ? { borderColor: '#374151', color: '#d1d5db' } : undefined}
+          className="px-4 py-2 border-2 border-black dark:border-gray-800 text-gray-700 dark:text-gray-300 transition-colors text-sm md:text-medium"
+          style={isDark ? { borderColor: '#1f2937', color: '#d1d5db' } : undefined}
           >
           {allExpanded ? 'Collapse All' : 'Expand All'}
         </button>

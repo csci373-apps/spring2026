@@ -1,5 +1,7 @@
 import { getAllPostIds, getPostData } from '@/lib/markdown';
 import PageHeader from '@/components/PageHeader';
+import ContentLayout from '@/components/ContentLayout';
+import QuickLinksNav from '@/components/QuickLinksNav';
 import Link from 'next/link';
 
 function formatDate(dateString: string): string {
@@ -66,13 +68,14 @@ export default async function QuestionsPage() {
   });
 
   return (
-    <div className="space-y-6">
-      <PageHeader 
-        title="In-Class Activities" 
-        excerpt="In-class activities and discussion questions"
-      />
-      
-      <table style={{ tableLayout: 'fixed', width: '100%' }}>
+    <ContentLayout variant="list" leftNav={<QuickLinksNav />}>
+      <div className="space-y-6">
+        <PageHeader 
+          title="In-Class Activities" 
+          excerpt="In-class activities and discussion questions"
+        />
+        
+        <table style={{ tableLayout: 'fixed', width: '100%' }}>
         <thead>
           <tr>
             <th style={{ width: '100px' }}>Week</th>
@@ -101,6 +104,7 @@ export default async function QuestionsPage() {
         ))}
         </tbody>
       </table>
-    </div>
+      </div>
+    </ContentLayout>
   );
 } 

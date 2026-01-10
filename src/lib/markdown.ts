@@ -6,7 +6,6 @@ import html from 'remark-html';
 import gfm from 'remark-gfm';
 import highlight from 'remark-highlight.js';
 import smartypants from 'remark-smartypants';
-import { remarkImageGrid } from './remark-imagegrid';
 
 const postsDirectory = path.join(process.cwd(), 'content');
 const quizzesDirectory = path.join(process.cwd(), 'content', 'quizzes');
@@ -33,6 +32,7 @@ export interface PostData {
   notes?: string;
   toc?: boolean;
   heading_max_level?: number;
+  quicklink?: number;
 }
 
 export function getAllPostIds(subdirectory?: string) {
@@ -71,7 +71,6 @@ export async function getPostData(id: string, subdirectory?: string): Promise<Po
     .use(gfm)  // Add GitHub Flavored Markdown support
     // @ts-expect-error - remark-highlight.js has type conflicts but works correctly at runtime
     .use(highlight)  // Add syntax highlighting
-    .use(remarkImageGrid)  // Add custom ImageGrid tag support
     .use(smartypants, { dashes: 'oldschool' })  // Convert -- to en-dash (–) and --- to em-dash (—)
     .use(html, { sanitize: false })  // Allow HTML without sanitization
     .process(matterResult.content);

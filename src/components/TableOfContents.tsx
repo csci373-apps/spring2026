@@ -94,6 +94,7 @@ export default function TableOfContents({ maxLevel = 2 }: TableOfContentsProps) 
 
   useEffect(() => {
     let intersectionObserver: IntersectionObserver | null = null;
+    let lastItemsHash = '';
     
     const performScan = () => {
       // Build selector based on maxLevel
@@ -103,8 +104,14 @@ export default function TableOfContents({ maxLevel = 2 }: TableOfContentsProps) 
       }
       const selector = headingSelectors.join(', ');
       
-      // Find all heading elements
-      const allHeadings = document.querySelectorAll(selector);
+      // Try to find headings within the main content scroll container first
+      // Otherwise fall back to the resources layout container or document
+      const scrollContainer = document.getElementById('main-content-scroll');
+      const resourcesLayout = document.querySelector('[data-resources-layout]');
+      const searchRoot = scrollContainer || resourcesLayout || document;
+      
+      // Find all heading elements within the search root
+      const allHeadings = searchRoot.querySelectorAll(selector);
       const headings: Element[] = [];
       
       allHeadings.forEach((heading) => {
@@ -147,7 +154,12 @@ export default function TableOfContents({ maxLevel = 2 }: TableOfContentsProps) 
         }
       });
 
-      setTocItems(items);
+      // Only update if items actually changed (use hash to avoid expensive JSON.stringify)
+      const itemsHash = items.map(item => `${item.id}:${item.text}`).join('|');
+      if (itemsHash !== lastItemsHash) {
+        lastItemsHash = itemsHash;
+        setTocItems(items);
+      }
 
       // Clean up old observer
       if (intersectionObserver) {
@@ -155,6 +167,11 @@ export default function TableOfContents({ maxLevel = 2 }: TableOfContentsProps) 
       }
 
       // Set up new intersection observer
+      // Use scroll container as root if it exists and is scrollable, otherwise use viewport
+      const isContainerScrollable = scrollContainer && 
+        (getComputedStyle(scrollContainer).overflowY === 'auto' || 
+         getComputedStyle(scrollContainer).overflowY === 'scroll');
+      
       intersectionObserver = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
@@ -164,6 +181,7 @@ export default function TableOfContents({ maxLevel = 2 }: TableOfContentsProps) 
           });
         },
         {
+          root: isContainerScrollable ? scrollContainer : null,
           rootMargin: '-80px 0px -80% 0px',
           threshold: 0.1
         }
@@ -175,31 +193,15 @@ export default function TableOfContents({ maxLevel = 2 }: TableOfContentsProps) 
     // Initial scan
     performScan();
     
+    // Do an early scan after a short delay to catch quiz that loads quickly
+    setTimeout(performScan, 500);
+    
     // Re-scan periodically to catch dynamically added headings (like quiz)
+    // Use a shorter interval for faster detection
     const interval = setInterval(performScan, 1000);
-    
-    // Listen for custom event to trigger re-scan
-    const handleRescan = () => {
-      performScan();
-    };
-    window.addEventListener('toc-rescan', handleRescan);
-    
-    // Use MutationObserver to watch for new headings
-    const mutationObserver = new MutationObserver(() => {
-      performScan();
-    });
-    
-    // Observe the main content area
-    const mainContent = document.querySelector('[data-resources-layout]') || document.body;
-    mutationObserver.observe(mainContent, {
-      childList: true,
-      subtree: true
-    });
 
     return () => {
       clearInterval(interval);
-      window.removeEventListener('toc-rescan', handleRescan);
-      mutationObserver.disconnect();
       if (intersectionObserver) {
         // Clean up observer on unmount
         const allHeadings = document.querySelectorAll('h2, h3, h4, h5, h6');
@@ -213,11 +215,10 @@ export default function TableOfContents({ maxLevel = 2 }: TableOfContentsProps) 
   }
 
   return (
-    <nav className="sticky top-20 w-64 flex-shrink-0">
+    <nav className="">
       <div 
-        className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 border border-gray-200 dark:border-gray-800"
-        style={isDark ? { backgroundColor: '#111827' } : undefined}
-      >
+        className="pl-4">
+        <h2 className="!text-lg !font-normal mb-2">On This Page</h2>
         <ul className="!list-none !p-0 !m-0 space-y-0.5">
           {tocItems.map((item) => {
             // Calculate indentation based on level (h2 = 0, h3 = 4, h4 = 8, etc.)
@@ -235,15 +236,68 @@ export default function TableOfContents({ maxLevel = 2 }: TableOfContentsProps) 
                 href={`#${item.id}`}
                 onClick={(e) => {
                   e.preventDefault();
-                  const element = document.getElementById(item.id);
-                  if (element) {
-                    const headerOffset = 80; // Account for fixed header (64px) + some padding
-                    const elementPosition = element.getBoundingClientRect().top;
-                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-                    window.scrollTo({
-                      top: offsetPosition,
-                      behavior: 'smooth'
-                    });
+                  const isQuizSection = item.id.startsWith('quiz-');
+                  
+                  // Update URL hash
+                  window.history.pushState(null, '', `#${item.id}`);
+                  
+                  // Find the scrollable container (main content area)
+                  const scrollContainer = document.getElementById('main-content-scroll');
+                  // Check if container exists and is actually scrollable (has overflow-y-auto or scroll)
+                  const isContainerScrollable = scrollContainer && 
+                    (getComputedStyle(scrollContainer).overflowY === 'auto' || 
+                     getComputedStyle(scrollContainer).overflowY === 'scroll');
+                  
+                  if (isContainerScrollable) {
+                    if (isQuizSection) {
+                      // For quiz sections, just scroll to near the bottom
+                      const maxScroll = scrollContainer.scrollHeight - scrollContainer.clientHeight;
+                      const targetScroll = Math.max(0, maxScroll - 100); // Leave 100px buffer
+                      scrollContainer.scrollTo({
+                        top: targetScroll,
+                        behavior: 'smooth'
+                      });
+                    } else {
+                      // Normal scroll calculation for other headings
+                      const element = document.getElementById(item.id);
+                      if (element && scrollContainer.contains(element)) {
+                        // Use getBoundingClientRect for reliable position calculation
+                        const containerRect = scrollContainer.getBoundingClientRect();
+                        const elementRect = element.getBoundingClientRect();
+                        
+                        // Calculate element's position relative to container's scrollable content
+                        const elementTopInContent = (elementRect.top - containerRect.top) + scrollContainer.scrollTop;
+                        
+                        // Account for fixed header (64px) + some padding
+                        const headerOffset = 80;
+                        const targetScroll = Math.max(0, elementTopInContent - headerOffset);
+                        
+                        scrollContainer.scrollTo({
+                          top: targetScroll,
+                          behavior: 'smooth'
+                        });
+                      }
+                    }
+                  } else {
+                    // Fallback to window scroll if container not found or not scrollable
+                    const headerOffset = 80;
+                    const element = document.getElementById(item.id);
+                    if (element) {
+                      if (isQuizSection) {
+                        // For quiz sections, scroll to near bottom of page
+                        window.scrollTo({
+                          top: document.documentElement.scrollHeight - window.innerHeight - 100,
+                          behavior: 'smooth'
+                        });
+                      } else {
+                        const elementTop = element.getBoundingClientRect().top + window.pageYOffset;
+                        const offsetPosition = Math.max(0, elementTop - headerOffset);
+                        window.scrollTo({
+                          top: offsetPosition,
+                          behavior: 'smooth'
+                        });
+                      }
+                    }
                   }
                 }}
                 className={`block py-0.5 px-2 text-sm transition-colors whitespace-nowrap overflow-hidden !border-0 text-ellipsis rounded ${

@@ -1,7 +1,8 @@
 import { getPostData, getAllPostIds } from '@/lib/markdown';
 import PageHeader from '@/components/PageHeader';
 import MarkdownContent from '@/components/MarkdownContent';
-import TableOfContents from '@/components/TableOfContents';
+import ContentLayout from '@/components/ContentLayout';
+import QuickLinksNav from '@/components/QuickLinksNav';
 import StyleGuideStyles from '@/components/StyleGuideStyles';
 
 interface AssignmentPageProps {
@@ -26,29 +27,21 @@ export default async function AssignmentPage({ params }: AssignmentPageProps) {
   const isStyleGuideDemo = slug === 'style-guide-demo';
   
   return (
-    <div className="space-y-6">
+    <ContentLayout
+      variant="detail-with-toc"
+      leftNav={<QuickLinksNav />}
+      showToc={postData.toc !== false}
+      tocMaxLevel={heading_max_level || 2}
+    >
       <PageHeader 
         title={postData.title} 
         excerpt={postData.excerpt}
         type={postData.type}
       />
       { postData.due_date && <p className="mt-2 text-lg font-bold">Due {formatDate(postData.due_date)} at 11:59pm</p> }
-      
-      <div className="flex gap-8">
-        {/* Main content */}
-        <div className="flex-1 min-w-0">
-          {isStyleGuideDemo && <StyleGuideStyles />}
-          <MarkdownContent content={postData.content} />
-        </div>
-        
-        {/* Table of Contents */}
-        {postData.toc !== false && (
-          <div className="hidden lg:block">
-            <TableOfContents maxLevel={heading_max_level || 2} />
-          </div>
-        )}
-      </div>
-    </div>
+      {isStyleGuideDemo && <StyleGuideStyles />}
+      <MarkdownContent content={postData.content} />
+    </ContentLayout>
   );
 }
 

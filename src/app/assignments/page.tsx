@@ -1,6 +1,8 @@
 import { getAllPostIds, getPostData } from '@/lib/markdown';
 import { formatDate, getWeek } from '@/lib/utils';
 import PageHeader from '@/components/PageHeader';
+import ContentLayout from '@/components/ContentLayout';
+import QuickLinksNav from '@/components/QuickLinksNav';
 import Link from 'next/link';
 import DaysLeft from '@/components/DaysLeft';
 import externalAssignments from '@/data/external-assignments.json';
@@ -109,13 +111,14 @@ export default async function AssignmentsPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <PageHeader 
-        title="Assignments" 
-        excerpt="All lab, homework, and project assignments are due at 11:59pm ET on the due date. Assignments should be submitted to the course Moodle unless otherwise specified."
-      />
-      
-      <table className="table-fixed w-full">
+    <ContentLayout variant="list" leftNav={<QuickLinksNav />}>
+      <div className="space-y-6">
+        <PageHeader 
+          title="Assignments" 
+          excerpt="All lab, homework, and project assignments are due at 11:59pm ET on the due date. Assignments should be submitted to the course Moodle unless otherwise specified."
+        />
+        
+        <table className="table-fixed w-full">
         <thead>
           <tr>
             <th className="md:w-[100px]">Week</th>
@@ -146,6 +149,7 @@ export default async function AssignmentsPage() {
         })}
         </tbody>
       </table>
-    </div>
+      </div>
+    </ContentLayout>
   );
 } 

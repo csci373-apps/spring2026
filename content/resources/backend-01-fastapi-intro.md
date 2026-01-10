@@ -3,6 +3,7 @@ title: "Intro to FastAPI"
 group: "Backend"
 group_order: 3
 order: 1
+quicklink: 0
 ---
 
 ## Overview

@@ -1,0 +1,222 @@
+{
+  "questions": [
+    {
+      "id": "q1",
+      "question": "What is the central philosophy of this course?",
+      "options": [
+        "Traditional lecture-driven learning with isolated technical mastery",
+        "Studio-based software development experience building real software for a real client",
+        "Individual project work with no collaboration",
+        "Focus on theoretical concepts without practical application"
+      ],
+      "correct": 1,
+      "explanation": "This course is designed as a studio-based software development experience where students work as a development team building real software for a real client, operating under real technical, organizational, and time constraints."
+    },
+    {
+      "id": "q2",
+      "question": "What are the two main phases of the course?",
+      "options": [
+        "Planning and Implementation",
+        "Design and Testing",
+        "Software Design Foundations (Weeks 1-8) and Building New Features (Weeks 9-15)",
+        "Individual Work and Team Work"
+      ],
+      "correct": 2,
+      "explanation": "The course is organized into Phase 1: Software Design Foundations (Weeks 1-8) where teams work on similar features using a shared starter system, and Phase 2: Building New Features (Weeks 9-15) where teams work on distinct vertical feature slices in a shared codebase."
+    },
+    {
+      "id": "q3",
+      "question": "What is the primary goal of Phase 1 (Software Design Foundations)?",
+      "options": [
+        "To build as many features as possible",
+        "To focus on process, coordination, and reasoning rather than feature differentiation",
+        "To work independently without collaboration",
+        "To learn only backend development"
+      ],
+      "correct": 1,
+      "explanation": "During Phase 1, all teams work on similar features and problems. This deliberate constraint allows students to focus on process, coordination, and reasoning, rather than feature differentiation."
+    },
+    {
+      "id": "q4",
+      "question": "What is the client context for this course?",
+      "options": [
+        "A social media platform",
+        "An e-commerce website",
+        "A cross-platform application supporting parents of young children with motor delays and clinicians",
+        "A gaming application"
+      ],
+      "correct": 2,
+      "explanation": "Students will collaborate with a real-world client focused on supporting parents of young children with motor delays. The project involves building a cross-platform application (web and mobile) using PostgreSQL, FastAPI, React, and React Native."
+    },
+    {
+      "id": "q5",
+      "question": "What is emphasized in Phase 2 (Building New Features)?",
+      "options": [
+        "Working on similar features as other teams",
+        "Individual work without collaboration",
+        "Collaboration at scale, integration and coordination, managing tradeoffs",
+        "Avoiding client interaction"
+      ],
+      "correct": 2,
+      "explanation": "Phase 2 emphasizes collaboration at scale, integration and coordination, managing tradeoffs between scope, quality, and time, and delivering a coherent product to a real stakeholder."
+    },
+    {
+      "id": "q6",
+      "question": "Why is regular attendance essential in this course?",
+      "options": [
+        "Because all lectures are recorded and attendance is optional",
+        "Because learning depends heavily on in-person participation, critique, and collaboration",
+        "Because there are no assignments outside of class",
+        "Because the final exam is worth 100% of the grade"
+      ],
+      "correct": 1,
+      "explanation": "Because this is a studio course, learning depends heavily on in-person participation, critique, and collaboration. Many skills required to deliver value to a client can only be practiced in a shared, synchronous setting."
+    },
+    {
+        "id": "q7",
+        "question": "What happens after three (3) unexcused absences?",
+        "options": [
+          "The student is automatically withdrawn from the course",
+          "The student receives a formal warning that they are at risk of failing the course",
+          "No action is taken",
+          "The student's grade is automatically reduced by one letter"
+        ],
+        "correct": 1,
+        "explanation": "After three (3) unexcused absences, the student will receive a formal warning that they are at risk of failing the course due to insufficient participation in required studio work."
+      },
+    {
+      "id": "q8",
+      "question": "What happens after four (4) or more unexcused absences?",
+      "options": [
+        "The student automatically passes the course",
+        "No action is taken",
+        "One or more actions may occur: reduction/cap on participation credit, removal from team-based work, or recommendation to withdraw",
+        "The student receives extra credit"
+      ],
+      "correct": 2,
+      "explanation": "After four (4) or more unexcused absences, one or more of the following actions may occur: reduction or cap on participation credit, removal from team-based work and reassignment to an individual alternative, or recommendation to withdraw from the course."
+    },
+    {
+      "id": "q9",
+      "question": "What is assessed in Code Reviews?",
+      "options": [
+        "The correctness of every line of code",
+        "Substantive review comments that address behavior, design, testing, or tradeoffs",
+        "Only spelling and grammar",
+        "The number of comments made"
+      ],
+      "correct": 1,
+      "explanation": "Code Reviews are assessed for substance and engagement (e.g., questions about behavior, design tradeoffs, or testing), not for 'correctness.'"
+    },
+
+    {
+      "id": "q10",
+      "question": "What percentage of the grade is allocated to Technical Contributions (Pull Requests)?",
+      "options": [
+        "25%",
+        "30%",
+        "35%",
+        "40%"
+      ],
+      "correct": 2,
+      "explanation": "Technical Contributions (Pull Requests) account for 35% of the grade, assessing the ability to implement coherent, well-scoped changes within an existing codebase."
+    },
+    {
+      "id": "q11",
+      "question": "What percentage of the grade is allocated to Code Reviews?",
+      "options": [
+        "10%",
+        "15%",
+        "20%",
+        "25%"
+      ],
+      "correct": 1,
+      "explanation": "Code Reviews account for 15% of the grade, assessing engagement with peer work through substantive review comments that address behavior, design, testing, or tradeoffs."
+    },
+    {
+      "id": "q12",
+      "question": "What percentage of the grade is allocated to Testing Contributions?",
+      "options": [
+        "15%",
+        "20%",
+        "25%",
+        "30%"
+      ],
+      "correct": 1,
+      "explanation": "Testing Contributions account for 20% of the grade, assessing the use of tests to specify behavior, reduce risk, and support safe iteration across backend and frontend components."
+    },
+    {
+      "id": "q13",
+      "question": "What percentage of the grade is allocated to Studio Participation?",
+      "options": [
+        "10%",
+        "15%",
+        "20%",
+        "25%"
+      ],
+      "correct": 1,
+      "explanation": "Studio Participation accounts for 15% of the grade, assessing in-class engagement, including participation in studio activities, critique sessions, and collaborative work."
+    },
+    {
+      "id": "q14",
+      "question": "How are students evaluated in this course?",
+      "options": [
+        "Solely based on team output",
+        "Solely based on individual work with no team collaboration",
+        "As individual contributors working within team-based projects",
+        "Based only on final exam performance"
+      ],
+      "correct": 2,
+      "explanation": "Students are evaluated as individual contributors working within team-based projects. You will collaborate closely with others, but your grade is not determined solely by your team's output. Assessment is based on observable individual contributions made in a team context."
+    },
+    {
+      "id": "q15",
+      "question": "Which of the following is assessed at the individual level?",
+      "options": [
+        "Integrated system behavior",
+        "Sprint demos and milestones",
+        "Pull Requests (PRs) authored by you",
+        "Client-facing deliverables"
+      ],
+      "correct": 2,
+      "explanation": "Pull Requests (PRs) are assessed at the individual level. Your authored PRs will be evaluated for clarity of intent, scope, correctness, use of tests, and adherence to project conventions."
+    },
+    {
+      "id": "q16",
+      "question": "What is one of the learning objectives of this course?",
+      "options": [
+        "To memorize all programming languages",
+        "To contribute effectively to an existing software system",
+        "To work only on new projects from scratch",
+        "To avoid using tests"
+      ],
+      "correct": 1,
+      "explanation": "One learning objective is to contribute effectively to an existing software system, including understanding and working within established architectural patterns, and making scoped, testable changes using professional workflows."
+    },
+    {
+      "id": "q17",
+      "question": "What technology stack is used in this course project?",
+      "options": [
+        "MySQL, Django, Angular, Flutter",
+        "PostgreSQL, FastAPI, React, React Native",
+        "MongoDB, Express, Vue, Ionic",
+        "SQLite, Flask, jQuery, Swift"
+      ],
+      "correct": 1,
+      "explanation": "The project focuses on building a cross-platform application (web and mobile) using PostgreSQL, FastAPI, React, and React Native."
+    },
+    {
+      "id": "q18",
+      "question": "What is the relationship between strong team outcomes and individual grades?",
+      "options": [
+        "Strong team outcomes automatically guarantee high individual grades",
+        "Strong individual effort overrides lack of participation in required studio work",
+        "Strong team outcomes do not automatically guarantee high individual grades, and strong individual effort does not override lack of participation",
+        "Individual grades are completely independent of team outcomes"
+      ],
+      "correct": 2,
+      "explanation": "Strong team outcomes do not automatically guarantee high individual grades, and strong individual effort does not override a lack of participation in required studio work. Grades reflect how you contribute, not just what the team produces."
+    }
+  ]
+}
+
