@@ -1,15 +1,11 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
-  darkMode: 'class', // Enable class-based dark mode
+  // Note: In Tailwind v4:
+  // - darkMode config removed - use @custom-variant in CSS instead
+  // - safelist removed - classes are auto-detected from content
   content: [
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/globals.css",
   ],
   theme: {
     extend: {

@@ -6,8 +6,18 @@ import Footer from './Footer';
 export default function ConditionalFooter() {
   const pathname = usePathname();
   
-  // Hide footer on resources detail pages (it's included in the page content)
-  if (pathname.startsWith('/resources/') && pathname !== '/resources') {
+  // Hide footer on pages that use ContentLayout (footer is included in ContentLayout)
+  // These pages use the 'content-layout-page' class
+  const usesContentLayout = pathname === '/' || 
+                            pathname === '/syllabus' ||
+                            pathname === '/assignments' ||
+                            pathname.startsWith('/assignments/') ||
+                            pathname === '/activities' ||
+                            pathname.startsWith('/activities/') ||
+                            pathname === '/resources' ||
+                            pathname.startsWith('/resources/');
+  
+  if (usesContentLayout) {
     return null;
   }
   

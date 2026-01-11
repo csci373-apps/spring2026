@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import clsx from 'clsx';
 import { formatDate } from '@/lib/utils';
 
 interface ResourceData {
@@ -48,10 +49,10 @@ function getDaysUntilDue(dueDate: string): number {
 
 export default function QuickLinksNavClient({ resources, assignments, readings }: QuickLinksNavClientProps) {
   return (
-    <div className="quick-links-nav h-full overflow-y-auto p-4">
+    <div className="quick-links-nav h-full overflow-y-auto p-4 hidden lg:block">
       {/* Quick Links Section */}
       {resources.length > 0 && (
-        <div className="mb-6 rounded-2xl bg-gray-100 dark:bg-black p-4">
+        <div className="mb-6 rounded-2xl bg-gray-100 dark:bg-gray-800 p-4">
           <h2 className="!text-lg !font-normal text-gray-800 dark:text-gray-100 !m-0 !mb-4">Quick Links</h2>
           <div className="space-y-2">
             {resources.map((resource) => {
@@ -72,7 +73,7 @@ export default function QuickLinksNavClient({ resources, assignments, readings }
 
       {/* Upcoming Due Dates Section */}
       {assignments.length > 0 && (
-        <div className="mb-8 rounded-2xl bg-gray-100 dark:bg-black p-4">
+        <div className="mb-8 rounded-2xl bg-blue-50 dark:bg-blue-950 p-4">
           <h2 className="!text-lg !font-normal text-gray-800 dark:text-gray-100 !m-0 !mb-4">Upcoming Due Dates</h2>
           <div className="space-y-1">
             {assignments.map((assignment, index) => {
@@ -86,7 +87,10 @@ export default function QuickLinksNavClient({ resources, assignments, readings }
                 : assignment.title;
 
               return (
-                <div key={assignment.id} className={`flex items-start justify-between gap-3 ${index < assignments.length - 1 ? 'pb-2 border-b border-gray-200 dark:border-gray-800' : ''}`}>
+                <div key={assignment.id} className={clsx(
+                  'flex items-start justify-between gap-3',
+                  index < assignments.length - 1 && 'pb-2 border-b border-gray-200 dark:border-gray-800'
+                )}>
                   <div className="flex-1 min-w-0">
                     {assignment.external_url ? (
                       <a
@@ -113,15 +117,13 @@ export default function QuickLinksNavClient({ resources, assignments, readings }
                     )}
                   </div>
                   {daysUntil !== null && (
-                    <span className={`text-xs font-semibold whitespace-nowrap ${
-                      isToday 
-                        ? 'text-red-600 dark:text-red-400' 
-                        : isTomorrow 
-                        ? 'text-orange-600 dark:text-orange-400'
-                        : isUrgent
-                        ? 'text-yellow-600 dark:text-yellow-400'
-                        : 'text-gray-500 dark:text-gray-500'
-                    }`}>
+                    <span className={clsx(
+                      'text-xs font-semibold whitespace-nowrap',
+                      isToday && 'text-red-600 dark:text-red-400',
+                      isTomorrow && 'text-orange-600 dark:text-orange-400',
+                      isUrgent && !isToday && !isTomorrow && 'text-yellow-600 dark:text-yellow-400',
+                      !isToday && !isTomorrow && !isUrgent && 'text-gray-500 dark:text-gray-500'
+                    )}>
                       {isToday ? 'Today' : isTomorrow ? 'Tomorrow' : `${daysUntil}d`}
                     </span>
                   )}
@@ -154,7 +156,7 @@ export default function QuickLinksNavClient({ resources, assignments, readings }
         };
 
         return (
-          <div className="mb-6 rounded-2xl bg-gray-100 dark:bg-black p-4">
+          <div className="mb-6 rounded-2xl bg-amber-50 dark:bg-gray-700 p-4">
             <h2 className="!text-lg !font-normal text-gray-800 dark:text-gray-100 !m-0 !mb-4">Upcoming Readings</h2>
             <div className="space-y-4">
               {Object.entries(readingsByDate).map(([date, dateReadings]) => {
@@ -170,15 +172,13 @@ export default function QuickLinksNavClient({ resources, assignments, readings }
                         {formatDateHeader(date)}
                       </h3>
                       {daysUntil !== null && (
-                        <span className={`text-xs font-semibold whitespace-nowrap ${
-                          isToday 
-                            ? 'text-red-600 dark:text-red-400' 
-                            : isTomorrow 
-                            ? 'text-orange-600 dark:text-orange-400'
-                            : isUrgent
-                            ? 'text-yellow-600 dark:text-yellow-400'
-                            : 'text-gray-500 dark:text-gray-500'
-                        }`}>
+                        <span className={clsx(
+                          'text-xs font-semibold whitespace-nowrap',
+                          isToday && 'text-red-600 dark:text-red-400',
+                          isTomorrow && 'text-orange-600 dark:text-orange-400',
+                          isUrgent && !isToday && !isTomorrow && 'text-yellow-600 dark:text-yellow-400',
+                          !isToday && !isTomorrow && !isUrgent && 'text-gray-500 dark:text-gray-500'
+                        )}>
                           {isToday ? 'Today' : isTomorrow ? 'Tomorrow' : `${daysUntil}d`}
                         </span>
                       )}
@@ -190,7 +190,9 @@ export default function QuickLinksNavClient({ resources, assignments, readings }
                           : reading.citation;
                         
                         return (
-                          <div key={`${reading.date}-${index}`} className={index < dateReadings.length - 1 ? 'pb-1  dark:border-gray-800' : ''}>
+                          <div key={`${reading.date}-${index}`} className={clsx(
+                            index < dateReadings.length - 1 && 'pb-1 border-b border-gray-200 dark:border-gray-800'
+                          )}>
                             {reading.url ? (
                               <a
                                 href={reading.url}

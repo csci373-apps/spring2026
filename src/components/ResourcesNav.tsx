@@ -31,10 +31,10 @@ export default function ResourcesNav({ resourcePages }: ResourcesNavProps) {
   
   const renderNavigation = () => (
     <div className="px-3">
-      {Object.entries(groupedPages).map(([groupName, pages]) => (
+      {Object.entries(groupedPages).map(([groupName, pages], idx) => (
         <div key={groupName} className="mb-6">
           <h4 className="!text-lg !font-normal !mb-2">
-            {groupName}
+            {idx + 1}. {groupName}
           </h4>
           <div className="space-y-3">
             {pages.map((page) => {
@@ -47,7 +47,7 @@ export default function ResourcesNav({ resourcePages }: ResourcesNavProps) {
                     onClick={() => setNavOpen(false)}
                     className={`text-sm font-normal transition-colors !border-0 leading-compact block ${
                       isActive
-                        ? '!font-extrabold text-black dark:text-white hover:text-gray-900 dark:hover:text-gray-200'
+                        ? '!font-extrabold text-blue-400 dark:text-white hover:text-blue-600 dark:hover:text-blue-200'
                         : 'text-gray-500 dark:!text-gray-100 hover:text-gray-900 dark:hover:text-gray-100'
                     }`}
                   >
@@ -83,7 +83,8 @@ export default function ResourcesNav({ resourcePages }: ResourcesNavProps) {
       </div>
       
       {/* Desktop: Sidebar navigation */}
-      <nav className="resources-nav hidden lg:block w-full px-4 py-6">
+      <h2 className="hidden md:flex !text-xl !font-normal !m-0 px-8 py-6 bg-gray-100 dark:bg-gray-800">Resource Pages</h2>
+      <nav className="resources-nav hidden lg:block w-full px-4 py-2">
         {renderNavigation()}
       </nav>
     </>

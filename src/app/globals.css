@@ -1,6 +1,9 @@
 /* stylelint-disable at-rule-no-unknown */
 @import "tailwindcss";
 
+/* Tailwind v4: Define custom dark mode variant for class-based dark mode */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -303,6 +306,10 @@ blockquote {
   a:hover {
     @apply opacity-80;
   }
+
+  .dark .prose a {
+    color: #60a5fa; /* blue-400 */
+  }
 }
 
 /* Prose links styling for all pages (syllabus, assignments, etc.) */
@@ -312,30 +319,30 @@ blockquote {
 
 .dark .prose a {
   color: #60a5fa !important; /* blue-400 */
+}
 
-  /* Better table styling if used */
-  table {
-    @apply rounded-lg overflow-hidden;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  }
+/* Better table styling if used */
+.prose table {
+  @apply rounded-lg overflow-hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
 
-  th {
-    background: var(--card);
-  }
+.prose th {
+  background: var(--card);
+}
 
-  /* Numbered steps styling */
-  ol li {
-    @apply pl-2;
-    counter-increment: list-counter;
-  }
+/* Numbered steps styling */
+.prose ol li {
+  @apply pl-2;
+  counter-increment: list-counter;
+}
 
-  /* Better spacing for nested lists */
-  ul ul,
-  ol ol,
-  ul ol,
-  ol ul {
-    @apply mt-2 mb-2;
-  }
+/* Better spacing for nested lists */
+.prose ul ul,
+.prose ol ol,
+.prose ul ol,
+.prose ol ul {
+  @apply mt-2 mb-2;
 }
 
 /* stylelint-disable-next-line */
@@ -356,122 +363,6 @@ body {
   overflow-y: auto;
 }
 
-/* Ensure dark mode backgrounds are applied */
-.dark body {
-  background: var(--background);
-}
-
-/* Explicit dark mode overrides for navigation and TOC */
-.dark nav[class*="bg-white"] {
-  background-color: #000000 !important;
-}
-
-.dark nav[class*="bg-white/80"] {
-  background-color: rgba(0, 0, 0, 0.8) !important;
-}
-
-.dark div[class*="bg-gray-50"] {
-  background-color: #111827 !important;
-}
-
-/* Force active nav link color in dark mode - must override !text-gray-600 */
-.dark nav a.font-bold,
-.dark nav a[class*="!text-gray-600"] {
-  color: #d1d5db !important;
-}
-
-/* Force ResourcesNav link colors in dark mode - override text-gray-500 */
-.dark .resources-nav a[class*="text-gray-500"] {
-  color: #f3f4f6 !important;
-}
-
-/* Force ResourcesNav active link color in dark mode - override text-black */
-.dark .resources-nav-link a.text-black {
-  color: #ffffff !important;
-}
-
-/* Force TOC link colors in dark mode - override text-gray-500 */
-.dark .toc-link.text-gray-500 {
-  color: #f3f4f6 !important;
-}
-
-/* Force TOC active link color in dark mode - override text-blue-600 */
-.dark .toc-link.text-blue-600 {
-  color: #dbeafe !important; /* blue-100 */
-}
-
-/* Force QuickLinksNav h2 text color in dark mode - override var(--foreground) from h2 rule */
-.dark .quick-links-nav h2 {
-  color: #f3f4f6 !important; /* gray-100 */
-}
-
-/* Force schedule borders and chevrons in dark mode - make borders darker */
-.dark .border-black {
-  border-color: #1f2937 !important;
-}
-
-.dark button[class*="text-black"] {
-  color: #e5e7eb !important;
-}
-
-/* Force Next/Previous button backgrounds in dark mode */
-.dark a[class*="bg-white"][class*="border-gray-300"] {
-  background-color: #111827 !important;
-  border-color: #1f2937 !important;
-}
-
-/* Force Next/Previous button text colors in dark mode */
-.dark a[class*="bg-white"][class*="border-gray-300"] span.text-gray-900 {
-  color: #f3f4f6 !important;
-}
-
-.dark a[class*="bg-white"][class*="border-gray-300"] span.text-gray-500 {
-  color: #d1d5db !important;
-}
-
-.dark a[class*="bg-white"][class*="border-gray-300"] svg {
-  color: #d1d5db !important;
-}
-
-/* Quiz dark mode overrides */
-.dark div[class*="bg-white"][class*="border-gray-200"] {
-  background-color: #1f2937 !important;
-  border-color: #1f2937 !important;
-}
-
-.dark label[class*="bg-white"] {
-  background-color: #1f2937 !important;
-}
-
-.dark label[class*="bg-green-50"] {
-  background-color: rgba(20, 83, 45, 0.3) !important;
-  border-color: #10b981 !important;
-}
-
-.dark label[class*="bg-red-50"] {
-  background-color: rgba(127, 29, 29, 0.3) !important;
-  border-color: #ef4444 !important;
-}
-
-.dark label[class*="bg-blue-50"] {
-  background-color: rgba(30, 58, 138, 0.3) !important;
-  border-color: #3b82f6 !important;
-}
-
-.dark div[class*="bg-blue-50"] {
-  background-color: rgba(30, 58, 138, 0.3) !important;
-  border-color: #3b82f6 !important;
-}
-
-.dark button[class*="bg-gray-100"] {
-  background-color: #374151 !important;
-  border-color: #4b5563 !important;
-  color: #e5e7eb !important;
-}
-
-.dark button[class*="bg-gray-100"]:hover {
-  background-color: #4b5563 !important;
-}
 
 /* Custom global styles */
 html {

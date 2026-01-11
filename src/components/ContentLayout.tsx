@@ -2,6 +2,7 @@
 
 import { ReactNode } from 'react';
 import TableOfContents from './TableOfContents';
+import Footer from './Footer';
 
 interface ResourcePage {
   slug: string;
@@ -18,6 +19,7 @@ interface ContentLayoutProps {
   showToc?: boolean;
   tocMaxLevel?: number;
   resourcePages?: ResourcePage[]; // For resources detail pages
+  showFooter?: boolean; // Whether to show footer inside content area
 }
 
 /**
@@ -36,6 +38,7 @@ export default function ContentLayout({
   leftNav,
   showToc = true,
   tocMaxLevel = 2,
+  showFooter = true,
 }: ContentLayoutProps) {
   const isResourcesDetail = variant === 'resources-detail';
   const isDetailWithToc = variant === 'detail-with-toc';
@@ -56,6 +59,7 @@ export default function ContentLayout({
           <div className="max-w-4xl mx-auto px-4">
             <div className="space-y-6 py-6">
               {children}
+              {showFooter && <Footer />}
             </div>
           </div>
         </div>
@@ -81,8 +85,9 @@ export default function ContentLayout({
           className={`flex-1 min-w-0 overflow-y-auto ${hasToc ? 'mr-72' : ''}`}
         >
           <div className="max-w-4xl px-4 lg:px-8">
-            <div className="space-y-6">
+            <div className="space-y-6 py-6">
               {children}
+              {showFooter && <Footer />}
             </div>
           </div>
         </div>

@@ -69,11 +69,11 @@ export default async function ResourcesPage() {
           excerpt="Technical guides and documentation for the course technologies"
         />
         
-        {chapters.map((chapter) => (
+        {chapters.map((chapter, idx) => (
         <div key={chapter.name} className="mb-8">
           {/* Chapter header */}
           <h2 className="text-2xl font-bold text-gray-900 m-0 mb-4">
-            {chapter.name}
+            {idx + 1}. {chapter.name}
           </h2>
           
           {/* Resource links */}
@@ -82,7 +82,7 @@ export default async function ResourcesPage() {
               <li key={item.id} className="pl-0">
                 <Link 
                   href={`/resources/${item.id}`}
-                  className="text-blue-600 dark:text-blue-400 hover:text-blue-600 dark:hover:text-blue-300 underline"
+                  className="text-blue-600 dark:text-blue-200 hover:text-blue-600 dark:hover:text-blue-300 underline"
                 >
                   <span className="flex-1">{item.title}</span>
                 </Link>

@@ -3,7 +3,6 @@ import PageHeader from '@/components/PageHeader';
 import MarkdownContent from '@/components/MarkdownContent';
 import ResourcesNav from '@/components/ResourcesNav';
 import ResourceQuiz from '@/components/ResourceQuiz';
-import Footer from '@/components/Footer';
 import ContentLayout from '@/components/ContentLayout';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -111,8 +110,6 @@ export default async function ResourcePage({ params }: PageProps) {
             </div>
           )}
           
-          {/* Footer */}
-          <Footer />
         </div>
       </ContentLayout>
     );
