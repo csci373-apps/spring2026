@@ -5,7 +5,7 @@ import { getTopics } from '@/lib/topics';
 
 export default async function SchedulePage() {
   const topics = await getTopics();
-  
+
   return (
     <ContentLayout variant="list" leftNav={<QuickLinksNav />}>
       <ScheduleContent topics={topics} />

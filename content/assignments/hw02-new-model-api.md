@@ -3,7 +3,7 @@ title: "New Model + API"
 date: "2026-01-29"
 type: "assignment"
 num: "2"
-draft: 0
+draft: 1
 due_date: "2026-02-03"
 ---
 

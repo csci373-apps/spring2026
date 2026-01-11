@@ -77,38 +77,12 @@ export default async function QuickLinksNav() {
   }));
 
   // Combine markdown assignments with external assignments
-  let assignments: AssignmentData[] = [...markdownAssignments, ...externalAssignments];
-  
-  // Filter out excluded, drafts, and past assignments
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  
-  assignments = assignments.filter(assignment => {
-    if (assignment.excluded) return false;
-    if (assignment.draft === 1) return false;
-    if (!assignment.due_date) return false;
-    
-    const dueDate = new Date(assignment.due_date + 'T23:59:59');
-    dueDate.setHours(0, 0, 0, 0);
-    return dueDate >= today;
-  });
+  // Don't filter here - pass all to client for dynamic filtering
+  const allAssignments: AssignmentData[] = [...markdownAssignments, ...externalAssignments];
 
-  // Sort by due date
-  assignments.sort((a, b) => {
-    if (!a.due_date || !b.due_date) return 0;
-    return new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
-  });
-
-  // Take only the next 5 upcoming assignments
-  const upcomingAssignments = assignments.slice(0, 5);
-
-  // Get readings from topics for the next 7-10 days
+  // Get readings from topics - extract all readings with their dates
   const topics = await getTopics();
-  const futureDate = new Date(today);
-  futureDate.setDate(today.getDate() + 10); // Next 10 days
-
-  const upcomingReadings: ReadingData[] = [];
-
+  
   // Date parsing function (same as in topics.tsx)
   function parseMeetingDate(meetingDate: string): string | null {
     const year = 2026;
@@ -181,6 +155,9 @@ export default async function QuickLinksNav() {
     return undefined;
   }
 
+  // Extract all readings with their dates (no date filtering - client will do that)
+  const allReadings: ReadingData[] = [];
+  
   topics.forEach(topic => {
     topic.meetings.forEach(meeting => {
       if (!meeting.readings || meeting.readings.length === 0) return;
@@ -188,33 +165,20 @@ export default async function QuickLinksNav() {
       const meetingDateStr = parseMeetingDate(meeting.date);
       if (!meetingDateStr) return;
       
-      const meetingDate = new Date(meetingDateStr);
-      meetingDate.setHours(0, 0, 0, 0);
-      
-      // Check if meeting date is within the next 10 days
-      if (meetingDate >= today && meetingDate <= futureDate) {
-        meeting.readings.forEach((reading: { citation: string | React.ReactElement; url?: string }) => {
-          const citationText = extractText(reading.citation);
-          const url = extractUrl(reading.citation) || reading.url;
-          
-          upcomingReadings.push({
-            date: meetingDateStr,
-            citation: citationText,
-            url: url
-          });
+      meeting.readings.forEach((reading: { citation: string | React.ReactElement; url?: string }) => {
+        const citationText = extractText(reading.citation);
+        const url = extractUrl(reading.citation) || reading.url;
+        
+        allReadings.push({
+          date: meetingDateStr,
+          citation: citationText,
+          url: url
         });
-      }
+      });
     });
   });
 
-  // Sort by date
-  upcomingReadings.sort((a, b) => {
-    return new Date(a.date).getTime() - new Date(b.date).getTime();
-  });
-
-  // Take only the next 7-10 readings (or all if less than 10)
-  const limitedReadings = upcomingReadings.slice(0, 10);
-
-  return <QuickLinksNavClient resources={quickLinkResources} assignments={upcomingAssignments} readings={limitedReadings} />;
+  // Pass all data to client - filtering will happen client-side
+  return <QuickLinksNavClient resources={quickLinkResources} assignments={allAssignments} readings={allReadings} />;
 }
 

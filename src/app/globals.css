@@ -163,6 +163,20 @@ blockquote {
   }
 }
 
+/* Schedule page specific styles */
+.schedule-page a {
+  color: #2563eb !important; /* blue-600 */
+  text-decoration: underline;
+}
+
+.dark .schedule-page a {
+  color: #60a5fa !important; /* blue-400 */
+}
+
+.schedule-page a:hover {
+  opacity: 0.8;
+}
+
 /* Activity page specific styles */
 .assignment-page.activity-content,
 .activity-content {
@@ -319,30 +333,30 @@ blockquote {
 
 .dark .prose a {
   color: #60a5fa !important; /* blue-400 */
-}
+  }
 
-/* Better table styling if used */
+  /* Better table styling if used */
 .prose table {
-  @apply rounded-lg overflow-hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
+    @apply rounded-lg overflow-hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
 
 .prose th {
-  background: var(--card);
-}
+    background: var(--card);
+  }
 
-/* Numbered steps styling */
+  /* Numbered steps styling */
 .prose ol li {
-  @apply pl-2;
-  counter-increment: list-counter;
-}
+    @apply pl-2;
+    counter-increment: list-counter;
+  }
 
-/* Better spacing for nested lists */
+  /* Better spacing for nested lists */
 .prose ul ul,
 .prose ol ol,
 .prose ul ol,
 .prose ol ul {
-  @apply mt-2 mb-2;
+    @apply mt-2 mb-2;
 }
 
 /* stylelint-disable-next-line */

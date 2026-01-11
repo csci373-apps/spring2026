@@ -162,26 +162,26 @@ export default function TableOfContents({ maxLevel = 2 }: TableOfContentsProps) 
                   e.preventDefault();
                   const isQuizSection = item.id.startsWith('quiz-');
                   
-                  // Update URL hash
-                  window.history.pushState(null, '', `#${item.id}`);
-                  
-                  // Find the scrollable container (main content area)
-                  const scrollContainer = document.getElementById('main-content-scroll');
-                  // Check if container exists and is actually scrollable (has overflow-y-auto or scroll)
-                  const isContainerScrollable = scrollContainer && 
-                    (getComputedStyle(scrollContainer).overflowY === 'auto' || 
-                     getComputedStyle(scrollContainer).overflowY === 'scroll');
-                  
-                  if (isContainerScrollable) {
+                    // Update URL hash
+                    window.history.pushState(null, '', `#${item.id}`);
+                    
+                    // Find the scrollable container (main content area)
+                    const scrollContainer = document.getElementById('main-content-scroll');
+                    // Check if container exists and is actually scrollable (has overflow-y-auto or scroll)
+                    const isContainerScrollable = scrollContainer && 
+                      (getComputedStyle(scrollContainer).overflowY === 'auto' || 
+                       getComputedStyle(scrollContainer).overflowY === 'scroll');
+                    
+                    if (isContainerScrollable) {
                     if (isQuizSection) {
                       // For quiz sections, just scroll to near the bottom
-                      const maxScroll = scrollContainer.scrollHeight - scrollContainer.clientHeight;
-                      const targetScroll = Math.max(0, maxScroll - 100); // Leave 100px buffer
-                      scrollContainer.scrollTo({
-                        top: targetScroll,
-                        behavior: 'smooth'
-                      });
-                    } else {
+                        const maxScroll = scrollContainer.scrollHeight - scrollContainer.clientHeight;
+                        const targetScroll = Math.max(0, maxScroll - 100); // Leave 100px buffer
+                        scrollContainer.scrollTo({
+                          top: targetScroll,
+                          behavior: 'smooth'
+                        });
+                      } else {
                       // Normal scroll calculation for other headings
                       const element = document.getElementById(item.id);
                       if (element && scrollContainer.contains(element)) {
@@ -191,20 +191,20 @@ export default function TableOfContents({ maxLevel = 2 }: TableOfContentsProps) 
                         
                         // Calculate element's position relative to container's scrollable content
                         const elementTopInContent = (elementRect.top - containerRect.top) + scrollContainer.scrollTop;
-                        
+                          
                         // Account for fixed header (64px) + some padding
                         const headerOffset = 80;
-                        const targetScroll = Math.max(0, elementTopInContent - headerOffset);
-                        
-                        scrollContainer.scrollTo({
-                          top: targetScroll,
-                          behavior: 'smooth'
-                        });
+                          const targetScroll = Math.max(0, elementTopInContent - headerOffset);
+                          
+                          scrollContainer.scrollTo({
+                            top: targetScroll,
+                            behavior: 'smooth'
+                          });
+                        }
                       }
-                    }
-                  } else {
-                    // Fallback to window scroll if container not found or not scrollable
-                    const headerOffset = 80;
+                    } else {
+                      // Fallback to window scroll if container not found or not scrollable
+                      const headerOffset = 80;
                     const element = document.getElementById(item.id);
                     if (element) {
                       if (isQuizSection) {
@@ -216,11 +216,11 @@ export default function TableOfContents({ maxLevel = 2 }: TableOfContentsProps) 
                       } else {
                         const elementTop = element.getBoundingClientRect().top + window.pageYOffset;
                         const offsetPosition = Math.max(0, elementTop - headerOffset);
-                        window.scrollTo({
-                          top: offsetPosition,
-                          behavior: 'smooth'
-                        });
-                      }
+                      window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                      });
+                    }
                     }
                   }
                 }}

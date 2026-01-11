@@ -136,7 +136,7 @@ async function enrichTopicsWithMarkdown(baseTopics: TopicsArray): Promise<Topics
       const autoActivities = matchingActivities.map((activity: PostData) => ({
         title: activity.title,
         url: `/activities/${activity.id}/`,
-        draft: activity.draft || 0
+        draft: activity.draft || 1
       }));
       
       // Create auto-populated assignment entry (take first match if multiple)
@@ -194,8 +194,8 @@ const baseTopics = [
           </>
         ),
         activities: [
-          { title: "Slides", url: "https://docs.google.com/presentation/d/1OZNO79sDQ3uI1sypTpXfwVLs0MCQUp-x/edit?usp=sharing&ouid=113376576186080604800&rtpof=true&sd=true", draft: 0 },
-          { title: "Syllabus", url: "/syllabus/", draft: 0 },
+          { title: "Slides", url: "https://docs.google.com/presentation/d/1OZNO79sDQ3uI1sypTpXfwVLs0MCQUp-x/edit?usp=sharing&ouid=113376576186080604800&rtpof=true&sd=true", draft: 1 },
+          { title: "Syllabus", url: "/syllabus/", draft: 1 },
         ]
       },
       {
@@ -216,10 +216,11 @@ const baseTopics = [
         readings: [
           {
             citation: (
-              <>
-                Hunt, A., & Thomas, D. (1999). <em>The Pragmatic Programmer</em>. <a href="https://www.oreilly.com/library/view/the-pragmatic-programmer/9780135956977/f_0017.xhtml" target="_blank">Ch. 1: A Pragmatic Philosophy</a>
-              </>
-            ),
+                <>
+                  Maitre, N.L., Marra, L., Kjeldsen, W. et al. <em>A social media-delivered intervention for motor delays: stage-Ib randomized clinical trial and implementation exploration</em>. Pediatr Res (2025). <a href="https://doi.org/10.1038/s41390-025-04151-5" target="_blank">https://doi.org/10.1038/s41390-025-04151-5</a>. 
+                  Full text available <a href="https://drive.google.com/file/d/1yeT8VcUUUZf6BmzD8XH8KD9Vz0gIuelg/view?usp=sharing" target="_blank">via UNCA library</a>.
+                </>
+              ),
           },
           {
             citation: (

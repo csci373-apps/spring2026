@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import PageHeader from '@/components/PageHeaderExpandable';
 import Meeting from '@/components/Meeting';
 
-import { Meeting as MeetingType, Topic } from '@/lib/topics';
+import { Topic } from '@/lib/topics';
 
 interface ScheduleContentProps {
   topics: Topic[];
@@ -57,7 +57,7 @@ export default function ScheduleContent({ topics }: ScheduleContentProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 schedule-page">
       <PageHeader title="Course Schedule" 
         excerpt="This schedule will definitely change over the course of the semester. Please continue to check back for updates." setMeetingStates={setMeetingStates} topics={topics} />
       {topics.map((topic) => (

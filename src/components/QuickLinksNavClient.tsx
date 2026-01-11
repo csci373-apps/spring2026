@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import clsx from 'clsx';
 import { formatDate } from '@/lib/utils';
+import { useMemo } from 'react';
+import { Topic } from '@/lib/topics';
 
 interface ResourceData {
   id: string;
@@ -16,6 +18,8 @@ interface AssignmentData {
   title: string;
   due_date?: string;
   type?: string;
+  draft?: number;
+  excluded?: boolean;
   external_url?: string;
 }
 
@@ -29,6 +33,7 @@ interface QuickLinksNavClientProps {
   resources: ResourceData[];
   assignments: AssignmentData[];
   readings: ReadingData[];
+  topics?: Topic[];
 }
 
 function titleCase(str: string): string {
@@ -47,11 +52,61 @@ function getDaysUntilDue(dueDate: string): number {
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 }
 
-export default function QuickLinksNavClient({ resources, assignments, readings }: QuickLinksNavClientProps) {
+export default function QuickLinksNavClient({ resources, assignments, readings, topics }: QuickLinksNavClientProps) {
+  
+  // Filter assignments client-side based on current date
+  const upcomingAssignments = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // Filter out excluded, drafts, and past assignments
+    const filtered = assignments.filter(assignment => {
+      if (assignment.excluded) return false;
+      if (assignment.draft === 1) return false;
+      if (!assignment.due_date) return false;
+      
+      const dueDate = new Date(assignment.due_date + 'T23:59:59');
+      dueDate.setHours(0, 0, 0, 0);
+      return dueDate >= today;
+    });
+
+    // Sort by due date
+    filtered.sort((a, b) => {
+      if (!a.due_date || !b.due_date) return 0;
+      return new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
+    });
+
+    // Take only the next 5 upcoming assignments
+    return filtered.slice(0, 5);
+  }, [assignments]);
+
+  // Filter readings client-side based on current date
+  const upcomingReadings = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const futureDate = new Date(today);
+    futureDate.setDate(today.getDate() + 5); // Next 5 days
+    
+    // Filter readings within the next 10 days
+    const filtered = readings.filter(reading => {
+      const readingDate = new Date(reading.date + 'T00:00:00');
+      readingDate.setHours(0, 0, 0, 0);
+      return readingDate >= today && readingDate <= futureDate;
+    });
+
+    // Sort by date
+    filtered.sort((a, b) => {
+      return new Date(a.date).getTime() - new Date(b.date).getTime();
+    });
+
+    // Take only the next 10 readings (or all if less than 10)
+    return filtered;
+  }, [readings]);
+
   return (
     <div className="quick-links-nav h-full overflow-y-auto p-4 hidden lg:block">
       {/* Quick Links Section */}
-      {resources.length > 0 && (
+      {(resources.length > 0) && (
         <div className="mb-6 rounded-2xl bg-gray-100 dark:bg-gray-800 p-4">
           <h2 className="!text-lg !font-normal text-gray-800 dark:text-gray-100 !m-0 !mb-4">Quick Links</h2>
           <div className="space-y-2">
@@ -72,11 +127,11 @@ export default function QuickLinksNavClient({ resources, assignments, readings }
       )}
 
       {/* Upcoming Due Dates Section */}
-      {assignments.length > 0 && (
+      {upcomingAssignments.length > 0 && (
         <div className="mb-8 rounded-2xl bg-blue-50 dark:bg-blue-950 p-4">
           <h2 className="!text-lg !font-normal text-gray-800 dark:text-gray-100 !m-0 !mb-4">Upcoming Due Dates</h2>
           <div className="space-y-1">
-            {assignments.map((assignment, index) => {
+            {upcomingAssignments.map((assignment, index) => {
               const daysUntil = assignment.due_date ? getDaysUntilDue(assignment.due_date) : null;
               const isToday = daysUntil === 0;
               const isTomorrow = daysUntil === 1;
@@ -89,7 +144,7 @@ export default function QuickLinksNavClient({ resources, assignments, readings }
               return (
                 <div key={assignment.id} className={clsx(
                   'flex items-start justify-between gap-3',
-                  index < assignments.length - 1 && 'pb-2 border-b border-gray-200 dark:border-gray-800'
+                  index < upcomingAssignments.length - 1 && 'pb-2 border-b border-gray-200 dark:border-gray-800'
                 )}>
                   <div className="flex-1 min-w-0">
                     {assignment.external_url ? (
@@ -135,9 +190,9 @@ export default function QuickLinksNavClient({ resources, assignments, readings }
       )}
 
       {/* Upcoming Readings Section */}
-      {readings.length > 0 && (() => {
+      {upcomingReadings.length > 0 && (() => {
         // Group readings by date
-        const readingsByDate = readings.reduce((groups, reading) => {
+        const readingsByDate = upcomingReadings.reduce((groups, reading) => {
           const date = reading.date;
           if (!groups[date]) {
             groups[date] = [];
@@ -185,9 +240,7 @@ export default function QuickLinksNavClient({ resources, assignments, readings }
                     </div>
                     <div className="space-y-1 ml-2">
                       {dateReadings.map((reading, index) => {
-                        const truncatedCitation = reading.citation.length > 20 
-                          ? reading.citation.substring(0, 18) + '...'
-                          : reading.citation;
+                        const isExternal = reading.url?.startsWith('http://') || reading.url?.startsWith('https://');
                         
                         return (
                           <div key={`${reading.date}-${index}`} className={clsx(
@@ -196,17 +249,19 @@ export default function QuickLinksNavClient({ resources, assignments, readings }
                             {reading.url ? (
                               <a
                                 href={reading.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="!border-0 !text-sm text-gray-800 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 block"
+                                target={isExternal ? "_blank" : undefined}
+                                rel={isExternal ? "noopener noreferrer" : undefined}
+                                className="!border-0 !text-sm text-gray-800 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-2 min-w-0"
                                 title={reading.citation}
                               >
-                                {truncatedCitation}
-                                <span className="ml-1 text-xs">↗</span>
+                                <span className="truncate flex-1 min-w-0">{reading.citation}</span>
+                                {isExternal && (
+                                  <span className="text-xs flex-shrink-0">↗</span>
+                                )}
                               </a>
                             ) : (
-                              <span className="!text-sm text-gray-800 dark:text-gray-100 block" title={reading.citation}>
-                                {truncatedCitation}
+                              <span className="!text-sm text-gray-800 dark:text-gray-100 block truncate" title={reading.citation}>
+                                {reading.citation}
                               </span>
                             )}
                           </div>
@@ -222,7 +277,7 @@ export default function QuickLinksNavClient({ resources, assignments, readings }
       })()}
 
       {/* Show message if all sections are empty */}
-      {resources.length === 0 && assignments.length === 0 && readings.length === 0 && (
+      {resources.length === 0 && upcomingAssignments.length === 0 && upcomingReadings.length === 0 && (
         <div>
           <h2 className="!text-lg !font-normal text-gray-800 dark:text-gray-100 mb-4">Quick Links</h2>
           <p className="text-sm text-gray-600 dark:text-gray-400">No quick links available</p>

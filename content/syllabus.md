@@ -1,6 +1,7 @@
 ---
 title: "Syllabus: Software Development Studio"
 date: "2025-08-26"
+heading_max_level: 3
 ---
 
 
@@ -27,7 +28,7 @@ date: "2025-08-26"
   <tr>
     <td><strong>Texts</strong></td>
     <td>
-        Hunt, A., & Thomas, D. (2019). <a href="https://learning.oreilly.com/library/view/the-pragmatic-programmer/9780135956977/" target="_blank">The pragmatic programmer: Your journey to mastery</a> (20th Anniversary ed.). Available via O'Reilly Media the UNCA library - just sign in with your UNCA email.
+        Various readings (see schedule)
     </td>
   </tr>
 </table>
@@ -245,8 +246,42 @@ This course involves sustained teamwork. If a student's lack of attendance or en
 
 This is intended to protect students who are consistently present and contributing, and reflects the professional reality that software development is collaborative and time-bound, and that consistent participation is necessary to meet the course objectives. Students who anticipate attendance challenges should speak with the instructors as early as possible.
 
-## 8. Draft Generative AI Policy
-We need to come up with a policy!
+## 8. Generative AI Policy
+
+The first half of this course aims to help you develop a foundational technical literacy for more complex projects. While generative AI tools can be useful for learning, over-reliance on AI-generated code can inhibit your ability to think critically and make smart decisions -- particularly when you're first learning.For that reason, this policy sets clear boundaries for appropriate AI use **for the first half of the semester**.
+
+
+### What *Is* Allowed
+
+You **may** use generative AI tools (e.g., ChatGPT) as a **reference**, similar to documentation or a textbook. Examples include:
+
+- Looking up programming concepts or syntax  
+- Getting explanations of how functions or methods work  
+- Understanding error messages and debugging ideas  
+- Learning best practices or common coding patterns  
+
+AI may help you *understand* code, but **you must write all submitted code yourself**.
+
+> **Rule of thumb:** If you could not reasonably reproduce the solution without referring back to the AI’s output, then the use is not permitted.
+
+
+### What Is *Not* Allowed
+
+You **may not** use generative AI tools to:
+
+- Generate any assignment-specific code, including small snippets, helper functions, or scaffolding  
+- Solve coding exercises or assignment problems  
+- Write functions, components, or other substantial code blocks  
+- Provide solutions that you then modify and submit  
+
+**All code you submit must be your own.** Copying, pasting, or adapting AI-generated code is considered academic dishonesty.
+
+
+### Code Editor AI Tools
+
+You **must disable AI-powered code completion and generation features** in your code editor (e.g., GitHub Copilot, Copilot Chat, Cursor, Tabnine, Codeium) while working on coursework during the first half of the semester. It is your responsibility to ensure these features are turned off before beginning work. Accidental use still counts as a violation, even if you only accept a few suggestions. If you are unsure how to disable these tools, please ask for help.
+* For the second half of the semester, we will revisit this policy and begin (optionally) integrating some GenAI tools.
+
 
 ## 9. University Policies & Resources
 

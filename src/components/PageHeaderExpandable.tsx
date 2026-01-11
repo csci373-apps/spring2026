@@ -1,9 +1,7 @@
 import Link from "next/link";
 import { useState, useEffect } from 'react';
 
-import { Meeting as MeetingType, Topic } from '@/lib/topics';
-
-type Meeting = MeetingType;
+import { Topic } from '@/lib/topics';
 
 interface PageHeaderProps {
   title: string;
