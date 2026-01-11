@@ -5,8 +5,6 @@ group_order: 3
 order: 2
 ---
 
-## Overview
-
 **SQLAlchemy** is an Object-Relational Mapping (ORM) library that lets you interact with databases using Python classes instead of SQL. In the starter code, we use **async SQLAlchemy** for asynchronous database operations.
 
 ## Defining a Model

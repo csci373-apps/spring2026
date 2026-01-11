@@ -1,6 +1,6 @@
 ---
 title: "Backend Deep Dive"
-date: "2026-01-20"
+start_date: "2026-01-20"
 type: "activity"
 ---
 

@@ -1,10 +1,10 @@
 ---
 title: "Team Working Agreement + Dev Setup"
-date: "2026-01-15"
 type: "assignment"
 num: "0"
 draft: 0
-due_date: "2026-01-10"
+assigned_date: "2026-01-15"
+due_date: "2026-01-20"
 heading_max_level: 3
 ---
 

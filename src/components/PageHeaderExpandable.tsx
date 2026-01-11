@@ -1,6 +1,9 @@
 import Link from "next/link";
-import topics from '@/lib/topics';
 import { useState, useEffect } from 'react';
+
+import { Meeting as MeetingType, Topic } from '@/lib/topics';
+
+type Meeting = MeetingType;
 
 interface PageHeaderProps {
   title: string;
@@ -8,9 +11,10 @@ interface PageHeaderProps {
   type?: string;
   group?: string;
   setMeetingStates: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+  topics: Topic[];
 }
 
-export default function PageHeader({ title, excerpt, type, group, setMeetingStates }: PageHeaderProps) {
+export default function PageHeader({ title, excerpt, type, group, setMeetingStates, topics }: PageHeaderProps) {
   const [allExpanded, setAllExpanded] = useState(false);
   const [isDark, setIsDark] = useState(false);
   const className = '!border-transparent hover:border-b-2';
@@ -48,7 +52,7 @@ export default function PageHeader({ title, excerpt, type, group, setMeetingStat
     setMeetingStates(savedStates);
   }
   
-  useEffect(loadSavedStates, [setMeetingStates]);
+  useEffect(loadSavedStates, [setMeetingStates, topics]);
 
   const toggleAll = () => {
     const newExpanded = !allExpanded;

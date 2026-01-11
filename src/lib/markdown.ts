@@ -19,6 +19,8 @@ export interface PostData {
   order?: number;
   description?: string;
   date: string;
+  start_date?: string;
+  assigned_date?: string;
   due_date?: string;
   content: string;
   excerpt?: string;

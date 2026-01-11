@@ -1,6 +1,6 @@
 ---
 title: "React Architecture"
-date: "2026-02-10"
+start_date: "2026-02-10"
 type: "activity"
 ---
 

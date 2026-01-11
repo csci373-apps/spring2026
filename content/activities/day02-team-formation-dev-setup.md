@@ -1,6 +1,6 @@
 ---
 title: "Team Formation + Dev Setup"
-date: "2026-01-15"
+start_date: "2026-01-15"
 type: "activity"
 ---
 

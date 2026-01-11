@@ -1,0 +1,316 @@
+{
+  "questions": [
+    {
+      "id": "q1",
+      "question": "What is Vitest?",
+      "options": [
+        "A fast, modern testing framework built by the Vite team, designed to work seamlessly with Vite projects",
+        "A CSS framework",
+        "A database system",
+        "A component library"
+      ],
+      "correct": 0,
+      "explanation": "Vitest is a fast, modern testing framework built by the Vite team. It's designed to work seamlessly with Vite projects and provides a Jest-compatible API, making it easy to learn and use. Key features include zero configuration, fast parallel execution, built-in assertions, mocking capabilities, and watch mode."
+    },
+    {
+      "id": "q2",
+      "question": "What makes a function \"pure\"?",
+      "options": [
+        "It uses only pure JavaScript",
+        "Same input always produces same output, no side effects (no database calls, no API calls, no file system access), no dependencies on external state",
+        "It's written in TypeScript",
+        "It doesn't use any variables"
+      ],
+      "correct": 1,
+      "explanation": "A pure function has: same input always produces same output, no side effects (no database calls, no API calls, no file system access), and no dependencies on external state. Pure functions are the easiest to test because they're predictable and don't require mocking."
+    },
+    {
+      "id": "q3",
+      "question": "Where are test files located in the web UI project?",
+      "options": [
+        "In a separate `tests/` directory at the root",
+        "In `src/tests/`",
+        "In `__tests__/` directories next to the code they test",
+        "Tests are not supported"
+      ],
+      "correct": 2,
+      "explanation": "Tests are organized in `__tests__/` directories next to the code they test. For example, `utils/__tests__/api.test.ts` tests `utils/api.ts`. This keeps tests close to the code they're testing, making it easy to find and maintain them."
+    },
+    {
+      "id": "q4",
+      "question": "What environment does Vitest use for testing React components?",
+      "options": [
+        "node",
+        "browser",
+        "deno",
+        "jsdom - simulates browser DOM"
+      ],
+      "correct": 3,
+      "explanation": "Vitest uses `jsdom` environment which simulates the browser DOM. This is configured in `vitest.config.ts` with `environment: 'jsdom'`. This allows you to test React components that interact with the DOM without needing a real browser."
+    },
+    {
+      "id": "q5",
+      "question": "What does `describe` do in a Vitest test?",
+      "options": [
+        "It groups related tests together",
+        "It runs the test",
+        "It imports dependencies",
+        "It mocks functions"
+      ],
+      "correct": 0,
+      "explanation": "`describe` groups related tests together. The first `describe` creates a test suite (usually named after the module), and nested `describe` blocks organize tests by function or feature. This helps organize and structure your tests."
+    },
+    {
+      "id": "q6",
+      "question": "What does `it` do in a Vitest test?",
+      "options": [
+        "It imports a module",
+        "It defines a single test case",
+        "It mocks a function",
+        "It runs all tests"
+      ],
+      "correct": 1,
+      "explanation": "`it` defines a single test case. The string describes what the test verifies (e.g., \"should include Authorization when token exists\"). Each `it` block should test one specific behavior, making it clear what's being tested."
+    },
+    {
+      "id": "q7",
+      "question": "Consider the following assertion:\n\n```typescript\nexpect(value).toBe(4);\n```\n\nWhat does `toBe` check?",
+      "options": [
+        "Deep equality for objects",
+        "Type equality only",
+        "Exact equality (===)",
+        "Approximate equality"
+      ],
+      "correct": 2,
+      "explanation": "`toBe` checks exact equality using `===`. For objects, use `toEqual` for deep equality. `toBe` is perfect for primitives (numbers, strings, booleans) and reference equality."
+    },
+    {
+      "id": "q8",
+      "question": "What library is used for testing React components?",
+      "options": [
+        "Vitest only",
+        "Jest",
+        "Enzyme",
+        "React Testing Library - focuses on testing how users interact with components"
+      ],
+      "correct": 3,
+      "explanation": "React Testing Library is used for testing React components. It focuses on testing how users interact with your components, not implementation details. It provides utilities like `render`, `screen`, and queries to find elements by their text, role, or label."
+    },
+    {
+      "id": "q9",
+      "question": "How do you test an async function in Vitest?",
+      "options": [
+        "Use `async`/`await` in your test, mock async dependencies, and await the result before asserting",
+        "You can't test async functions",
+        "Use `.then()` only",
+        "Async functions don't need testing"
+      ],
+      "correct": 0,
+      "explanation": "To test async functions: use `async`/`await` in your test function, mock async dependencies (like `global.fetch`) before calling the function, and await the result before asserting. For example: `it('should fetch user data', async () => { const result = await fetchUser(1); expect(result.username).toBe('testuser'); });`"
+    },
+    {
+      "id": "q10",
+      "question": "What is mocking?",
+      "options": [
+        "A way to skip tests",
+        "Replacing the real implementation of a dependency with a fake one that you control",
+        "A way to speed up tests",
+        "A type of assertion"
+      ],
+      "correct": 1,
+      "explanation": "Mocking means replacing the real implementation of a dependency with a fake one that you control. This allows you to: control return values, test error cases, verify function calls, and run tests faster (no actual network requests or I/O operations)."
+    },
+    {
+      "id": "q11",
+      "question": "Consider the following code:\n\n```typescript\nbeforeEach(() => {\n    global.fetch = vi.fn();\n});\n```\n\nWhat does `vi.fn()` do?",
+      "options": [
+        "It imports the real fetch function",
+        "It creates a fake function that you can control",
+        "It runs the tests",
+        "It clears the cache"
+      ],
+      "correct": 1,
+      "explanation": "`vi.fn()` creates a mock function that you can control. In this example, it replaces `global.fetch` with a fake version. You can then configure it with methods like `mockResolvedValue()` to control what it returns."
+    },
+    {
+      "id": "q12",
+      "question": "Consider the following code:\n\n```typescript\nglobal.fetch = vi.fn().mockResolvedValue({\n    ok: true,\n    json: async () => ({ id: 1, username: 'testuser' }),\n});\n```\n\nWhat does `mockResolvedValue` do?",
+      "options": [
+        "It makes the function throw an error",
+        "It configures the mock async function to return a Promise that resolves to the provided value",
+        "It runs the real function",
+        "It clears the mock"
+      ],
+      "correct": 1,
+      "explanation": "`mockResolvedValue(value)` configures the mock async function to return a Promise that resolves to the provided value. This is used for testing async functions that should succeed. For failures, use `mockRejectedValue(error)`."
+    },
+    {
+      "id": "q13",
+      "question": "What does `toHaveBeenCalledWith` verify?",
+      "options": [
+        "That a function was called at all",
+        "That a function returned a value",
+        "That a function was called with specific arguments",
+        "That a function threw an error"
+      ],
+      "correct": 2,
+      "explanation": "`toHaveBeenCalledWith('expected', 'args')` verifies that a mock function was called with specific arguments. This is useful for ensuring your code calls dependencies with the correct parameters."
+    },
+    {
+      "id": "q14",
+      "question": "What command runs tests in watch mode?",
+      "options": [
+        "`npm test`",
+        "`npm run test:verbose`",
+        "`vitest --watch`",
+        "`npm run test:watch`"
+      ],
+      "correct": 3,
+      "explanation": "Run `npm run test:watch` to run tests in watch mode. This watches for file changes and automatically re-runs tests, making it great for development. Tests run once with `npm test`."
+    },
+    {
+      "id": "q15",
+      "question": "How do you mock environment variables in Vitest?",
+      "options": [
+        "Use `vi.stubEnv('VITE_API_URL', 'http://example.com')`",
+        "You can't mock environment variables",
+        "Edit the .env file",
+        "Use process.env directly"
+      ],
+      "correct": 0,
+      "explanation": "Use `vi.stubEnv('VITE_API_URL', 'http://example.com')` to mock environment variables in Vitest. This temporarily replaces the environment variable for your tests. Use `vi.unstubAllEnvs()` to restore them."
+    },
+    {
+      "id": "q16",
+      "question": "What should you test for pure functions?",
+      "options": [
+        "Only the happy path",
+        "Only error cases",
+        "Normal use cases, edge cases (null, undefined, empty strings), and error cases (invalid inputs)",
+        "Nothing - pure functions don't need testing"
+      ],
+      "correct": 2,
+      "explanation": "For pure functions, test: normal use cases (expected inputs), edge cases (null, undefined, empty strings, boundary values), and error cases (invalid inputs). Don't just test the happy path - edge cases often reveal bugs."
+    },
+    {
+      "id": "q17",
+      "question": "Consider the following test:\n\n```typescript\nit('should render loading message', () => {\n    render(<LoadingSpinner message=\"Loading data...\" />);\n    expect(screen.getByText('Loading data...')).toBeInTheDocument();\n});\n```\n\nWhat does `screen.getByText` do?",
+      "options": [
+        "It renders the component",
+        "It mocks a function",
+        "It clears the DOM",
+        "It finds an element by its text content"
+      ],
+      "correct": 3,
+      "explanation": "`screen.getByText('Loading data...')` finds an element by its text content. It's a query from React Testing Library that searches the rendered component for an element containing that exact text. If not found, it throws an error."
+    },
+    {
+      "id": "q18",
+      "question": "What does `toBeInTheDocument()` check?",
+      "options": [
+        "That an element has a specific class",
+        "That an element exists in the DOM",
+        "That an element is visible",
+        "That an element has a specific style"
+      ],
+      "correct": 1,
+      "explanation": "`toBeInTheDocument()` checks if an element exists in the DOM. This matcher comes from `@testing-library/jest-dom` and is commonly used to verify that elements are rendered correctly."
+    },
+    {
+      "id": "q19",
+      "question": "What is the difference between `mockResolvedValue` and `mockRejectedValue`?",
+      "options": [
+        "`mockResolvedValue` makes an async function succeed (return a resolved Promise), while `mockRejectedValue` makes it fail (return a rejected Promise)",
+        "There is no difference",
+        "They both make functions succeed",
+        "They both make functions fail"
+      ],
+      "correct": 0,
+      "explanation": "`mockResolvedValue(value)` configures a mock async function to succeed - it returns a Promise that resolves to the value. `mockRejectedValue(error)` configures it to fail - it returns a Promise that rejects with the error. Use these to test both success and error paths."
+    },
+    {
+      "id": "q20",
+      "question": "What should test names be like?",
+      "options": [
+        "Short and cryptic (e.g., 'test1', 'works')",
+        "Random names",
+        "Test names don't matter",
+        "Clear and descriptive, describing what they verify (e.g., 'should return null when value is null')"
+      ],
+      "correct": 3,
+      "explanation": "Test names should be clear and descriptive, describing what they verify. Good examples: 'should return null when value is null', 'should include Authorization header when token exists'. Bad examples: 'test1', 'works'. Clear names make it immediately obvious what's broken when a test fails."
+    },
+    {
+      "id": "q21",
+      "question": "What does `npm run test:verbose` do?",
+      "options": [
+        "Runs tests in watch mode",
+        "Shows individual test names instead of just test suites, making it easier to see which specific tests pass or fail",
+        "Skips failing tests",
+        "Runs only one test"
+      ],
+      "correct": 1,
+      "explanation": "`npm run test:verbose` shows individual test names instead of just test suites. This makes it easier to see which specific tests pass or fail, providing more detailed output for debugging."
+    },
+    {
+      "id": "q22",
+      "question": "What should you NOT test (for now) according to the testing philosophy?",
+      "options": [
+        "Pure functions",
+        "Utility functions",
+        "Everything should be tested",
+        "Complex React components with many dependencies, components that heavily depend on Mantine, API integration, and E2E flows"
+      ],
+      "correct": 3,
+      "explanation": "According to the minimal but practical testing approach, you should NOT test (for now): Complex React components with many dependencies (requires more setup), components that heavily depend on Mantine (test your logic, not Mantine's), API integration (use backend tests for that), and E2E flows. These can be added later as you learn more advanced testing techniques."
+    },
+    {
+      "id": "q23",
+      "question": "What does `userEvent.setup()` do?",
+      "options": [
+        "It renders a component",
+        "It creates a user interaction helper for simulating user actions like typing and clicking",
+        "It mocks a function",
+        "It clears the DOM"
+      ],
+      "correct": 1,
+      "explanation": "`userEvent.setup()` creates a user interaction helper from `@testing-library/user-event`. It provides methods like `user.type()` and `user.click()` to simulate user interactions with components. Always `await` user interactions as they're async."
+    },
+    {
+      "id": "q24",
+      "question": "Consider the following test:\n\n```typescript\nit('should fetch user data', async () => {\n    global.fetch = vi.fn().mockResolvedValue({\n        ok: true,\n        json: async () => ({ id: 1, username: 'testuser' }),\n    });\n    \n    const result = await fetchUser(1);\n    expect(result.username).toBe('testuser');\n    expect(global.fetch).toHaveBeenCalledWith(\n        'http://localhost:8000/api/users/1',\n        expect.any(Object)\n    );\n});\n```\n\nWhat does the last assertion verify?",
+      "options": [
+        "That the function returned a value",
+        "That the function didn't throw an error",
+        "That the function was called multiple times",
+        "That the mock function was called with the correct URL and options"
+      ],
+      "correct": 3,
+      "explanation": "The last assertion `expect(global.fetch).toHaveBeenCalledWith(...)` verifies that the mock function was called with the correct arguments (the URL and request options). This ensures your code (`fetchUser`) correctly calls `fetch` with the right parameters."
+    },
+    {
+      "id": "q25",
+      "question": "What is the purpose of `beforeEach` in tests?",
+      "options": [
+        "It runs after each test",
+        "It runs only once before all tests",
+        "It skips tests",
+        "It runs before each test, useful for resetting state, clearing localStorage, or setting up mocks"
+      ],
+      "correct": 3,
+      "explanation": "`beforeEach` runs before each test in the suite. It's useful for resetting state, clearing localStorage, setting up mocks, or any other setup that should happen before every test. This ensures tests don't interfere with each other."
+    },
+    {
+      "id": "q26",
+      "question": "What command opens Vitest's web UI for an interactive testing experience?",
+      "options": [
+        "`npm test`",
+        "`npm run test:watch`",
+        "`npm run test:coverage`",
+        "`npm run test:ui`"
+      ],
+      "correct": 3,
+      "explanation": "Run `npm run test:ui` to open Vitest's web UI. This provides an interactive testing experience where you can see test results, filter tests, and debug failures in a browser-based interface."
+    }
+  ]
+}

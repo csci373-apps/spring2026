@@ -1,6 +1,6 @@
 ---
 title: "Course Intro"
-date: "2026-01-13"
+start_date: "2026-01-13"
 type: "activity"
 ---
 

@@ -46,11 +46,15 @@ export default async function QuestionsPage() {
     };
   }));
 
-  // Filter out excluded and draft activities
-  const filteredActivities = activities.filter(activity => !activity.excluded && !(activity.draft === 1));
+  // Filter out excluded and draft activities, and those without dates
+  const filteredActivities = activities.filter(activity => 
+    !activity.excluded && 
+    !(activity.draft === 1) && 
+    activity.date
+  );
 
   // Sort activities by date
-  filteredActivities.sort((a, b) => a.date.localeCompare(b.date));
+  filteredActivities.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
 
   // Calculate week numbers and determine which ones to show, and add activity numbers
   const activitiesWithWeeks = filteredActivities.map((activity, index) => {

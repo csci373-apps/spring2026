@@ -1,6 +1,6 @@
 ---
 title: "TypeScript, Contexts, Hooks"
-date: "2026-02-12"
+start_date: "2026-02-12"
 type: "activity"
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: "Pytest Workshop"
-date: "2026-01-22"
+start_date: "2026-01-22"
 type: "activity"
 ---
 

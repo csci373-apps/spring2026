@@ -91,9 +91,9 @@ export default function Meeting({
     const url = activity.url || '#';
     
     if (isExternalLink) {
-      return (<Link href={url} target="_blank">{activity.title}</Link>);
+      return (<Link href={url} target="_blank" className="text-blue-600 dark:text-blue-400 hover:underline">{activity.title}</Link>);
     }
-    return (<Link href={url}>{activity.title}</Link>);
+    return (<Link href={url} className="text-blue-600 dark:text-blue-400 hover:underline">{activity.title}</Link>);
   }
 
   function renderActivities() {
@@ -158,7 +158,7 @@ export default function Meeting({
     if (assignment.draft && assignment.draft === 1) {
       return (<>{assignment.titleShort}: {assignment.title}</>);
     }
-    return (<><Link href={assignment.url || '#'}>{assignment.titleShort}</Link>: {assignment.title}</>);
+    return (<><Link href={assignment.url || '#'} className="text-blue-600 dark:text-blue-400 hover:underline">{assignment.titleShort}</Link>: {assignment.title}</>);
   }
 
   function renderDetailsButton() {

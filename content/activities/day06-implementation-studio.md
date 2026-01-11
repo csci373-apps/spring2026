@@ -1,6 +1,6 @@
 ---
 title: "Implementation Studio"
-date: "2026-01-29"
+start_date: "2026-01-29"
 type: "activity"
 ---
 

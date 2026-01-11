@@ -1,6 +1,6 @@
 ---
 title: "High-Fidelity Prototyping + Implementation"
-date: "2026-02-26"
+start_date: "2026-02-26"
 type: "activity"
 ---
 

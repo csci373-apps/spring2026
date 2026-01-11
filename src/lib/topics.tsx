@@ -1,4 +1,179 @@
-const topics = [
+import { getAllPosts, PostData } from './markdown';
+import React from 'react';
+
+// Type definitions for topics structure
+interface Activity {
+  title: string;
+  url?: string;
+  draft?: number;
+}
+
+interface Assignment {
+  titleShort: string;
+  title: string;
+  url?: string;
+  draft?: number;
+}
+
+export interface Reading {
+  citation: string | React.ReactElement;
+  url?: string;
+}
+
+export interface Meeting {
+  date: string;
+  topic: string;
+  description?: string | React.ReactElement;
+  activities?: Activity[];
+  readings?: Reading[];
+  optionalReadings?: Reading[];
+  holiday?: boolean;
+  discussionQuestions?: string;
+  assigned?: Assignment | string;
+  due?: Assignment | string;
+}
+
+export interface Topic {
+  id: number;
+  title: string;
+  description: string | React.ReactElement;
+  meetings: Meeting[];
+}
+
+type TopicsArray = Topic[];
+
+// Date parsing utilities
+function parseMeetingDate(meetingDate: string): string | null {
+  // Format: "Tu, Jan 13" -> "2026-01-13"
+  // Assume year 2026 for semester dates
+  const year = 2026;
+  
+  const monthMap: Record<string, number> = {
+    'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6,
+    'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12
+  };
+  
+  const match = meetingDate.match(/(\w+), (\w+) (\d+)/);
+  if (!match) return null;
+  
+  const [, , monthAbbr, day] = match;
+  const month = monthMap[monthAbbr];
+  if (!month) return null;
+  
+  const monthStr = String(month).padStart(2, '0');
+  const dayStr = String(parseInt(day)).padStart(2, '0');
+  
+  return `${year}-${monthStr}-${dayStr}`;
+}
+
+function normalizeDate(dateStr: string | undefined): string | null {
+  if (!dateStr) return null;
+  // Ensure YYYY-MM-DD format
+  if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    return dateStr;
+  }
+  return null;
+}
+
+// Enrichment function
+async function enrichTopicsWithMarkdown(baseTopics: TopicsArray): Promise<TopicsArray> {
+  // Read all activities and assignments
+  const allActivities = getAllPosts('activities');
+  const allAssignments = getAllPosts('assignments');
+  
+  // Filter activities with start_date and assignments with assigned_date
+  const activitiesWithDates = allActivities.filter(a => a.start_date);
+  const assignmentsWithDates = allAssignments.filter(a => a.assigned_date);
+  
+  // Create maps for quick lookup by date
+  const activitiesByDate = new Map<string, PostData[]>();
+  const assignmentsByDate = new Map<string, PostData[]>();
+  
+  activitiesWithDates.forEach(activity => {
+    const date = normalizeDate(activity.start_date);
+    if (date) {
+      if (!activitiesByDate.has(date)) {
+        activitiesByDate.set(date, []);
+      }
+      activitiesByDate.get(date)!.push(activity);
+    }
+  });
+  
+  assignmentsWithDates.forEach(assignment => {
+    const date = normalizeDate(assignment.assigned_date);
+    if (date) {
+      if (!assignmentsByDate.has(date)) {
+        assignmentsByDate.set(date, []);
+      }
+      assignmentsByDate.get(date)!.push(assignment);
+    }
+  });
+  
+  // Clone baseTopics to avoid mutating the original
+  // We need to preserve React elements in descriptions, so we do a shallow copy
+  const enrichedTopics: TopicsArray = baseTopics.map((topic: Topic) => ({
+    ...topic,
+    meetings: topic.meetings.map((meeting: Meeting) => ({
+      ...meeting,
+      activities: meeting.activities ? [...meeting.activities] : undefined,
+      assigned: meeting.assigned ? (typeof meeting.assigned === 'object' ? { ...meeting.assigned } : meeting.assigned) : undefined,
+    }))
+  }));
+  
+  // Enrich each meeting
+  enrichedTopics.forEach((topic: Topic) => {
+    topic.meetings.forEach((meeting: Meeting) => {
+      const meetingDateStr = parseMeetingDate(meeting.date);
+      if (!meetingDateStr) return;
+      
+      // Find matching activities
+      const matchingActivities = activitiesByDate.get(meetingDateStr) || [];
+      
+      // Find matching assignments
+      const matchingAssignments = assignmentsByDate.get(meetingDateStr) || [];
+      
+      // Create auto-populated activity entries
+      const autoActivities = matchingActivities.map((activity: PostData) => ({
+        title: activity.title,
+        url: `/activities/${activity.id}/`,
+        draft: activity.draft || 0
+      }));
+      
+      // Create auto-populated assignment entry (take first match if multiple)
+      const autoAssignment = matchingAssignments.length > 0 
+        ? (() => {
+            const assignment = matchingAssignments[0];
+            // Format titleShort as "HW" + number (e.g., "HW0", "HW1")
+            const titleShort = assignment.num ? `HW ${assignment.num}` : 'HW';
+            return {
+              titleShort: titleShort,
+              title: assignment.title,
+              url: `/assignments/${assignment.id}/`,
+              draft: assignment.draft || 0
+            };
+          })()
+        : null;
+      
+      // Merge activities: keep manual entries, add auto-populated ones
+      if (autoActivities.length > 0) {
+        const existingActivities = meeting.activities || [];
+        // Check if auto-populated activities already exist (by URL) to avoid duplicates
+        const existingUrls = new Set(existingActivities.map((a: Activity) => a.url));
+        const newAutoActivities = autoActivities.filter((a: Activity) => !existingUrls.has(a.url));
+        meeting.activities = [...existingActivities, ...newAutoActivities];
+      }
+      
+      // Merge assignment: only set if not already set manually
+      if (autoAssignment && !meeting.assigned) {
+        meeting.assigned = autoAssignment;
+      }
+    });
+  });
+  
+  return enrichedTopics;
+}
+
+const baseTopics = [
   {
     id: 1,
     title: "Intro to the Course",
@@ -21,7 +196,6 @@ const topics = [
         activities: [
           { title: "Slides", url: "https://docs.google.com/presentation/d/1OZNO79sDQ3uI1sypTpXfwVLs0MCQUp-x/edit?usp=sharing&ouid=113376576186080604800&rtpof=true&sd=true", draft: 0 },
           { title: "Syllabus", url: "/syllabus/", draft: 0 },
-          { title: "Day 1: Course Intro", url: "/activities/day01-course-intro/", draft: 0 },
         ]
       },
       {
@@ -38,7 +212,6 @@ const topics = [
         ),
         activities: [
           { title: "Slides", url: "#", draft: 1 },
-          { title: "Day 2: Team Formation + Dev Setup", url: "/activities/day02-team-formation-dev-setup/", draft: 0 },
         ],
         readings: [
           {
@@ -63,12 +236,6 @@ const topics = [
             ),
           },
         ],
-        assigned: {
-          titleShort: "HW0",
-          title: "Team Working Agreement (Phase 1) + Local Setup Verification",
-          url: "/assignments/hw00-team-agreement/",
-          draft: 0,
-        },
       },
     ],
   },
@@ -92,7 +259,6 @@ const topics = [
         ),
         activities: [
           { title: "Slides", url: "#", draft: 1 },
-          { title: "Day 3: Backend Deep Dive", url: "/activities/day03-backend-deep-dive/", draft: 1 },
         ],
         readings: [
           {
@@ -127,7 +293,6 @@ const topics = [
         ),
         activities: [
           { title: "Slides", url: "#", draft: 1 },
-          { title: "Day 4: Pytest Workshop", url: "/activities/day04-pytest-workshop/", draft: 1 },
         ],
         readings: [
           {
@@ -169,7 +334,6 @@ const topics = [
         ),
         activities: [
           { title: "Slides", url: "#", draft: 1 },
-          { title: "Day 5: Domain Modeling", url: "/activities/day05-domain-modeling/", draft: 1 },
         ],
         readings: [
           {
@@ -202,9 +366,6 @@ const topics = [
             </ul>
           </>
         ),
-        activities: [
-          { title: "Day 6: Implementation Studio", url: "/activities/day06-implementation-studio/", draft: 1 },
-        ],
         assigned: {
           titleShort: "HW2",
           title: "New Model + API + Tests (PR) + 1 Substantive Peer Review",
@@ -234,7 +395,6 @@ const topics = [
         ),
         activities: [
           { title: "Slides", url: "#", draft: 1 },
-          { title: "Day 7: Design Principles", url: "/activities/day07-design-principles/", draft: 1 },
         ],
         readings: [
           {
@@ -268,9 +428,6 @@ const topics = [
             </ul>
           </>
         ),
-        activities: [
-          { title: "Day 8: Refactoring Studio", url: "/activities/day08-refactoring-studio/", draft: 1 },
-        ],
         assigned: {
           titleShort: "HW3",
           title: "Refactor/Extension PR + Tests + 1 Peer Review (Design Focus)",
@@ -300,7 +457,6 @@ const topics = [
         ),
         activities: [
           { title: "Slides", url: "#", draft: 1 },
-          { title: "Day 9: React Architecture", url: "/activities/day09-react-architecture/", draft: 1 },
         ],
         readings: [
           {
@@ -333,9 +489,6 @@ const topics = [
             </ul>
           </>
         ),
-        activities: [
-          { title: "Day 10: TypeScript, Contexts, Hooks", url: "/activities/day10-typescript-contexts-hooks/", draft: 1 },
-        ],
         assigned: {
           titleShort: "HW4",
           title: "Frontend Integration PR + 1 Peer Review (Frontend Focus)",
@@ -367,7 +520,6 @@ const topics = [
         ),
         activities: [
           { title: "Slides", url: "#", draft: 1 },
-          { title: "Day 11: React Native + Expo", url: "/activities/day11-react-native-expo/", draft: 1 },
         ],
         readings: [
           {
@@ -394,9 +546,6 @@ const topics = [
             </ul>
           </>
         ),
-        activities: [
-          { title: "Day 12: Mobile UI Integration", url: "/activities/day12-mobile-ui-integration/", draft: 1 },
-        ],
         assigned: {
           titleShort: "HW5",
           title: "Mobile Integration PR + Peer Review + Reflection",
@@ -427,7 +576,6 @@ const topics = [
         ),
         activities: [
           { title: "Slides", url: "#", draft: 1 },
-          { title: "Day 13: Human-Centered Design + Low-Fi Prototyping", url: "/activities/day13-hcd-lowfi-prototyping/", draft: 1 },
         ],
         readings: [
           {
@@ -459,9 +607,6 @@ const topics = [
             </ul>
           </>
         ),
-        activities: [
-          { title: "Day 14: High-Fidelity Prototyping + Implementation", url: "/activities/day14-hifi-prototyping-implementation/", draft: 1 },
-        ],
         assigned: {
           titleShort: "HW6",
           title: "Low-Fi + Hi-Fi Prototypes + UX Implementation",
@@ -489,9 +634,6 @@ const topics = [
             </ul>
           </>
         ),
-        activities: [
-          { title: "Day 15: Demo Prep + Phase 1 Reflection", url: "/activities/day15-demo-prep/", draft: 1 },
-        ],
         readings: [
           {
             citation: (
@@ -514,9 +656,6 @@ const topics = [
             </ul>
           </>
         ),
-        activities: [
-          { title: "Day 16: Sprint 1 Demos + Phase 1 Retrospective", url: "/activities/day16-sprint-demos-retrospective/", draft: 1 },
-        ],
         assigned: {
           titleShort: "HW7",
           title: "Phase 1 Reflection + Phase 2 Preparation",
@@ -555,11 +694,6 @@ const topics = [
             </ul>
           </>
         ),
-        activities: [
-          { title: "Agile Primer", url: "/activities/agile-primer/", draft: 1 },
-          { title: "Vertical Team Formation", url: "/activities/vertical-teams/", draft: 1 },
-          { title: "Phase 2 Working Agreement", url: "/activities/working-agreement-phase2/", draft: 1 },
-        ],
         readings: [
           {
             citation: "Schwaber, K., & Sutherland, J. The Scrum Guide.",
@@ -582,11 +716,6 @@ const topics = [
             </ul>
           </>
         ),
-        activities: [
-          { title: "Feature Assignment", url: "/activities/feature-assignment/", draft: 1 },
-          { title: "Sprint Planning Workshop", url: "/activities/sprint-planning-workshop/", draft: 1 },
-          { title: "API Contract Definition", url: "/activities/api-contracts/", draft: 1 },
-        ],
       },
     ],
   },
@@ -609,11 +738,6 @@ const topics = [
             </ul>
           </>
         ),
-        activities: [
-          { title: "Daily Standup Protocol", url: "/activities/standup-protocol/", draft: 1 },
-          { title: "Feature Development Guide", url: "/activities/feature-development/", draft: 1 },
-          { title: "Cross-Team Collaboration", url: "/activities/cross-team-collab/", draft: 1 },
-        ],
       },
       {
         date: "Th, Mar 26",
@@ -628,11 +752,6 @@ const topics = [
             </ul>
           </>
         ),
-        activities: [
-          { title: "PR Workflow (Shared Repo)", url: "/activities/pr-workflow-shared/", draft: 1 },
-          { title: "Code Review Across Teams", url: "/activities/cross-team-review/", draft: 1 },
-          { title: "Conflict Resolution", url: "/activities/conflict-resolution/", draft: 1 },
-        ],
       },
       {
         date: "Tu, Mar 31",
@@ -647,10 +766,6 @@ const topics = [
             </ul>
           </>
         ),
-        activities: [
-          { title: "Feature Development", url: "/activities/feature-development/", draft: 1 },
-          { title: "Team Check-in", url: "/activities/team-checkin/", draft: 1 },
-        ],
       },
       {
         date: "Th, Apr 2",
@@ -665,10 +780,6 @@ const topics = [
             </ul>
           </>
         ),
-        activities: [
-          { title: "Integration Testing", url: "/activities/integration-testing/", draft: 1 },
-          { title: "Code Review Across Teams", url: "/activities/cross-team-review/", draft: 1 },
-        ],
       },
     ],
   },
@@ -691,11 +802,6 @@ const topics = [
             </ul>
           </>
         ),
-        activities: [
-          { title: "Sprint Review Format", url: "/activities/sprint-review/", draft: 1 },
-          { title: "Sprint Retrospective", url: "/activities/sprint-retro/", draft: 1 },
-          { title: "Sprint Planning", url: "/activities/sprint-planning/", draft: 1 },
-        ],
       },
       {
         date: "Th, Apr 9",
@@ -710,10 +816,6 @@ const topics = [
             </ul>
           </>
         ),
-        activities: [
-          { title: "Feature Development", url: "/activities/feature-development/", draft: 1 },
-          { title: "Team Check-in", url: "/activities/team-checkin/", draft: 1 },
-        ],
       },
       {
         date: "Tu, Apr 14",
@@ -728,10 +830,6 @@ const topics = [
             </ul>
           </>
         ),
-        activities: [
-          { title: "Feature Development", url: "/activities/feature-development/", draft: 1 },
-          { title: "Integration Testing", url: "/activities/integration-testing/", draft: 1 },
-        ],
       },
       {
         date: "Th, Apr 16",
@@ -746,10 +844,6 @@ const topics = [
             </ul>
           </>
         ),
-        activities: [
-          { title: "Code Review Across Teams", url: "/activities/cross-team-review/", draft: 1 },
-          { title: "Integration Testing", url: "/activities/integration-testing/", draft: 1 },
-        ],
       },
     ],
   },
@@ -772,10 +866,6 @@ const topics = [
             </ul>
           </>
         ),
-        activities: [
-          { title: "Sprint Review", url: "/activities/sprint-review/", draft: 1 },
-          { title: "Integration Testing Guide", url: "/activities/integration-testing/", draft: 1 },
-        ],
       },
       {
         date: "Th, Apr 23",
@@ -790,10 +880,6 @@ const topics = [
             </ul>
           </>
         ),
-        activities: [
-          { title: "Feature Development", url: "/activities/feature-development/", draft: 1 },
-          { title: "Integration Testing", url: "/activities/integration-testing/", draft: 1 },
-        ],
       },
       {
         date: "Tu, Apr 28",
@@ -808,10 +894,6 @@ const topics = [
             </ul>
           </>
         ),
-        activities: [
-          { title: "Integration Testing", url: "/activities/integration-testing/", draft: 1 },
-          { title: "Bug Triage", url: "/activities/bug-triage/", draft: 1 },
-        ],
       },
       {
         date: "Th, Apr 30",
@@ -826,10 +908,6 @@ const topics = [
             </ul>
           </>
         ),
-        activities: [
-          { title: "Integration Testing", url: "/activities/integration-testing/", draft: 1 },
-          { title: "Final Testing Checklist", url: "/activities/final-testing/", draft: 1 },
-        ],
       },
     ],
   },
@@ -852,10 +930,6 @@ const topics = [
             </ul>
           </>
         ),
-        activities: [
-          { title: "Final Testing Checklist", url: "/activities/final-testing/", draft: 1 },
-          { title: "Demo Preparation", url: "/activities/demo-prep/", draft: 1 },
-        ],
         readings: [
           {
             citation: "Martin, R. C. (2011). The Clean Coder. (Ch. 12-13)",
@@ -875,14 +949,19 @@ const topics = [
             </ul>
           </>
         ),
-        activities: [
-          { title: "Final Demo Format", url: "/activities/final-demo/", draft: 1 },
-          { title: "Course Reflection", url: "/activities/course-reflection/", draft: 1 },
-        ],
       },
     ],
   },
 ];
 
-export default topics;
+// Export async function to get enriched topics
+export async function getTopics() {
+  return await enrichTopicsWithMarkdown(baseTopics);
+}
+
+// Export base topics for backward compatibility during transition
+export { baseTopics };
+
+// Default export: for now, return base topics (components will be updated to use getTopics())
+export default baseTopics;
 

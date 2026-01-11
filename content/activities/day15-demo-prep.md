@@ -1,6 +1,6 @@
 ---
 title: "Demo Prep + Phase 1 Reflection"
-date: "2026-03-03"
+start_date: "2026-03-03"
 type: "activity"
 ---
 

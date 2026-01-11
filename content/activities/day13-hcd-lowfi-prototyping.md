@@ -1,6 +1,6 @@
 ---
 title: "Human-Centered Design + Low-Fi Prototyping"
-date: "2026-02-24"
+start_date: "2026-02-24"
 type: "activity"
 ---
 

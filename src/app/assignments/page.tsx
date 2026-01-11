@@ -91,6 +91,7 @@ export default async function AssignmentsPage() {
           href={assignment.external_url} 
           target="_blank" 
           rel="noopener noreferrer"
+          className="text-blue-600 dark:text-blue-400 hover:underline"
         >
           {assignment.type ? titleCase(assignment.type) : ''} {assignment.num ? assignment.num : ''}</a>
         <span className="ml-1 text-xs">↗</span>
@@ -100,7 +101,7 @@ export default async function AssignmentsPage() {
     
     // Handle regular markdown assignments
     return (<>
-      <Link href={`/assignments/${assignment.id}`}>
+      <Link href={`/assignments/${assignment.id}`} className="text-blue-600 dark:text-blue-400 hover:underline">
         {assignment.type ? titleCase(assignment.type) : ''} {assignment.num ? assignment.num : ''}
       </Link>
       {assignment.notes && (

@@ -3,9 +3,14 @@
 import { useState, useEffect } from 'react';
 import PageHeader from '@/components/PageHeaderExpandable';
 import Meeting from '@/components/Meeting';
-import topics from '@/lib/topics';
 
-export default function ScheduleContent() {
+import { Meeting as MeetingType, Topic } from '@/lib/topics';
+
+interface ScheduleContentProps {
+  topics: Topic[];
+}
+
+export default function ScheduleContent({ topics }: ScheduleContentProps) {
   const [meetingStates, setMeetingStates] = useState<Record<string, boolean>>({});
   const [isDark, setIsDark] = useState(false);
 
@@ -26,7 +31,7 @@ export default function ScheduleContent() {
     setMeetingStates(savedStates);
   }
 
-  useEffect(loadSavedStates, []);
+  useEffect(loadSavedStates, [topics]);
 
   useEffect(() => {
     // Check if dark mode is active
@@ -54,7 +59,7 @@ export default function ScheduleContent() {
   return (
     <div className="space-y-6">
       <PageHeader title="Course Schedule" 
-        excerpt="This schedule will definitely change over the course of the semester. Please continue to check back for updates." setMeetingStates={setMeetingStates} />
+        excerpt="This schedule will definitely change over the course of the semester. Please continue to check back for updates." setMeetingStates={setMeetingStates} topics={topics} />
       {topics.map((topic) => (
         <div key={topic.id} className="mb-16">
           <h2>Topic {topic.id}: {topic.title}</h2>

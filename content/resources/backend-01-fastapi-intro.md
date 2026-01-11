@@ -6,8 +6,6 @@ order: 1
 quicklink: 0
 ---
 
-## Overview
-
 **FastAPI** is a Python web framework for building REST API endpoints. It provides utilities for API documentation, data validation, and database interaction, making it easier to create well-structured, type-safe APIs. FastAPI automatically generates interactive API documentation from your code, validates request and response data using Pydantic models, and integrates seamlessly with SQLAlchemy for database operations.
 
 ## Creating an Endpoint

@@ -4,7 +4,6 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
-import { useDarkMode } from '@/hooks/useDarkMode';
 
 interface ResourcePage {
   slug: string;
@@ -18,7 +17,6 @@ interface ResourcesNavProps {
 
 export default function ResourcesNav({ resourcePages }: ResourcesNavProps) {
   const [navOpen, setNavOpen] = useState(false);
-  const isDark = useDarkMode();
   const pathname = usePathname();
   
   // Group pages by their group field
@@ -35,30 +33,30 @@ export default function ResourcesNav({ resourcePages }: ResourcesNavProps) {
     <div className="px-3">
       {Object.entries(groupedPages).map(([groupName, pages]) => (
         <div key={groupName} className="mb-6">
-          <h4 className="!text-lg !font-normal">
+          <h4 className="!text-lg !font-normal !mb-2">
             {groupName}
           </h4>
-          <ol>
+          <div className="space-y-3">
             {pages.map((page) => {
               const href = `/resources/${page.slug}`;
               const isActive = pathname === href;
               return (
-                <li key={page.slug} className="px-3 py-0">
+                <div key={page.slug} className="resources-nav-link">
                   <Link
                     href={href}
                     onClick={() => setNavOpen(false)}
-                    className={`text-sm font-medium transition-colors !border-0 ${
+                    className={`text-sm font-normal transition-colors !border-0 leading-compact block ${
                       isActive
-                        ? 'font-bold text-black dark:text-white hover:text-gray-900 dark:hover:text-gray-200'
-                        : 'text-blue-700 dark:text-blue-400 border-blue-500'
+                        ? '!font-extrabold text-black dark:text-white hover:text-gray-900 dark:hover:text-gray-200'
+                        : 'text-gray-500 dark:!text-gray-100 hover:text-gray-900 dark:hover:text-gray-100'
                     }`}
                   >
                     {page.title}
                   </Link>
-                </li>
+                </div>
               );
             })}
-          </ol>
+          </div>
         </div>
       ))}
     </div>
@@ -77,7 +75,7 @@ export default function ResourcesNav({ resourcePages }: ResourcesNavProps) {
         </button>
         {navOpen && (
           <div className="mb-6">
-            <nav className="w-full border rounded-lg bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+            <nav className="resources-nav w-full border rounded-lg bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
               {renderNavigation()}
             </nav>
           </div>
@@ -85,7 +83,7 @@ export default function ResourcesNav({ resourcePages }: ResourcesNavProps) {
       </div>
       
       {/* Desktop: Sidebar navigation */}
-      <nav className="hidden lg:block w-full px-4 py-6">
+      <nav className="resources-nav hidden lg:block w-full px-4 py-6">
         {renderNavigation()}
       </nav>
     </>

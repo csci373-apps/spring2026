@@ -1,6 +1,6 @@
 ---
 title: "Design Principles"
-date: "2026-02-03"
+start_date: "2026-02-03"
 type: "activity"
 ---
 

@@ -36,11 +36,9 @@ export default function ContentLayout({
   leftNav,
   showToc = true,
   tocMaxLevel = 2,
-  resourcePages,
 }: ContentLayoutProps) {
   const isResourcesDetail = variant === 'resources-detail';
   const isDetailWithToc = variant === 'detail-with-toc';
-  const isList = variant === 'list';
   
   // All pages use full-height scrollable containers
   const hasToc = (isResourcesDetail || isDetailWithToc) && showToc;

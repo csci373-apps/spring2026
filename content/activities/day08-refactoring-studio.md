@@ -1,6 +1,6 @@
 ---
 title: "Refactoring Studio"
-date: "2026-02-05"
+start_date: "2026-02-05"
 type: "activity"
 ---
 

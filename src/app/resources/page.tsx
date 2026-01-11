@@ -1,6 +1,7 @@
 import { getAllPosts, PostData } from '@/lib/markdown';
 import PageHeader from '@/components/PageHeader';
 import ContentLayout from '@/components/ContentLayout';
+import QuickLinksNav from '@/components/QuickLinksNav';
 import Link from 'next/link';
 
 interface ResourceItem {
@@ -61,7 +62,7 @@ export default async function ResourcesPage() {
 
 
   return (
-    <ContentLayout variant="list">
+    <ContentLayout variant="list" leftNav={<QuickLinksNav />}>
       <div className="space-y-6">
         <PageHeader 
           title="Course How To Guides" 
@@ -81,6 +82,7 @@ export default async function ResourcesPage() {
               <li key={item.id} className="pl-0">
                 <Link 
                   href={`/resources/${item.id}`}
+                  className="text-blue-600 dark:text-blue-400 hover:text-blue-600 dark:hover:text-blue-300 underline"
                 >
                   <span className="flex-1">{item.title}</span>
                 </Link>

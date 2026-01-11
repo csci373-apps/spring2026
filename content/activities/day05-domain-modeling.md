@@ -1,6 +1,6 @@
 ---
 title: "Domain Modeling"
-date: "2026-01-27"
+start_date: "2026-01-27"
 type: "activity"
 ---
 

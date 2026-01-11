@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface TocItem {
   id: string;
@@ -15,82 +15,6 @@ interface TableOfContentsProps {
 export default function TableOfContents({ maxLevel = 2 }: TableOfContentsProps) {
   const [tocItems, setTocItems] = useState<TocItem[]>([]);
   const [activeId, setActiveId] = useState<string>('');
-  const [isDark, setIsDark] = useState(false);
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
-
-  useEffect(() => {
-    // Check if dark mode is active
-    setIsDark(document.documentElement.classList.contains('dark'));
-    
-    // Watch for dark mode changes
-    const observer = new MutationObserver(() => {
-      setIsDark(document.documentElement.classList.contains('dark'));
-    });
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['class']
-    });
-    
-    return () => observer.disconnect();
-  }, []);
-
-  const scanHeadings = useCallback(() => {
-    // Build selector based on maxLevel (e.g., maxLevel 2 = "h2", maxLevel 3 = "h2, h3")
-    const headingSelectors = [];
-    for (let i = 2; i <= maxLevel; i++) {
-      headingSelectors.push(`h${i}`);
-    }
-    const selector = headingSelectors.join(', ');
-    
-    // Find all heading elements up to maxLevel, but exclude those inside instructor notes sections
-    const allHeadings = document.querySelectorAll(selector);
-    const headings: Element[] = [];
-    
-    // Filter out headings that are inside instructor notes sections
-    allHeadings.forEach((heading) => {
-      const instructorNotesSection = heading.closest('[data-instructor-notes="true"]');
-      if (!instructorNotesSection) {
-        headings.push(heading);
-      }
-    });
-    
-    const items: TocItem[] = [];
-    const usedIds = new Set<string>();
-
-    headings.forEach((heading, index) => {
-      let id = heading.id;
-      
-      // If no id exists, generate one
-      if (!id) {
-        const baseId = heading.textContent?.toLowerCase()
-          .replace(/[^a-z0-9\s]/g, '')
-          .replace(/\s+/g, '-') || `heading-${index}`;
-        
-        // Ensure uniqueness by adding a number if needed
-        id = baseId;
-        let counter = 1;
-        while (usedIds.has(id)) {
-          id = `${baseId}-${counter}`;
-          counter++;
-        }
-        
-        heading.id = id;
-      }
-      
-      usedIds.add(id);
-
-      const level = parseInt(heading.tagName.charAt(1));
-      if (level <= maxLevel) {
-        items.push({
-          id: heading.id,
-          text: heading.textContent || '',
-          level: level
-        });
-      }
-    });
-
-    setTocItems(items);
-  }, [maxLevel]);
 
   useEffect(() => {
     let intersectionObserver: IntersectionObserver | null = null;
@@ -300,20 +224,11 @@ export default function TableOfContents({ maxLevel = 2 }: TableOfContentsProps) 
                     }
                   }
                 }}
-                className={`block py-0.5 px-2 text-sm transition-colors whitespace-nowrap overflow-hidden !border-0 text-ellipsis rounded ${
+                className={`block py-0.5 px-2 text-sm font-normal transition-colors whitespace-nowrap overflow-hidden !border-0 text-ellipsis rounded toc-link ${
                   activeId === item.id
-                    ? 'bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-bold'
-                    : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-800'
+                    ? '!font-extrabold text-blue-600 dark:text-blue-100 hover:text-blue-600 dark:hover:text-blue-200'
+                    : 'text-gray-500 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-100'
                 }`}
-                onMouseEnter={() => setHoveredId(item.id)}
-                onMouseLeave={() => setHoveredId(null)}
-                style={isDark && hoveredId === item.id && activeId !== item.id ? { 
-                  backgroundColor: '#1f2937', 
-                  color: '#ffffff' 
-                } : isDark && activeId === item.id ? {
-                  backgroundColor: '#1e3a8a',
-                  color: '#93c5fd'
-                } : undefined}
                 title={item.text}
               >
                 {item.text}

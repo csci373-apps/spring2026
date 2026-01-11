@@ -1,6 +1,6 @@
 ---
 title: "React Native + Expo"
-date: "2026-02-17"
+start_date: "2026-02-17"
 type: "activity"
 ---
 

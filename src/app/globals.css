@@ -72,7 +72,7 @@ th {
   color: var(--foreground);
 }
 
-a {
+/* a {
   @apply border-b-2 hover:border-b-2;
   border-color: var(--primary);
   color: var(--primary);
@@ -81,7 +81,7 @@ a {
 a:hover {
   border-color: var(--accent);
   text-decoration: none;
-}
+} */
 
 ol {
   @apply list-decimal pl-12 mb-4;
@@ -297,11 +297,21 @@ blockquote {
   /* Enhanced links */
   a {
     @apply transition-colors duration-200;
+    color: #2563eb; /* blue-600 */
   }
 
   a:hover {
     @apply opacity-80;
   }
+}
+
+/* Prose links styling for all pages (syllabus, assignments, etc.) */
+.prose a {
+  color: #2563eb !important; /* blue-600 */
+}
+
+.dark .prose a {
+  color: #60a5fa !important; /* blue-400 */
 
   /* Better table styling if used */
   table {
@@ -368,6 +378,31 @@ body {
 .dark nav a.font-bold,
 .dark nav a[class*="!text-gray-600"] {
   color: #d1d5db !important;
+}
+
+/* Force ResourcesNav link colors in dark mode - override text-gray-500 */
+.dark .resources-nav a[class*="text-gray-500"] {
+  color: #f3f4f6 !important;
+}
+
+/* Force ResourcesNav active link color in dark mode - override text-black */
+.dark .resources-nav-link a.text-black {
+  color: #ffffff !important;
+}
+
+/* Force TOC link colors in dark mode - override text-gray-500 */
+.dark .toc-link.text-gray-500 {
+  color: #f3f4f6 !important;
+}
+
+/* Force TOC active link color in dark mode - override text-blue-600 */
+.dark .toc-link.text-blue-600 {
+  color: #dbeafe !important; /* blue-100 */
+}
+
+/* Force QuickLinksNav h2 text color in dark mode - override var(--foreground) from h2 rule */
+.dark .quick-links-nav h2 {
+  color: #f3f4f6 !important; /* gray-100 */
 }
 
 /* Force schedule borders and chevrons in dark mode - make borders darker */
