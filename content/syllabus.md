@@ -16,7 +16,7 @@ heading_max_level: 3
       <ul>
         <li>
           <strong>Prof. Sanft</strong>: 
-          TBD
+          Drop-in: Mondays 2:00-3:00pm, Wednesdays 1:30-2:30pm; Or by appointment slot (<a href="https://calendar.app.google/QjwW9pwqQ3e8sHmWA">booking page</a>, ensure your calendar time zone is set to Eastern); Or email for an appointment at other times
         </li>
         <li>
           <strong>Prof. Van Wart</strong>: 
