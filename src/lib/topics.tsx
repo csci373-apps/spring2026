@@ -152,7 +152,7 @@ async function enrichTopicsWithMarkdown(baseTopics: TopicsArray): Promise<Topics
       const autoActivities = matchingActivities.map((activity: PostData) => ({
         title: activity.title,
         url: `/activities/${activity.id}/`,
-        draft: activity.draft || 1
+        draft: activity.draft !== undefined ? activity.draft : 1
       }));
       
       // Create auto-populated assignment entry for assigned (take first match if multiple)
@@ -165,7 +165,7 @@ async function enrichTopicsWithMarkdown(baseTopics: TopicsArray): Promise<Topics
               titleShort: titleShort,
               title: assignment.title,
               url: `/assignments/${assignment.id}/`,
-              draft: assignment.draft || 0
+              draft: assignment.draft !== undefined ? assignment.draft : 0
             };
           })()
         : null;
@@ -180,7 +180,7 @@ async function enrichTopicsWithMarkdown(baseTopics: TopicsArray): Promise<Topics
               titleShort: titleShort,
               title: assignment.title,
               url: `/assignments/${assignment.id}/`,
-              draft: assignment.draft || 0
+              draft: assignment.draft !== undefined ? assignment.draft : 0
             };
           })()
         : null;
@@ -231,7 +231,8 @@ const baseTopics = [
         ),
         activities: [
           { title: "Slides", url: "https://docs.google.com/presentation/d/1OZNO79sDQ3uI1sypTpXfwVLs0MCQUp-x/edit?usp=sharing&ouid=113376576186080604800&rtpof=true&sd=true", draft: 1 },
-          { title: "Syllabus", url: "/syllabus/", draft: 1 },
+          { title: "Syllabus", url: "/syllabus/", draft: 0 },
+          { title: "Work Preferences Form", url: "https://forms.gle/Hw7hXyvLMLxCRShS7", draft: 0 },
         ]
       },
       {
