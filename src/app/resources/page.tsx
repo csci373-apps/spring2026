@@ -26,8 +26,8 @@ export default async function ResourcesPage() {
       id: post.id,
       title: post.title || post.id.charAt(0).toUpperCase() + post.id.slice(1).replace(/-/g, ' '),
       group: (post as PostData & { group?: string }).group || 'Other',
-      group_order: (post as PostData & { group_order?: number }).group_order || 999,
-      order: (post as PostData & { order?: number }).order || 999
+      group_order: (post as PostData & { group_order?: number }).group_order ?? 999,
+      order: (post as PostData & { order?: number }).order ?? 999
     }))
     .sort((a, b) => {
       if (a.group_order !== b.group_order) {
@@ -57,6 +57,11 @@ export default async function ResourcesPage() {
     });
   });
 
+  // Sort items within each chapter by order
+  chaptersMap.forEach((chapter) => {
+    chapter.items.sort((a, b) => a.order - b.order);
+  });
+
   // Convert to array and sort by group_order
   const chapters = Array.from(chaptersMap.values()).sort((a, b) => a.group_order - b.group_order);
 
@@ -77,7 +82,7 @@ export default async function ResourcesPage() {
           </h2>
           
           {/* Resource links */}
-          <ul className="list-none pl-0 space-y-3">
+          <ol className="pl-0 space-y-0 list-decimal">
             {chapter.items.map((item) => (
               <li key={item.id} className="pl-0">
                 <Link 
@@ -88,7 +93,7 @@ export default async function ResourcesPage() {
                 </Link>
               </li>
             ))}
-          </ul>
+          </ol>
         </div>
       ))}
       </div>

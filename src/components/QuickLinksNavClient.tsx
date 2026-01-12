@@ -33,7 +33,7 @@ interface QuickLinksNavClientProps {
   resources: ResourceData[];
   assignments: AssignmentData[];
   readings: ReadingData[];
-  topics?: Topic[];
+  topics: Topic[];
 }
 
 function titleCase(str: string): string {
@@ -52,7 +52,7 @@ function getDaysUntilDue(dueDate: string): number {
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 }
 
-export default function QuickLinksNavClient({ resources, assignments, readings, topics }: QuickLinksNavClientProps) {
+export default function QuickLinksNavClient({ resources, assignments, readings }: QuickLinksNavClientProps) {
   
   // Filter assignments client-side based on current date
   const upcomingAssignments = useMemo(() => {

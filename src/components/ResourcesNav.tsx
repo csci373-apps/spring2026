@@ -9,6 +9,8 @@ interface ResourcePage {
   slug: string;
   title: string;
   group?: string;
+  group_order?: number;
+  order?: number;
 }
 
 interface ResourcesNavProps {
@@ -29,25 +31,41 @@ export default function ResourcesNav({ resourcePages }: ResourcesNavProps) {
     return groups;
   }, {} as Record<string, typeof resourcePages>);
   
+  // Sort pages within each group by order property
+  Object.keys(groupedPages).forEach(group => {
+    groupedPages[group].sort((a, b) => {
+      const orderA = a.order ?? 999;
+      const orderB = b.order ?? 999;
+      return orderA - orderB;
+    });
+  });
+  
+  // Sort groups by group_order (get the first page's group_order for each group)
+  const sortedGroups = Object.entries(groupedPages).sort(([, pagesA], [, pagesB]) => {
+    const groupOrderA = pagesA[0]?.group_order ?? 999;
+    const groupOrderB = pagesB[0]?.group_order ?? 999;
+    return groupOrderA - groupOrderB;
+  });
+  
   const renderNavigation = () => (
     <div className="px-3">
-      {Object.entries(groupedPages).map(([groupName, pages], idx) => (
+      {sortedGroups.map(([groupName, pages], idx) => (
         <div key={groupName} className="mb-6">
           <h4 className="!text-lg !font-normal !mb-2">
             {idx + 1}. {groupName}
           </h4>
-          <div className="space-y-3">
+          <div className="space-y-1">
             {pages.map((page) => {
               const href = `/resources/${page.slug}`;
               const isActive = pathname === href;
               return (
-                <div key={page.slug} className="resources-nav-link">
+                <div key={page.slug} className="resources-nav-link min-w-0">
                   <Link
                     href={href}
                     onClick={() => setNavOpen(false)}
-                    className={`text-sm font-normal transition-colors !border-0 leading-compact block ${
+                    className={`text-sm font-normal transition-colors !border-0 leading-compact block truncate ${
                       isActive
-                        ? '!font-extrabold text-blue-400 dark:text-white hover:text-blue-600 dark:hover:text-blue-200'
+                        ? '!font-bold text-blue-400 dark:text-white hover:text-blue-600 dark:hover:text-blue-200'
                         : 'text-gray-500 dark:!text-gray-100 hover:text-gray-900 dark:hover:text-gray-100'
                     }`}
                   >

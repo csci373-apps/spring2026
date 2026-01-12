@@ -81,13 +81,15 @@ async function enrichTopicsWithMarkdown(baseTopics: TopicsArray): Promise<Topics
   const allActivities = getAllPosts('activities');
   const allAssignments = getAllPosts('assignments');
   
-  // Filter activities with start_date and assignments with assigned_date
+  // Filter activities with start_date and assignments with assigned_date or due_date
   const activitiesWithDates = allActivities.filter(a => a.start_date);
-  const assignmentsWithDates = allAssignments.filter(a => a.assigned_date);
+  const assignmentsWithAssignedDates = allAssignments.filter(a => a.assigned_date);
+  const assignmentsWithDueDates = allAssignments.filter(a => a.due_date);
   
   // Create maps for quick lookup by date
   const activitiesByDate = new Map<string, PostData[]>();
-  const assignmentsByDate = new Map<string, PostData[]>();
+  const assignmentsByAssignedDate = new Map<string, PostData[]>();
+  const assignmentsByDueDate = new Map<string, PostData[]>();
   
   activitiesWithDates.forEach(activity => {
     const date = normalizeDate(activity.start_date);
@@ -99,13 +101,23 @@ async function enrichTopicsWithMarkdown(baseTopics: TopicsArray): Promise<Topics
     }
   });
   
-  assignmentsWithDates.forEach(assignment => {
+  assignmentsWithAssignedDates.forEach(assignment => {
     const date = normalizeDate(assignment.assigned_date);
     if (date) {
-      if (!assignmentsByDate.has(date)) {
-        assignmentsByDate.set(date, []);
+      if (!assignmentsByAssignedDate.has(date)) {
+        assignmentsByAssignedDate.set(date, []);
       }
-      assignmentsByDate.get(date)!.push(assignment);
+      assignmentsByAssignedDate.get(date)!.push(assignment);
+    }
+  });
+  
+  assignmentsWithDueDates.forEach(assignment => {
+    const date = normalizeDate(assignment.due_date);
+    if (date) {
+      if (!assignmentsByDueDate.has(date)) {
+        assignmentsByDueDate.set(date, []);
+      }
+      assignmentsByDueDate.get(date)!.push(assignment);
     }
   });
   
@@ -117,6 +129,7 @@ async function enrichTopicsWithMarkdown(baseTopics: TopicsArray): Promise<Topics
       ...meeting,
       activities: meeting.activities ? [...meeting.activities] : undefined,
       assigned: meeting.assigned ? (typeof meeting.assigned === 'object' ? { ...meeting.assigned } : meeting.assigned) : undefined,
+      due: meeting.due ? (typeof meeting.due === 'object' ? { ...meeting.due } : meeting.due) : undefined,
     }))
   }));
   
@@ -129,8 +142,11 @@ async function enrichTopicsWithMarkdown(baseTopics: TopicsArray): Promise<Topics
       // Find matching activities
       const matchingActivities = activitiesByDate.get(meetingDateStr) || [];
       
-      // Find matching assignments
-      const matchingAssignments = assignmentsByDate.get(meetingDateStr) || [];
+      // Find matching assignments by assigned_date
+      const matchingAssignedAssignments = assignmentsByAssignedDate.get(meetingDateStr) || [];
+      
+      // Find matching assignments by due_date
+      const matchingDueAssignments = assignmentsByDueDate.get(meetingDateStr) || [];
       
       // Create auto-populated activity entries
       const autoActivities = matchingActivities.map((activity: PostData) => ({
@@ -139,10 +155,25 @@ async function enrichTopicsWithMarkdown(baseTopics: TopicsArray): Promise<Topics
         draft: activity.draft || 1
       }));
       
-      // Create auto-populated assignment entry (take first match if multiple)
-      const autoAssignment = matchingAssignments.length > 0 
+      // Create auto-populated assignment entry for assigned (take first match if multiple)
+      const autoAssignedAssignment = matchingAssignedAssignments.length > 0 
         ? (() => {
-            const assignment = matchingAssignments[0];
+            const assignment = matchingAssignedAssignments[0];
+            // Format titleShort as "HW" + number (e.g., "HW0", "HW1")
+            const titleShort = assignment.num ? `HW ${assignment.num}` : 'HW';
+            return {
+              titleShort: titleShort,
+              title: assignment.title,
+              url: `/assignments/${assignment.id}/`,
+              draft: assignment.draft || 0
+            };
+          })()
+        : null;
+      
+      // Create auto-populated assignment entry for due (take first match if multiple)
+      const autoDueAssignment = matchingDueAssignments.length > 0 
+        ? (() => {
+            const assignment = matchingDueAssignments[0];
             // Format titleShort as "HW" + number (e.g., "HW0", "HW1")
             const titleShort = assignment.num ? `HW ${assignment.num}` : 'HW';
             return {
@@ -163,9 +194,14 @@ async function enrichTopicsWithMarkdown(baseTopics: TopicsArray): Promise<Topics
         meeting.activities = [...existingActivities, ...newAutoActivities];
       }
       
-      // Merge assignment: only set if not already set manually
-      if (autoAssignment && !meeting.assigned) {
-        meeting.assigned = autoAssignment;
+      // Merge assigned assignment: only set if not already set manually
+      if (autoAssignedAssignment && !meeting.assigned) {
+        meeting.assigned = autoAssignedAssignment;
+      }
+      
+      // Merge due assignment: only set if not already set manually
+      if (autoDueAssignment && !meeting.due) {
+        meeting.due = autoDueAssignment;
       }
     });
   });

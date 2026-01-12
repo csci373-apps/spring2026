@@ -1,6 +1,7 @@
 "use client";
 
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useLayoutEffect, useRef } from 'react';
+import { usePathname } from 'next/navigation';
 import TableOfContents from './TableOfContents';
 import Footer from './Footer';
 
@@ -42,9 +43,130 @@ export default function ContentLayout({
 }: ContentLayoutProps) {
   const isResourcesDetail = variant === 'resources-detail';
   const isDetailWithToc = variant === 'detail-with-toc';
+  const pathname = usePathname();
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const isRestoringRef = useRef(false);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // All pages use full-height scrollable containers
   const hasToc = (isResourcesDetail || isDetailWithToc) && showToc;
+  
+  // Restore scroll position - use useLayoutEffect to restore before paint to prevent blinking
+  useLayoutEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const scrollKey = `scroll-position-percentage-${pathname}`;
+    const savedPercentage = localStorage.getItem(scrollKey);
+    
+    if (!savedPercentage) return;
+    
+    const percentage = parseFloat(savedPercentage);
+    if (isNaN(percentage)) return;
+    
+    isRestoringRef.current = true;
+    
+    // Try to restore immediately (before paint)
+    const scrollContainer = scrollContainerRef.current || document.getElementById('main-content-scroll');
+    if (scrollContainer) {
+      const scrollHeight = scrollContainer.scrollHeight;
+      const clientHeight = scrollContainer.clientHeight;
+      const maxScroll = scrollHeight - clientHeight;
+      
+      if (maxScroll > 0 && scrollHeight > 200) {
+        const targetPosition = (percentage / 100) * maxScroll;
+        scrollContainer.scrollTop = targetPosition;
+      }
+    }
+    
+    // Also restore after content loads (in case initial attempt was too early)
+    let lastScrollHeight = 0;
+    let stableCount = 0;
+    
+    const restoreScroll = () => {
+      const container = scrollContainerRef.current || document.getElementById('main-content-scroll');
+      if (!container) {
+        requestAnimationFrame(restoreScroll);
+        return;
+      }
+      
+      const scrollHeight = container.scrollHeight;
+      const clientHeight = container.clientHeight;
+      const maxScroll = scrollHeight - clientHeight;
+      
+      if (maxScroll <= 0 || scrollHeight < 200) {
+        requestAnimationFrame(restoreScroll);
+        return;
+      }
+      
+      // Check if scroll height has stabilized
+      if (scrollHeight === lastScrollHeight) {
+        stableCount++;
+        if (stableCount >= 2) {
+          // Content is stable, restore using percentage
+          const targetPosition = (percentage / 100) * maxScroll;
+          container.scrollTop = targetPosition;
+          
+          setTimeout(() => {
+            isRestoringRef.current = false;
+          }, 200);
+          return;
+        }
+      } else {
+        lastScrollHeight = scrollHeight;
+        stableCount = 0;
+      }
+      
+      requestAnimationFrame(restoreScroll);
+    };
+    
+    // Start checking after initial render
+    requestAnimationFrame(restoreScroll);
+  }, [pathname]);
+  
+  // Save scroll position on scroll
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const scrollContainer = scrollContainerRef.current || document.getElementById('main-content-scroll');
+    if (!scrollContainer) return;
+    
+    const scrollKey = `scroll-position-percentage-${pathname}`;
+    
+    const handleScroll = () => {
+      // Don't save during restoration
+      if (isRestoringRef.current) return;
+      
+      // Debounce to avoid too many writes
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+      
+      scrollTimeoutRef.current = setTimeout(() => {
+        const container = scrollContainerRef.current || document.getElementById('main-content-scroll');
+        if (!container) return;
+        
+        const scrollTop = container.scrollTop;
+        const scrollHeight = container.scrollHeight;
+        const clientHeight = container.clientHeight;
+        const maxScroll = scrollHeight - clientHeight;
+        
+        // Save as percentage (more reliable when content height changes)
+        if (maxScroll > 0) {
+          const percentage = (scrollTop / maxScroll) * 100;
+          localStorage.setItem(scrollKey, percentage.toString());
+        }
+      }, 150);
+    };
+    
+    scrollContainer.addEventListener('scroll', handleScroll, { passive: true });
+    
+    return () => {
+      scrollContainer.removeEventListener('scroll', handleScroll);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, [pathname]);
   
   return (
     <div className="relative lg:h-[calc(100vh-4rem)] lg:overflow-hidden -mx-4 lg:-mx-8">
@@ -81,6 +203,7 @@ export default function ContentLayout({
         
         {/* Center Column: Content - scrollable on all pages */}
         <div 
+          ref={scrollContainerRef}
           id="main-content-scroll"
           className={`flex-1 min-w-0 overflow-y-auto ${hasToc ? 'mr-72' : ''}`}
         >

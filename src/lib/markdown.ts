@@ -67,6 +67,38 @@ export async function getPostData(id: string, subdirectory?: string): Promise<Po
 
   // Use gray-matter to parse the post metadata section
   const matterResult = matter(fileContents);
+  
+  // Pre-process markdown to fix tables without headers
+  // If a table starts with a separator row (| -- | -- |), add an empty header row before it
+  let markdownContent = matterResult.content;
+  const lines = markdownContent.split('\n');
+  const processedLines: string[] = [];
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    
+    // Check if this line is a separator row (| -- | -- |)
+    const isSeparatorRow = line.match(/^\s*\|(\s*--\s*\|)+\s*$/);
+    
+    if (isSeparatorRow && i > 0) {
+      const prevLine = lines[i - 1];
+      // Check if previous line is a table row with content (not a separator)
+      const prevIsTableRow = prevLine.match(/^\s*\|.*\|.*\|\s*$/);
+      const prevIsSeparator = prevLine.match(/^\s*\|(\s*--\s*\|)+\s*$/);
+      
+      // If previous line is not a table row, or is also a separator, we need to add a header
+      if (!prevIsTableRow || prevIsSeparator) {
+        // Count columns from the separator row (number of | minus 1)
+        const columnCount = (line.match(/\|/g) || []).length - 1;
+        // Create empty header row with same number of columns
+        const emptyHeaderRow = '|' + ' |'.repeat(columnCount) + ' |';
+        processedLines.push(emptyHeaderRow);
+      }
+    }
+    processedLines.push(line);
+  }
+  
+  markdownContent = processedLines.join('\n');
 
   // Use remark to convert markdown into HTML string with GFM support and syntax highlighting
   const processedContent = await remark()
@@ -75,9 +107,9 @@ export async function getPostData(id: string, subdirectory?: string): Promise<Po
     .use(highlight)  // Add syntax highlighting
     .use(smartypants, { dashes: 'oldschool' })  // Convert -- to en-dash (–) and --- to em-dash (—)
     .use(html, { sanitize: false })  // Allow HTML without sanitization
-    .process(matterResult.content);
+    .process(markdownContent);
   let contentHtml = processedContent.toString();
-  
+
   // Wrap each instructor notes section with data attribute for conditional rendering
   // Find all "## Instructor Notes" headings and wrap each section individually
   // Each section includes the heading and everything until the next h2 heading (or end of document)

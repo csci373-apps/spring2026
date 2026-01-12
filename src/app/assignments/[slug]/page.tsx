@@ -4,6 +4,7 @@ import MarkdownContent from '@/components/MarkdownContent';
 import ContentLayout from '@/components/ContentLayout';
 import QuickLinksNav from '@/components/QuickLinksNav';
 import StyleGuideStyles from '@/components/StyleGuideStyles';
+import Link from 'next/link';
 
 interface AssignmentPageProps {
   params: Promise<{
@@ -33,6 +34,13 @@ export default async function AssignmentPage({ params }: AssignmentPageProps) {
       showToc={postData.toc !== false}
       tocMaxLevel={heading_max_level || 2}
     >
+      <div className="mb-4">
+        <Link href="/assignments" className="text-blue-600 dark:text-blue-400 hover:underline">
+          Assignments
+        </Link>
+        {' > '}
+        <span className="text-gray-900 dark:text-gray-100">{postData.title}</span>
+      </div>
       <PageHeader 
         title={postData.title} 
         excerpt={postData.excerpt}

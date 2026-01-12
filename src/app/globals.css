@@ -163,20 +163,6 @@ blockquote {
   }
 }
 
-/* Schedule page specific styles */
-.schedule-page a {
-  color: #2563eb !important; /* blue-600 */
-  text-decoration: underline;
-}
-
-.dark .schedule-page a {
-  color: #60a5fa !important; /* blue-400 */
-}
-
-.schedule-page a:hover {
-  opacity: 0.8;
-}
-
 /* Activity page specific styles */
 .assignment-page.activity-content,
 .activity-content {
@@ -333,30 +319,45 @@ blockquote {
 
 .dark .prose a {
   color: #60a5fa !important; /* blue-400 */
-  }
+}
 
-  /* Better table styling if used */
+/* Schedule page links styling - make all links blue with hover underline */
+.schedule-content a {
+  color: #2563eb !important; /* blue-600 */
+  text-decoration: none;
+  transition: text-decoration 0.2s ease;
+}
+
+.schedule-content a:hover {
+  text-decoration: underline;
+}
+
+.dark .schedule-content a {
+  color: #60a5fa !important; /* blue-400 */
+}
+
+/* Better table styling if used */
 .prose table {
-    @apply rounded-lg overflow-hidden;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  }
+  @apply rounded-lg overflow-hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
 
 .prose th {
-    background: var(--card);
-  }
+  background: var(--card);
+}
 
-  /* Numbered steps styling */
+/* Numbered steps styling */
 .prose ol li {
-    @apply pl-2;
-    counter-increment: list-counter;
-  }
+  @apply pl-2;
+  counter-increment: list-counter;
+}
 
-  /* Better spacing for nested lists */
+/* Better spacing for nested lists */
 .prose ul ul,
 .prose ol ol,
 .prose ul ol,
 .prose ol ul {
-    @apply mt-2 mb-2;
+  @apply mt-2 mb-2;
 }
 
 /* stylelint-disable-next-line */
@@ -460,6 +461,31 @@ main > div.relative {
   padding-left: 0 !important;
   padding-right: 0 !important;
 }
+
+img.frame {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    @apply mb-4;
+}
+img.xsmall {
+    max-width: 250px;
+    width: 60%;
+    @apply mb-4;
+}
+img.small {
+    max-width: 450px;
+    width: 60%;
+    @apply mb-4;
+}
+img.large {
+    max-width: 100%;
+    width: 100%;
+    @apply mb-4;
+}
+
+
+
 
 code {
   @apply bg-gray-100 dark:bg-gray-800 p-1 rounded-md;

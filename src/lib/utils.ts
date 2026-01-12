@@ -1,3 +1,49 @@
+/**
+ * Triggers a celebratory confetti animation
+ * @param enabled - Whether to enable the confetti (default: true). Useful for conditional triggering.
+ */
+export function triggerConfetti(enabled: boolean = true): void {
+  if (!enabled || typeof window === 'undefined') return;
+  
+  // Use dynamic import to avoid SSR issues
+  import('canvas-confetti').then((confettiModule) => {
+    const confetti = confettiModule.default;
+    
+    // Trigger confetti animation
+    const duration = 3000;
+    const animationEnd = Date.now() + duration;
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+    function randomInRange(min: number, max: number) {
+      return Math.random() * (max - min) + min;
+    }
+
+    const interval: NodeJS.Timeout = setInterval(function() {
+      const timeLeft = animationEnd - Date.now();
+
+      if (timeLeft <= 0) {
+        return clearInterval(interval);
+      }
+
+      const particleCount = 50 * (timeLeft / duration);
+      
+      // Launch confetti from the left
+      confetti({
+        ...defaults,
+        particleCount,
+        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+      });
+      
+      // Launch confetti from the right
+      confetti({
+        ...defaults,
+        particleCount,
+        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+      });
+    }, 250);
+  });
+}
+
 function formatDate(dateString: string): string {
     // Handle the YYYY-MM-DD format from markdown frontmatter
     const date = new Date(dateString + 'T00:00:00');

@@ -2,7 +2,7 @@
 title: "Team Working Agreement + Dev Setup"
 type: "assignment"
 num: "0"
-draft: 1
+draft: 0
 assigned_date: "2026-01-15"
 due_date: "2026-01-20"
 heading_max_level: 3

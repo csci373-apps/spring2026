@@ -179,6 +179,6 @@ export default async function QuickLinksNav() {
   });
 
   // Pass all data to client - filtering will happen client-side
-  return <QuickLinksNavClient resources={quickLinkResources} assignments={allAssignments} readings={allReadings} />;
+  return <QuickLinksNavClient resources={quickLinkResources} assignments={allAssignments} readings={allReadings} topics={topics} />;
 }
 

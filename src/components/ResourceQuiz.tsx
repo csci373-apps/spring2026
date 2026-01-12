@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useDarkMode } from '@/hooks/useDarkMode';
+import { triggerConfetti } from '@/lib/utils';
 import hljs from 'highlight.js';
 
 // Helper function to format inline code and code blocks
@@ -197,6 +198,9 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
   const [randomMode, setRandomMode] = useState<boolean>(false);
   const isDark = useDarkMode();
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const previousCompletedRef = useRef<boolean>(false);
+  const previousShowSummaryRef = useRef<boolean>(false);
+  const isInitialLoad = useRef<boolean>(true);
   
   const storageKey = `quiz-${resourceSlug}`;
   const randomModeKey = `quiz-random-${resourceSlug}`;
@@ -251,19 +255,28 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
         const savedState: QuizState = JSON.parse(saved);
         setSelectedAnswers(savedState.selectedAnswers || {});
         setScore(savedState.score || 0);
-        setCompleted(savedState.completed || false);
+        const wasCompleted = savedState.completed || false;
+        setCompleted(wasCompleted);
+        // Set the previous completed ref to prevent confetti on initial load
+        previousCompletedRef.current = wasCompleted;
         // Find first unanswered question, or stay at 0
         const firstUnanswered = shuffledQuestions.findIndex(q => !savedState.selectedAnswers?.[q.id]);
         if (firstUnanswered !== -1) {
           setCurrentQuestionIndex(firstUnanswered);
-        } else if (savedState.completed) {
+          previousShowSummaryRef.current = false;
+        } else if (wasCompleted) {
           // If completed, show summary (index beyond last question)
           setCurrentQuestionIndex(shuffledQuestions.length);
+          previousShowSummaryRef.current = true;
         }
       }
     } catch (error) {
       console.error('Error loading quiz state:', error);
     }
+    // Mark initial load as complete after state is set
+    setTimeout(() => {
+      isInitialLoad.current = false;
+    }, 100);
   }, [storageKey, shuffledQuestions]);
 
   // Calculate score whenever selectedAnswers changes
@@ -295,6 +308,37 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
       console.error('Error saving quiz state:', error);
     }
   }, [selectedAnswers, shuffledQuestions, storageKey]);
+
+  // Trigger confetti when quiz is completed AND user is viewing the summary screen AND score > 85%
+  useEffect(() => {
+    if (shuffledQuestions.length === 0) return;
+    
+    // Show summary screen if completed and at the end
+    const showSummary = completed && currentQuestionIndex >= shuffledQuestions.length;
+    
+    // Calculate score percentage
+    const scorePercentage = shuffledQuestions.length > 0 ? (score / shuffledQuestions.length) * 100 : 0;
+    
+    // Skip on initial load
+    if (isInitialLoad.current) {
+      isInitialLoad.current = false;
+      previousCompletedRef.current = completed;
+      previousShowSummaryRef.current = showSummary;
+      return;
+    }
+
+    // Trigger confetti when:
+    // 1. Quiz is completed
+    // 2. User is viewing the summary screen (currentQuestionIndex >= shuffledQuestions.length)
+    // 3. User just navigated to the summary screen (wasn't showing summary before)
+    // 4. Score is greater than 85%
+    if (completed && showSummary && !previousShowSummaryRef.current && scorePercentage > 85) {
+      triggerConfetti();
+    }
+
+    previousCompletedRef.current = completed;
+    previousShowSummaryRef.current = showSummary;
+  }, [completed, currentQuestionIndex, shuffledQuestions.length, score]);
 
 
 

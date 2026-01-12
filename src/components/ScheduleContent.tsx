@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import PageHeader from '@/components/PageHeaderExpandable';
-import Meeting from '@/components/Meeting';
+import Meeting from '@/components/schedule-entry/Meeting';
 
 import { Topic } from '@/lib/topics';
 
@@ -57,11 +57,11 @@ export default function ScheduleContent({ topics }: ScheduleContentProps) {
   };
 
   return (
-    <div className="space-y-6 schedule-page">
+    <div className="space-y-6 schedule-content">
       <PageHeader title="Course Schedule" 
         excerpt="This schedule will definitely change over the course of the semester. Please continue to check back for updates." setMeetingStates={setMeetingStates} topics={topics} />
       {topics.map((topic) => (
-        <div key={topic.id} className="mb-16">
+        <div key={topic.id} id={`topic-${topic.id}`} className="mb-16">
           <h2>Topic {topic.id}: {topic.title}</h2>
           <p 
             className="pb-6 !mb-0 border-b border-black dark:border-gray-800 text-gray-700 dark:text-gray-300"

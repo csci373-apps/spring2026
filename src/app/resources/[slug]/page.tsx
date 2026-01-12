@@ -37,8 +37,8 @@ export default async function ResourcePage({ params }: PageProps) {
         slug: post.id,
         title: post.title || post.id.charAt(0).toUpperCase() + post.id.slice(1).replace(/-/g, ' '),
         group: (post as PostData & { group?: string }).group || 'Other',
-        group_order: (post as PostData & { group_order?: number }).group_order || 999,
-        order: (post as PostData & { order?: number }).order || 999
+        group_order: (post as PostData & { group_order?: number }).group_order ?? 999,
+        order: (post as PostData & { order?: number }).order ?? 999
       }))
       .sort((a, b) => {
         if (a.group_order !== b.group_order) {
