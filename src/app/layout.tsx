@@ -21,7 +21,7 @@ const outfit = Outfit({
 
 export const metadata: Metadata = {
   title: "CSCI 373 Course Website",
-  description: "Course materials and resources for CSCI 373: Software Development Studio",
+  description: "Course materials and resources for CSCI 373: Industry Team Project",
   icons: {
     icon: '/favicon.ico', // or '/your-favicon.png'
     // apple: '/apple-touch-icon.png', // for iOS devices

@@ -1,12 +1,12 @@
 ---
-title: "Syllabus: Software Development Studio"
+title: "Syllabus: Industry Team Project"
 date: "2025-08-26"
 heading_max_level: 3
 ---
 
 
 <table>
-  <tr><td><strong>Course</strong></td><td>CSCI 373: Software Development Studio</td></tr>
+  <tr><td><strong>Course</strong></td><td>CSCI 373: Industry Team Project</td></tr>
   <tr><td><strong>Instructors</strong></td><td>Dr. Kevin Sanft (ksanft@unca.edu) & Dr. Sarah Van Wart (svanwart@unca.edu)</td></tr>
   <tr><td><strong>Credits</strong></td><td>3 Credit Hours</td></tr>
   <tr><td><strong>Time & Location</strong></td><td>Tu/Th, 9:55 AM - 11:35 AM in RRO 217</td></tr>
@@ -20,7 +20,7 @@ heading_max_level: 3
         </li>
         <li>
           <strong>Prof. Van Wart</strong>: 
-          Mon, Wed & Fri, 2:30 - 3:30 PM (or by appointment) In Rhoades-Robinson, Rm. 220
+          Mon, Wed & Fri, 3:30 - 4:30 PM (or by appointment) In Rhoades-Robinson, Rm. 220
         </li>
       </ul>
     </td>
@@ -137,25 +137,19 @@ Assessment in this course emphasizes **process, reasoning, and collaboration**, 
 
 Grades are based on the following components:
 
-1. **Technical Contributions (Pull Requests) — 35%**
+1. **First Half — 33%** 
 
-    Assesses the ability to implement coherent, well-scoped changes within an existing codebase, including appropriate use of tests and adherence to project conventions.
+    Everyone is working on everything!
+    * Weighted categories (testing, technical implementation, participation, etc.)
+    * Performance reviews (~every two weeks)
 
-1. **Code Reviews — 15%**
+1. **Second Half — 67%**
 
-    Assesses engagement with peer work through substantive review comments that address behavior, design, testing, or tradeoffs.
+    Teams are specializing:
 
-1. **Testing Contributions — 20%**
-
-    Assesses the use of tests to specify behavior, reduce risk, and support safe iteration across backend and frontend components.
-
-1. **Design Artifacts — 15%**
-
-    Assesses design work and reflection, including prototypes, design rationales, and short written reflections tied to concrete decisions.
-
-1. **Studio Participation — 15%**
-
-    Assesses in-class engagement, including participation in studio activities, critique sessions, and collaborative work. Because this is a studio course, participation cannot be fully replicated outside of class.
+    * Meeting deliverables (team)
+    * Meeting goals (individual)
+    * Performance reviews (~every four weeks)
 
 This course reflects the reality of professional software development: software is built collaboratively, but learning and evaluation occur at the individual level. Assessment in this course intentionally balances both. Given this, students will be evaluated as **individual contributors working within team-based projects**. You will collaborate closely with others, but your grade is not determined solely by your team’s output. Instead, assessment is based on observable individual contributions made in a team context, as well as selected team-level outcomes.
 
@@ -191,8 +185,6 @@ These components reflect how well the team coordinated work and delivered a cohe
 Students who are frequently absent or disengaged may have their grades **decoupled from team outcomes** and may be reassigned to individual alternative work.
 
 > Strong team outcomes do not automatically guarantee high individual grades, and strong individual effort does not override a lack of participation in required studio work. Grades reflect **how you contribute**, not just what the team produces.
-
-
 
 
 ## 6. Topics

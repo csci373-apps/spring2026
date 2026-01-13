@@ -108,57 +108,8 @@
       "correct": 1,
       "explanation": "Code Reviews are assessed for substance and engagement (e.g., questions about behavior, design tradeoffs, or testing), not for 'correctness.'"
     },
-
     {
       "id": "q10",
-      "question": "What percentage of the grade is allocated to Technical Contributions (Pull Requests)?",
-      "options": [
-        "25%",
-        "30%",
-        "35%",
-        "40%"
-      ],
-      "correct": 2,
-      "explanation": "Technical Contributions (Pull Requests) account for 35% of the grade, assessing the ability to implement coherent, well-scoped changes within an existing codebase."
-    },
-    {
-      "id": "q11",
-      "question": "What percentage of the grade is allocated to Code Reviews?",
-      "options": [
-        "10%",
-        "15%",
-        "20%",
-        "25%"
-      ],
-      "correct": 1,
-      "explanation": "Code Reviews account for 15% of the grade, assessing engagement with peer work through substantive review comments that address behavior, design, testing, or tradeoffs."
-    },
-    {
-      "id": "q12",
-      "question": "What percentage of the grade is allocated to Testing Contributions?",
-      "options": [
-        "15%",
-        "20%",
-        "25%",
-        "30%"
-      ],
-      "correct": 1,
-      "explanation": "Testing Contributions account for 20% of the grade, assessing the use of tests to specify behavior, reduce risk, and support safe iteration across backend and frontend components."
-    },
-    {
-      "id": "q13",
-      "question": "What percentage of the grade is allocated to Studio Participation?",
-      "options": [
-        "10%",
-        "15%",
-        "20%",
-        "25%"
-      ],
-      "correct": 1,
-      "explanation": "Studio Participation accounts for 15% of the grade, assessing in-class engagement, including participation in studio activities, critique sessions, and collaborative work."
-    },
-    {
-      "id": "q14",
       "question": "How are students evaluated in this course?",
       "options": [
         "Solely based on team output",
@@ -170,7 +121,7 @@
       "explanation": "Students are evaluated as individual contributors working within team-based projects. You will collaborate closely with others, but your grade is not determined solely by your team's output. Assessment is based on observable individual contributions made in a team context."
     },
     {
-      "id": "q15",
+      "id": "q11",
       "question": "Which of the following is assessed at the individual level?",
       "options": [
         "Integrated system behavior",
@@ -182,7 +133,7 @@
       "explanation": "Pull Requests (PRs) are assessed at the individual level. Your authored PRs will be evaluated for clarity of intent, scope, correctness, use of tests, and adherence to project conventions."
     },
     {
-      "id": "q16",
+      "id": "q12",
       "question": "What is one of the learning objectives of this course?",
       "options": [
         "To memorize all programming languages",
@@ -194,19 +145,7 @@
       "explanation": "One learning objective is to contribute effectively to an existing software system, including understanding and working within established architectural patterns, and making scoped, testable changes using professional workflows."
     },
     {
-      "id": "q17",
-      "question": "What technology stack is used in this course project?",
-      "options": [
-        "MySQL, Django, Angular, Flutter",
-        "PostgreSQL, FastAPI, React, React Native",
-        "MongoDB, Express, Vue, Ionic",
-        "SQLite, Flask, jQuery, Swift"
-      ],
-      "correct": 1,
-      "explanation": "The project focuses on building a cross-platform application (web and mobile) using PostgreSQL, FastAPI, React, and React Native."
-    },
-    {
-      "id": "q18",
+      "id": "q13",
       "question": "What is the relationship between strong team outcomes and individual grades?",
       "options": [
         "Strong team outcomes automatically guarantee high individual grades",

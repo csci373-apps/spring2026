@@ -31,7 +31,8 @@ Your working agreement must include:
 #### 1. Communication (5 points)
 - **How will you communicate?** (Slack, Discord, email, text, etc.)
 - **Response time expectations?** (within 24 hours? same day? etc.)
-- **When are team members available?** (time zones, class schedules, work schedules)
+- **When are team members available?** (class schedules, work schedules)
+- **UNCA Google Calendar:** Can we assume they're up-to-date?
 - **How will you share updates?** (daily? weekly? as needed?)
 
 **Example:**
@@ -49,7 +50,7 @@ Your working agreement must include:
 #### 2. Meetings (5 points)
 - **How often will you meet?** (weekly? bi-weekly? as needed?)
 - **How long?** (1 hour? 2 hours?)
-- **Where?** (in-person? Zoom? hybrid?)
+- **Where?** (these should be in-person meetings)
 - **What's the agenda?** (standup? planning? coding together?)
 
 **Example:**
@@ -86,7 +87,7 @@ Your working agreement must include:
 
 #### 4. Code Review (3 points)
 - **Who reviews PRs?** (everyone? specific people? rotate?)
-- **How quickly should reviews happen?** (within 24 hours? same day?)
+- **How quickly should reviews happen?** (within 24 hours? 48?)
 - **What makes a good review?** (constructive? specific? kind?)
 
 **Example:**
