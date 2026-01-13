@@ -15,6 +15,7 @@ interface Activity {
   url?: string;
   draft?: number;
   excluded?: number;
+  notes?: string;
 }
 
 interface Assignment {
@@ -145,9 +146,26 @@ export default function Meeting({
                 const linkClass = `text-blue-600 dark:text-blue-400 hover:underline ${isChecked ? '!line-through opacity-60' : ''}`;
                 
                 if (isExternalLink) {
-                  return <Link href={url} target="_blank" className={linkClass} onClick={(e) => e.stopPropagation()}>{activity.title}</Link>;
+                  return ( 
+                  <>
+                    <Link href={url} target="_blank" className={linkClass} onClick={(e) => e.stopPropagation()}>{activity.title}</Link>
+                    {activity.notes && (
+                      <>
+                      {" - "} 
+                      <span className="text-md text-gray-500 dark:text-gray-400">{activity.notes}</span>
+                      </>
+                    )}
+                  </>
+                  );
                 }
-                return <Link href={url} className={linkClass} onClick={(e) => e.stopPropagation()}>{activity.title}</Link>;
+                return (
+                  <>
+                    <Link href={url} className={linkClass} onClick={(e) => e.stopPropagation()}>{activity.title}</Link>
+                    {activity.notes && (
+                      <>{" - "} <span className="text-md text-gray-500 dark:text-gray-400">{activity.notes}</span></>
+                    )}
+                  </>
+                );
               })()}
             </>
           )}

@@ -3,6 +3,7 @@ title: "Course Intro"
 start_date: "2026-01-13"
 type: "activity"
 draft: 0
+excluded: 1
 ---
 
 ## Learning Objectives

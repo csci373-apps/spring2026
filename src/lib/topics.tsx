@@ -221,18 +221,26 @@ const baseTopics = [
         topic: "Course intro + course arc + architecture overview",
         description: (
           <>
-            <ul>
-              <li>Course expectations, studio norms, and the course structure</li>
-              <li>Introduction to the software development lifecycle (SDLC)</li>
-              <li>High-level walkthrough of the starter system: backend layers, frontend structure, and where tests will live</li>
-              <li>Activity: trace a request end-to-end (login → API → DB → response)</li>
-            </ul>
+            Welcome to the course!
           </>
         ),
         activities: [
-          { title: "Slides", url: "https://docs.google.com/presentation/d/1OZNO79sDQ3uI1sypTpXfwVLs0MCQUp-x/edit?usp=sharing&ouid=113376576186080604800&rtpof=true&sd=true", draft: 1 },
-          { title: "Syllabus", url: "/syllabus/", draft: 0 },
-          { title: "Work Preferences Form", url: "https://forms.gle/Hw7hXyvLMLxCRShS7", draft: 0 },
+          { title: "Slides", url: "https://docs.google.com/presentation/d/1OZNO79sDQ3uI1sypTpXfwVLs0MCQUp-x/edit?usp=sharing&ouid=113376576186080604800&rtpof=true&sd=true", draft: 0 },
+          { 
+            title: "Syllabus", 
+            url: "/syllabus/", 
+            draft: 0,
+            notes: "Please take the syllabus quiz (scroll to the bottom) before the start of class on Thursday."
+         },
+          { 
+            title: "Work Preferences Form", 
+            url: "https://forms.gle/Hw7hXyvLMLxCRShS7", 
+            draft: 0,
+            notes: "Please complete by tomorrow (Wednesday) so that we can assign teams."
+          },
+          { title: "Your Name + Github Handle", url: "https://docs.google.com/spreadsheets/d/1f0wusSc6K8UwkNp4fjHw1VLcfKZUtUOOoMLHRWKrft0/edit?usp=sharing", draft: 0,
+            notes: "Please add your name and github handle to the spreadsheet."
+          },
         ]
       },
       {

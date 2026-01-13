@@ -4,9 +4,113 @@ group: "Getting Started"
 group_order: 1
 order: 1
 quicklink: 1
+heading_max_level: 3
 ---
 
 The starter code is a simplified version of the Three Moves Ahead health application that provides the foundational infrastructure for your semester project. It includes core authentication, basic CRUD operations, and development tooling, but intentionally excludes advanced features that you'll implement during the course.
+
+## Architecture Diagrams
+
+### 1. Development
+All containers managed by `docker-compose.yaml`. Expo runs locally, connects to Backend via localhost:8000 
+
+```bash
+┌─────────────────────────────────────────────────────────────┐
+│                    Your Laptop (Development)                │
+│                                                             │
+│  ┌──────────────┐         ┌────────────────┐                │
+│  │              │         │   Frontend     │                │
+│  │  Browser     │◀───────▶│   Container    │                │
+│  │              │         │ localhost:8000 │                │
+│  │              │         │    (React)     │                │
+│  └──────────────┘         └──────┬─────────┘                │
+│                                  │                          │
+│  ┌──────────────┐                │   HTTP Requests          │
+│  │   Expo       │                │ (localhost:8000)         │
+│  │   (npm start)│                │                          │
+│  │   iOS/Android│                │                          │
+│  │   Simulator  │                │                          │
+│  └──────────────┘                ▼                          │
+│         ▲                ┌────────────────┐                 │
+│         │                │    Backend     │                 │
+│         └──────────────▶ | localhost:8000 │                 │
+│     HTTP Requests        │   (FastAPI)    │                 │
+│   (localhost:8000)       └──────┬─────────┘                 │
+│                                 │                           │
+│                                 │    SQL Queries            │
+│                                 │ (Docker network)          │
+│                                 ▼                           │
+│                          ┌──────────────┐                   │
+│                          │  Database    │                   │
+│                          │  Container   │                   │
+│                          │ (PostgreSQL) │                   │
+│                          └──────────────┘                   │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### 2. Production
+Single container serves both frontend (static) and backend (FastAPI). Mobile app built with EAS, distributed as APK/IPA.
+
+```bash
+┌─────────────────────────────────────────────────────────────┐
+│                    Browser Users                            │
+│                                                             │
+│  ┌──────────────┐         ┌──────────────┐                  │
+│  │   Desktop    │         │   Mobile     │                  │
+│  │   Browser    │         │   Browser    │                  │
+│  └──────────────┘         └──────────────┘                  │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+                                      │
+                                      │ HTTPS
+                                      │ (https://tma.unca.info)
+                                      │
+                                      ▼
+┌────────────────────────────────────────────────────────────┐
+│                    Production (Railway)                    │
+│                                                            │
+│                    ┌────────────────────────────┐          │
+│                    │   Combined Container       │          │
+│                    │   (Single Docker Image)    │          │
+│                    │                            │          │
+│                    │  ┌──────────────────────┐  │          │
+│                    │  │  Frontend (Static)   │  │          │
+│                    │  │  Served from /static │  │          │
+│                    │  └──────────────────────┘  │          │
+│                    │                            │          │
+│                    │  ┌──────────────────────┐  │          │
+│                    │  │  Backend (FastAPI)   │  │          │
+│                    │  │  Port: 8080          │  │          │
+│                    │  └──────┬───────────────┘  │          │
+│                    └─────────┼──────────────────┘          │
+│                              │                             │
+│                              │    SQL Queries              │
+│                              │                             │
+│                              ▼                             │
+│                    ┌──────────────────────┐                │
+│                    │  Managed PostgreSQL  │                │
+│                    │  (Railway/Cloud DB)  │                │
+│                    └──────────────────────┘                │
+│                                                            │
+└────────────────────────────────────────────────────────────┘
+                                      ▲
+                                      │
+                                      │ HTTPS API Calls
+                                      │ (https://tma.unca.info)
+                                      │
+┌─────────────────────────────────────────────────────────────┐
+│                    Mobile Users                             │
+│                                                             │
+│  ┌──────────────┐         ┌────────────────┐                │
+│  │  iOS Device  │         │ Android Device │                │
+│  │  (IPA)       │         │  (APK)         │                │
+│  └──────────────┘         └────────────────┘                │
+│                                                             │
+│  Built with EAS (Expo Application Services)                 │
+│  Distributed via App Store / Google Play / Direct Install   │
+└─────────────────────────────────────────────────────────────┘
+```
 
 ## What's Included
 
@@ -21,38 +125,7 @@ The starter code is a simplified version of the Three Moves Ahead health applica
 - CORS middleware configured
 
 **API Endpoints:**
-- **Authentication** (`/api/auth/`)
-  - `POST /register` - User registration
-  - `POST /login` - User login (returns JWT token)
-  - `GET /me` - Get current user info
-  - `PATCH /users/disable` - Disable user account
-  - `PATCH /users/role` - Update user role
-  - `PATCH /users/{user_id}/profile` - Update user profile
-
-- **Users** (`/api/users/`)
-  - `GET /` - List all users (admin only)
-  - `GET /{id}` - Get user by ID
-  - `POST /` - Create new user (admin only)
-  - `PATCH /{id}` - Update user
-  - `DELETE /{id}` - Delete user (admin only)
-
-- **Groups** (`/api/groups/`)
-  - `GET /` - List groups (filtered by user access)
-  - `GET /{id}` - Get group details with members
-  - `GET /{id}/courses` - Get courses assigned to group
-  - `POST /` - Create new group
-  - `PATCH /{id}` - Update group
-  - `DELETE /{id}` - Delete group
-  - `POST /{id}/members` - Add member to group
-  - `DELETE /{id}/members/{user_id}` - Remove member from group
-  - `PATCH /{id}/members/{user_id}/role` - Update member role
-
-- **Courses** (`/api/courses/`)
-  - `GET /` - List courses (filtered by user's groups)
-  - `GET /{id}` - Get course details
-  - `POST /` - Create new course (admin only)
-  - `PATCH /{id}` - Update course (admin only)
-  - `DELETE /{id}` - Delete course (admin only)
+<a href="https://dev.tma.unca.info/docs" target="_blank">https://dev.tma.unca.info/docs</a>
 
 **Database Models:**
 - `User` - User accounts with profile fields
@@ -77,28 +150,17 @@ The starter code is a simplified version of the Three Moves Ahead health applica
 - Context API for authentication state
 
 **Features:**
-- **Authentication**
-  - Login page
-  - Protected routes
-  - Role-based navigation
-
-- **Admin Interface** (admin role only)
-  - Users management (list, create, edit, delete)
-  - Groups management (list, create, edit, delete, manage members)
-  - Courses management (list, create, edit, delete)
-  - Sidebar navigation
-  - Responsive design
-
-- **User Interface** (user role)
-  - Groups list and detail pages
-  - Basic navigation
-  - User sidebar
+- Authentication
+- Admin Interface
+- User Interface
 
 **UI Components:**
 - Layout components (AdminPageLayout, UserPageLayout)
 - Data views (table and card views)
 - Form components
 - Navigation components
+
+**Web Demo**: https://dev.tma.unca.info/
 
 ### 3. Mobile App (React Native + Expo)
 
@@ -167,25 +229,29 @@ The following features are intentionally excluded from the starter code and will
 
 ### 2. Initial Setup
 
+1. One member of your team forks the base repository, located here: https://github.com/csci373-apps/tma-starter-app
+
 1. **Clone the repository:**
    ```bash
-   git clone git@github.com:teammates-username/tma.git
+   git clone git@github.com:<teammates_github_handle>/tma-starter-app.git
    cd tma
    ```
 
-2. **Create a new branch:**
+1. **Create a new branch:**
    ```bash
    git checkout -b <your-username>-setup
    ```
 
-3. **Create environment file:**
+1. **Create environment file:**
    ```bash
    cp .env.example .env
    ```
    Edit `.env` if needed (defaults usually work for local development).
 
-4. **Build your Docker images, volumes, and containers:**
-First, make sure that Docker Desktop is running on your machine. Then, issue the following command to build your containers:
+1. **Build your Docker images, volumes, and containers:**
+First, make sure that Docker Desktop is running on your machine. Also, if you've previously built a container that also uses ports 5433, 5173, or 8000, please stop those containers before proceeding.
+
+When you're ready, issue the following command to build your containers:
 
    ```bash
    docker compose up -d
