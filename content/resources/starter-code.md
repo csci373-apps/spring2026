@@ -160,7 +160,7 @@ Single container serves both frontend (static) and backend (FastAPI). Mobile app
 - Form components
 - Navigation components
 
-**Web Demo**: https://dev.tma.unca.info/
+**Web Demo**: <a href="https://dev.tma.unca.info/" target="_blank">https://dev.tma.unca.info/</a>
 
 ### 3. Mobile App (React Native + Expo)
 

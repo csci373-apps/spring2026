@@ -2,66 +2,174 @@
   "questions": [
     {
       "id": "q1",
+      "question": "What should be included in a PR description?",
+      "options": [
+        "Just the title is enough",
+        "What changed, why, how to test, and screenshots/examples (if UI changes)",
+        "A link to the issue",
+        "Only the code changes"
+      ],
+      "correct": 1,
+      "explanation": "Every PR should include: (1) What changed? (brief summary), (2) Why? (context or motivation), (3) How to test? (steps for reviewers), and (4) Screenshots/Examples (if UI changes). This helps reviewers understand the context and purpose of your changes."
+    },
+    {
+      "id": "q2",
+      "question": "What is the Pre-PR Checklist?",
+      "options": [
+        "A list of things to do after creating a PR",
+        "A list of files to include in the PR",
+        "A checklist to complete before opening a PR: code works, tests pass, clean commit history, rebased on latest main, linting/formatting done, no debug code",
+        "Optional suggestions that don't need to be followed"
+      ],
+      "correct": 2,
+      "explanation": "Before opening a PR, ensure: code works and compiles, tests pass, commit history is clean, branch is rebased on latest main, linting/formatting is done, and all debug code (console.logs, commented code) is removed."
+    },
+    {
+      "id": "q3",
+      "question": "What is a good size for a PR?",
+      "options": [
+        "Small enough to be reviewed in 15-30 minutes",
+        "At least 1000 lines of code",
+        "Size doesn't matter",
+        "As large as possible to include everything"
+      ],
+      "correct": 0,
+      "explanation": "Small PRs are easier to review and understand. Aim for PRs that can be reviewed in 15-30 minutes. Keep PRs focused - one feature or fix per PR."
+    },
+    {
+      "id": "q4",
+      "question": "What should you do before asking others to review your PR?",
+      "options": [
+        "Wait for someone to notice it",
+        "Self-review first: look for typos, obvious bugs, and unclear code",
+        "Nothing, just create the PR",
+        "Merge it yourself"
+      ],
+      "correct": 1,
+      "explanation": "Self-review your own PR before asking others. Look for typos, obvious bugs, and unclear code. This helps catch issues before your teammates review it."
+    },
+    {
+      "id": "q5",
+      "question": "When reviewing a PR, what should you check?",
+      "options": [
+        "Only if the code compiles",
+        "Just approve it without looking",
+        "Only the PR description",
+        "Understand the change, code works, tests included, code quality, no obvious bugs, documentation"
+      ],
+      "correct": 3,
+      "explanation": "Review checklist includes: understand the change, code works and tests pass, tests are included for new functionality, code quality (clarity, naming, conventions), no obvious bugs, and documentation is clear."
+    },
+    {
+      "id": "q6",
+      "question": "What is an important step in the review workflow that reviewers sometimes skip?",
+      "options": [
+        "Testing the changes locally by checking out the branch",
+        "Clicking approve",
+        "Reading the PR description",
+        "Leaving comments"
+      ],
+      "correct": 0,
+      "explanation": "Testing the changes locally is very important! Reviewers sometimes skip this step, but pulling down the branch locally and running the code helps catch issues that might not be obvious from just reading the code."
+    },
+    {
+      "id": "q7",
+      "question": "What are the types of comments you can leave in a PR review?",
+      "options": [
+        "Only questions",
+        "Only suggestions",
+        "Only criticism",
+        "Questions, suggestions, required changes, and praise"
+      ],
+      "correct": 3,
+      "explanation": "Types of comments include: (1) Questions to clarify understanding, (2) Suggestions for improvements, (3) Required changes for issues that must be fixed, and (4) Praise to acknowledge good work."
+    },
+    {
+      "id": "q8",
+      "question": "What's the difference between 'Approve', 'Request changes', and 'Comment'?",
+      "options": [
+        "They're all the same",
+        "None of them matter",
+        "Approve = ready to merge, Request changes = issues need fixing, Comment = optional feedback",
+        "Approve = merge immediately, Request changes = optional, Comment = required"
+      ],
+      "correct": 2,
+      "explanation": "Approve means the PR looks good and is ready to merge (after rebase if needed). Request changes means there are issues that need to be addressed before merging. Comment means you have feedback but it's not blocking (optional improvements)."
+    },
+    {
+      "id": "q9",
+      "question": "What should you do when giving feedback in a PR review?",
+      "options": [
+        "Be constructive and kind, ask questions, suggest specific improvements, explain why, acknowledge good work, focus on code not person",
+        "Be dismissive and harsh",
+        "Make it personal",
+        "Nitpick on every style detail"
+      ],
+      "correct": 0,
+      "explanation": "When giving feedback: be constructive and kind, ask questions if unclear, suggest specific improvements, explain why you're suggesting a change, acknowledge what's good about the code, and focus on the code not the person."
+    },
+    {
+      "id": "q10",
       "question": "When is it safe to use `--force-with-lease`?",
       "options": [
         "Only on main branch",
         "Always, it's completely safe",
-        "Never, it's too dangerous",
-        "Only on feature branches, never on main"
+        "Only on feature branches, never on main",
+        "Never, it's too dangerous"
       ],
-      "correct": 3,
+      "correct": 2,
       "explanation": "`--force-with-lease` is safe to use on feature branches after amending or rebasing. Never force push to `main` - it can overwrite important commits and cause problems for your team."
     },
     {
-      "id": "q2",
+      "id": "q11",
       "question": "When is a good time to commit?",
       "options": [
-        "Only at the end of the day",
-        "When code is broken but you want to save it",
+        "When you've completed a logical piece of work, code compiles, and tests pass",
         "Every 5 minutes to save your work",
-        "When you've completed a logical piece of work, code compiles, and tests pass"
+        "Only at the end of the day",
+        "When code is broken but you want to save it"
       ],
-      "correct": 3,
-      "explanation": "Commit when you've completed a logical piece of work (e.g., 'Add tests for login endpoint'), code compiles, and tests pass. Each commit should represent a working state."
+      "correct": 0,
+      "explanation": "Commit when you've completed a logical piece of work (e.g., 'Add tests for login endpoint'), code compiles, and tests pass. Each commit should represent a working state that you'd be okay showing in a PR."
     },
     {
-      "id": "q3",
+      "id": "q12",
       "question": "What is rebase and why is it required before merging a PR?",
       "options": [
-        "Rebase deletes all your commits",
         "Rebase is optional and not recommended",
         "Rebase creates a merge commit",
+        "Rebase deletes all your commits",
         "Rebase rewrites commit history by replaying your commits on top of the latest main, creating a clean linear history"
       ],
       "correct": 3,
-      "explanation": "Rebase rewrites commit history by replaying your commits on top of the latest `main`. It creates a clean, linear history without merge commits. All PRs must be rebased before merging."
+      "explanation": "Rebase rewrites commit history by replaying your commits on top of the latest `main`. It creates a clean, linear history without merge commits. All PRs must be rebased before merging to ensure they're based on the latest code."
     },
     {
-      "id": "q4",
+      "id": "q13",
       "question": "What is the team fork structure in Phase 1?",
       "options": [
         "Each team member has their own fork",
-        "One team member forks the repo, all members are collaborators on that fork, everyone works from the same fork",
         "Everyone works directly on the main repository",
+        "One team member forks the repo, all members are collaborators on that fork, everyone works from the same fork",
         "Teams don't use forks"
       ],
-      "correct": 1,
+      "correct": 2,
       "explanation": "In Phase 1, one team member forks the starter repository, all team members are added as collaborators on that fork, and everyone clones and pushes to the same fork. This ensures all team members can see each other's work."
     },
     {
-      "id": "q5",
+      "id": "q14",
       "question": "What should you do if you have too many small 'save point' commits?",
       "options": [
         "Delete the branch and start over",
         "Push them all as-is",
-        "Create a new branch",
-        "Use interactive rebase (`git rebase -i HEAD~N`) to squash them into logical commits"
+        "Use interactive rebase (`git rebase -i HEAD~N`) to squash them into logical commits",
+        "Create a new branch"
       ],
-      "correct": 3,
-      "explanation": "Use interactive rebase to clean up your commit history. Change `pick` to `squash` for commits you want to combine. This creates a clean history that tells a good story."
+      "correct": 2,
+      "explanation": "Use interactive rebase to clean up your commit history. Change `pick` to `squash` for commits you want to combine. This creates a clean history that tells a good story and makes code reviews easier."
     },
     {
-      "id": "q6",
+      "id": "q15",
       "question": "What is the rule about committing directly to `main`?",
       "options": [
         "Never commit directly to main - always create a feature branch first",
@@ -70,19 +178,43 @@
         "Only commit to main on weekends"
       ],
       "correct": 0,
-      "explanation": "Never commit directly to `main`. Always create a feature branch for each feature/assignment. This keeps work isolated and makes code reviews easier."
+      "explanation": "Never commit directly to `main`. Always create a feature branch for each feature/assignment. This keeps work isolated and makes code reviews easier before changes are merged."
     },
     {
-      "id": "q7",
+      "id": "q16",
       "question": "What command should you use to fix a mistake in your last commit?",
       "options": [
+        "`git commit --amend` - to update the last commit without creating a new one",
         "`git revert`",
         "`git commit --fix`",
-        "`git commit --amend` - to update the last commit without creating a new one",
         "`git undo`"
       ],
-      "correct": 2,
+      "correct": 0,
       "explanation": "Use `git commit --amend` to update the last commit. This is useful when you realize the last commit has a bug or is incomplete. Use `--no-edit` to keep the same message, or `-m` to change it."
+    },
+    {
+      "id": "q17",
+      "question": "What should you do if you realize your last commit has a bug?",
+      "options": [
+        "Fix the bug, then use `git commit --amend` to update the last commit",
+        "Ignore it and move on",
+        "Delete the branch",
+        "Create a new commit to fix it"
+      ],
+      "correct": 0,
+      "explanation": "If you realize the last commit has a bug: (1) Fix the bug, (2) Stage the changes with `git add`, (3) Use `git commit --amend` to update the last commit, (4) Force push if you've already pushed the branch."
+    },
+    {
+      "id": "q18",
+      "question": "What should you do even if a PR is approved?",
+      "options": [
+        "Merge it immediately",
+        "Nothing, it's already approved",
+        "The author should still rebase onto latest `main` before merging",
+        "Close the PR"
+      ],
+      "correct": 2,
+      "explanation": "Even if you approve a PR, the author should still rebase onto latest `main` before merging. This ensures the PR is based on the latest code and creates a clean, linear history."
     }
   ]
 }

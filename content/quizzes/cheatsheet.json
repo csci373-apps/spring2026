@@ -1,0 +1,292 @@
+{
+  "questions": [
+    {
+      "id": "q1",
+      "question": "What does the `-d` flag do in `docker compose up -d`?",
+      "options": [
+        "Runs containers in detached mode (background)",
+        "Deletes all containers first",
+        "Shows debug output",
+        "Downloads images from the internet"
+      ],
+      "correct": 0,
+      "explanation": "The `-d` flag runs containers in detached mode, meaning they run in the background and don't block your terminal. This is useful so you can continue using your terminal while containers run."
+    },
+    {
+      "id": "q2",
+      "question": "Why is it important to use `docker compose down --rmi all -v --remove-orphans` before a complete rebuild?",
+      "options": [
+        "It speeds up the rebuild process",
+        "It ensures all old images, volumes, and orphaned containers are removed, giving you a truly fresh start",
+        "It saves disk space temporarily",
+        "It's not important - you can skip this step"
+      ],
+      "correct": 1,
+      "explanation": "This command removes all images (`--rmi all`), volumes (`-v`), and orphaned containers (`--remove-orphans`), ensuring a completely clean slate. This is important when you want to eliminate any cached or stale data that might cause issues."
+    },
+    {
+      "id": "q3",
+      "question": "What do the `-it` flags do in `docker exec -it tma_backend bash`?",
+      "options": [
+        "They make the command run faster",
+        "They provide an interactive terminal, allowing you to type commands and see output in real-time",
+        "They delete the container after use",
+        "They run the command as root"
+      ],
+      "correct": 1,
+      "explanation": "The `-i` flag keeps STDIN open (interactive), and `-t` allocates a pseudo-TTY (terminal). Together, they allow you to interact with the container's shell as if you were logged into it directly."
+    },
+    {
+      "id": "q4",
+      "question": "What does the `--reset` flag do in `scripts/populate.py --reset`?",
+      "options": [
+        "It drops all tables and recreates them with fresh data",
+        "It only adds new data without removing old data",
+        "It backs up the database first",
+        "It skips populating certain tables"
+      ],
+      "correct": 0,
+      "explanation": "The `--reset` flag drops all existing tables and recreates them from scratch with fresh seed data. This is useful when you want to start with a clean database state, especially after schema changes or when testing."
+    },
+    {
+      "id": "q5",
+      "question": "Why do we use `docker exec -it tma_db psql` instead of running `psql` directly on your machine?",
+      "options": [
+        "It's faster",
+        "The database runs inside a Docker container, so we need to execute psql inside that container to connect",
+        "It's more secure",
+        "It's just a preference"
+      ],
+      "correct": 1,
+      "explanation": "Since the database runs inside a Docker container (`tma_db`), you need to execute the `psql` command inside that container to connect. Running `psql` directly on your machine won't work because the database isn't accessible from outside the container by default."
+    },
+    {
+      "id": "q6",
+      "question": "What does the `\\dt` command do in psql?",
+      "options": [
+        "It deletes all tables",
+        "It lists all tables in the current database",
+        "It shows table data",
+        "It creates a new table"
+      ],
+      "correct": 1,
+      "explanation": "The `\\dt` command is a psql meta-command that lists all tables in the current database. The backslash (`\\`) indicates it's a psql command, not SQL."
+    },
+    {
+      "id": "q7",
+      "question": "What is the difference between `scripts/check.sh` and `scripts/fix.sh`?",
+      "options": [
+        "They do the same thing",
+        "`check.sh` only reports issues without making changes, while `fix.sh` automatically fixes most formatting and some linting issues",
+        "`check.sh` fixes issues, `fix.sh` only checks",
+        "One is for Python, one is for JavaScript"
+      ],
+      "correct": 1,
+      "explanation": "`check.sh` runs linting and formatting checks in read-only mode - it reports what's wrong but doesn't change anything. `fix.sh` automatically applies fixes (like formatting with black and isort) but may still require manual fixes for some issues."
+    },
+    {
+      "id": "q8",
+      "question": "Why is it important to run `npm run check` before committing code?",
+      "options": [
+        "It's not important",
+        "It catches linting, formatting, and TypeScript errors before they cause problems in code review or production",
+        "It speeds up your code",
+        "It automatically fixes all issues"
+      ],
+      "correct": 1,
+      "explanation": "Running `npm run check` catches linting, formatting, and TypeScript errors early. This prevents issues from reaching code review, keeps code quality consistent, and helps catch bugs before they're committed."
+    },
+    {
+      "id": "q9",
+      "question": "What does `poetry run pytest` do?",
+      "options": [
+        "It runs all backend tests using Poetry's virtual environment",
+        "It installs pytest",
+        "It formats Python code",
+        "It starts the backend server"
+      ],
+      "correct": 0,
+      "explanation": "`poetry run pytest` runs pytest within Poetry's managed virtual environment. Poetry ensures the correct dependencies and versions are used, making test results consistent across different machines."
+    },
+    {
+      "id": "q10",
+      "question": "What is the purpose of `npm run type-check`?",
+      "options": [
+        "It checks if npm is installed correctly",
+        "It runs TypeScript's type checker to find type errors without running the code",
+        "It compiles TypeScript to JavaScript",
+        "It runs tests"
+      ],
+      "correct": 1,
+      "explanation": "`npm run type-check` runs TypeScript's compiler in check mode to find type errors. It doesn't generate output files or run the code - it just validates that types are correct, catching errors before runtime."
+    },
+    {
+      "id": "q11",
+      "question": "Why is `npm run test:watch` useful during development?",
+      "options": [
+        "It runs tests faster",
+        "It automatically re-runs tests when files change, giving immediate feedback as you code",
+        "It only runs tests once",
+        "It doesn't require npm"
+      ],
+      "correct": 1,
+      "explanation": "Watch mode automatically re-runs tests when you save files. This provides immediate feedback as you develop, helping you catch issues quickly and maintain test-driven development workflows."
+    },
+    {
+      "id": "q12",
+      "question": "Why do you need to run `cd mobile` before starting Expo?",
+      "options": [
+        "You don't need to - you can run it from anywhere",
+        "The Expo configuration and package.json are in the mobile directory, so you need to be there for npm/expo commands to work correctly",
+        "It's just a convention",
+        "It makes Expo run faster"
+      ],
+      "correct": 1,
+      "explanation": "The mobile app has its own `package.json` and configuration files in the `mobile/` directory. Running commands from that directory ensures npm/expo can find the correct dependencies and configuration."
+    },
+    {
+      "id": "q13",
+      "question": "What happens when you press `i` in the Expo development server?",
+      "options": [
+        "It installs dependencies",
+        "It runs the app on iOS simulator",
+        "It shows information about the app",
+        "It stops the server"
+      ],
+      "correct": 1,
+      "explanation": "Pressing `i` in Expo opens the app in the iOS simulator. This is a quick way to test your mobile app on iOS without manually opening the simulator and loading the app."
+    },
+    {
+      "id": "q14",
+      "question": "Why is it important to know that the frontend runs on port 5173?",
+      "options": [
+        "It's not important",
+        "You need this URL to access the web app in your browser during development",
+        "It's the same for all projects",
+        "It's only used in production"
+      ],
+      "correct": 1,
+      "explanation": "Knowing the port (5173) lets you access the frontend web app at http://localhost:5173 in your browser. This is essential for viewing and testing your React application during development."
+    },
+    {
+      "id": "q15",
+      "question": "What is the purpose of http://localhost:8000/docs?",
+      "options": [
+        "It's the frontend application",
+        "It provides interactive API documentation (Swagger/OpenAPI) automatically generated by FastAPI",
+        "It's the database interface",
+        "It's not used in development"
+      ],
+      "correct": 1,
+      "explanation": "FastAPI automatically generates interactive API documentation at `/docs`. This Swagger UI lets you explore all API endpoints, see request/response schemas, and even test API calls directly from your browser."
+    },
+    {
+      "id": "q16",
+      "question": "Why are default credentials (`admin`/`password`) provided after populating the database?",
+      "options": [
+        "They're used in production",
+        "They provide quick access for development and testing without having to create accounts manually",
+        "They're required for the app to work",
+        "They're encrypted"
+      ],
+      "correct": 1,
+      "explanation": "Default credentials allow developers to quickly log in and test the application without manually creating accounts. They're only for development - production should never use these default credentials."
+    },
+    {
+      "id": "q17",
+      "question": "What does `git checkout -b my-new-branch` do?",
+      "options": [
+        "It deletes a branch",
+        "It creates a new branch called 'my-new-branch' and switches to it in one command",
+        "It only lists branches",
+        "It merges branches"
+      ],
+      "correct": 1,
+      "explanation": "The `-b` flag with `git checkout` creates a new branch if it doesn't exist, then switches to it. This is a convenient shortcut for starting work on a new feature branch."
+    },
+    {
+      "id": "q18",
+      "question": "Why is `git commit --amend --no-edit` useful?",
+      "options": [
+        "It deletes the last commit",
+        "It updates the last commit with new changes without creating a new commit or changing the message",
+        "It only changes the commit message",
+        "It creates a new branch"
+      ],
+      "correct": 1,
+      "explanation": "Amend allows you to fix mistakes in your last commit (like adding a forgotten file or fixing a typo) without creating a new commit. `--no-edit` keeps the original commit message, which is useful for small fixes."
+    },
+    {
+      "id": "q19",
+      "question": "Why do you need to run `git add .` before `git rebase --continue`?",
+      "options": [
+        "You don't need to",
+        "After resolving conflicts, you must stage the resolved files before Git can continue replaying commits",
+        "It's optional",
+        "It deletes the conflicts"
+      ],
+      "correct": 1,
+      "explanation": "When rebase pauses for conflicts, you resolve them in your editor. Then you must stage the resolved files with `git add` to tell Git the conflicts are fixed. Only then can you continue the rebase with `--continue`."
+    },
+    {
+      "id": "q20",
+      "question": "What is the purpose of `git stash`?",
+      "options": [
+        "It permanently saves your changes",
+        "It temporarily saves uncommitted changes so you can switch branches or pull updates without losing work",
+        "It deletes your changes",
+        "It creates a new commit"
+      ],
+      "correct": 1,
+      "explanation": "Stash temporarily saves your uncommitted changes. This is useful when you need to switch branches or pull updates but aren't ready to commit. You can later restore the stashed changes with `git stash pop`."
+    },
+    {
+      "id": "q21",
+      "question": "What does the `-f` flag do in `docker compose logs -f backend`?",
+      "options": [
+        "It forces the logs to appear",
+        "It follows the logs in real-time, showing new log entries as they're generated",
+        "It filters the logs",
+        "It formats the logs differently"
+      ],
+      "correct": 1,
+      "explanation": "The `-f` (follow) flag streams logs in real-time. Instead of showing only existing logs and exiting, it continues to display new log entries as they're generated, which is essential for debugging running applications."
+    },
+    {
+      "id": "q22",
+      "question": "Why would you do a complete reset (`docker compose down --rmi all -v --remove-orphans`)?",
+      "options": [
+        "It's faster than regular restart",
+        "When you want to eliminate all cached data, volumes, and images to start completely fresh (useful when things are broken or after major changes)",
+        "You should do it every day",
+        "It's not recommended"
+      ],
+      "correct": 1,
+      "explanation": "A complete reset removes everything: containers, images, volumes, and orphaned resources. This is useful when you have persistent issues, want to test with a truly clean state, or after major dependency or configuration changes."
+    },
+    {
+      "id": "q23",
+      "question": "What does running `pytest tests/path/to/test_file.py` allow you to do?",
+      "options": [
+        "It runs all tests in the project",
+        "It runs only the tests in that specific file, useful for focused testing during development",
+        "It installs pytest",
+        "It creates new test files"
+      ],
+      "correct": 1,
+      "explanation": "Specifying a test file path runs only tests in that file. This is much faster than running the entire test suite and allows you to focus on testing the specific feature you're working on."
+    },
+    {
+      "id": "q24",
+      "question": "Why is it important to run linting and formatting checks before committing?",
+      "options": [
+        "It's not important",
+        "It ensures code follows project standards, catches potential bugs, and makes code reviews easier by focusing on logic rather than style",
+        "It makes code run faster",
+        "It's only required in production"
+      ],
+      "correct": 1,
+      "explanation": "Linting and formatting checks ensure code consistency across the project, catch common bugs and style issues early, and make code reviews more efficient by keeping style consistent so reviewers can focus on logic and architecture."
+    }
+  ]
+}

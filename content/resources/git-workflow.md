@@ -6,23 +6,144 @@ order: 1
 quicklink: 1
 ---
 
-## Overview
-
 This guide covers the Git workflow you'll use during Phase 1 of the course. In Phase 1, each team works in their own forked repository, and all team members are collaborators on that fork.
 
-## Phase 1 Git Workflow
 
-### 1. Feature Branches
+## 1. Creating a Good Pull Request
 
-Never commit directly to `main`. Create a branch for each feature/assignment:
+Before opening a PR, use this checklist:
+
+### 1.1. Pre-PR Checklist
+
+- **Code works**: Your code compiles, runs, and doesn't break existing functionality
+- **Tests pass**: All existing tests pass, and you've added tests for new functionality
+- **Clean commit history**: Commits are logical, well-organized, and tell a clear story
+- **Rebased on latest main**: Your branch is up-to-date with the latest `main` branch
+- **Linting/formatting**: Code follows project style (run `npm run fix` or `bash scripts/fix.sh`)
+- **No debug code**: Removed console.logs, commented-out code, and temporary debugging statements
+
+### 1.2. PR Description Template
+
+Every PR should include:
+
+> 1. **What changed?** (Brief summary)
+>    
+>      Example: "Adds tests for the login endpoint"
+>
+> 2. **Why?** (Context or motivation)
+>    
+>      Example: "This PR addresses HW1 requirement to write contract-level tests for 3 endpoints"
+>
+> 3. **How to test?** (Steps for reviewers)
+>    
+>      Example: "Run `pytest tests/test_auth.py` to see the new tests"
+>
+> 4. **Screenshots/Examples** (if UI changes)
+>    
+>      Include before/after screenshots for UI changes
+
+**Example PR Description:**
 
 ```bash
-git checkout -b your-branch
+## What Changed
+Adds contract-level tests for the login endpoint (`POST /api/auth/login`).
+
+## Why
+This addresses HW1 requirement to write tests for 3 existing endpoints. The login endpoint is a critical authentication path that needs test coverage.
+
+## How to Test
+1. Run `docker exec -it tma_backend poetry run pytest tests/test_auth.py::test_login_success`
+2. Verify all tests pass
+
+## Related
+- Closes #123 (if applicable)
 ```
+
+### 1.3. PR Best Practices
+
+- **Keep PRs focused**: One feature or fix per PR. If you have multiple unrelated changes, create separate PRs.
+- **Small is better**: Smaller PRs are easier to review and understand. Aim for PRs that can be reviewed in 15-30 minutes.
+- **Self-review first**: Review your own PR before asking others. Look for typos, obvious bugs, and unclear code.
+- **Request reviews**: Tag your teammates for review. Don't merge your own PRs.
+
+## 2. Reviewing a Pull Request
+
+When reviewing a PR, your goal is to help improve code quality and catch issues before they're merged.
+
+### 2.1. Review Checklist
+
+- **Understand the change**: Read the PR description and understand what it's trying to accomplish
+- **Code works**: Check that the code compiles and tests pass (if CI shows failures, note them)
+- **Tests included**: Verify that new functionality has appropriate test coverage
+- **Code quality**: Look for clarity, proper naming, and adherence to project conventions
+- **No obvious bugs**: Check for logic errors, edge cases, and potential issues
+- **Documentation**: Ensure code is readable and well-commented where needed
+
+### 2.2. How to Give Good Feedback
+
+**✅ Do:**
+- Be constructive and kind
+- Ask questions if something is unclear
+- Suggest specific improvements
+- Explain *why* you're suggesting a change
+- Acknowledge what's good about the code
+- Focus on the code, not the person
+
+**❌ Don't:**
+- Be dismissive or harsh
+- Nitpick on style (unless it's inconsistent with project standards)
+- Request changes without explaining why
+- Make it personal
+- Approve without actually reviewing
+
+### 2.3. Types of Comments
+
+1. **Questions**: "I'm not sure I understand this logic. Can you explain why we check `user.is_active` here?"
+
+2. **Suggestions**: "Consider extracting this into a helper function to improve readability."
+
+3. **Required changes**: "This will throw an error if `user` is null. We should add a null check."
+
+4. **Praise**: "Great test coverage! I like how you handled the edge cases."
+
+### 2.4. Review Workflow
+
+1. **Read the PR description** to understand the context
+2. **Look at the "Files changed" tab** to see all modifications
+3. **Leave comments** on specific lines or sections
+4. **Test the changes** if possible (checkout the branch locally) 
+    * ⚠️ This is important! Reviewers sometimes skip this step, but pulling down the branch locally and running the code is very important.
+5. **Approve or request changes** when done reviewing
+6. **Follow up** if the author asks questions or makes updates
+
+### 2.5. Example Review Comments
+
+* **Good comment:** *"This function is doing a lot. Consider breaking it into smaller functions: one to validate input, one to fetch the user, and one to create the response. This would make it easier to test each part separately."*
+    * **Less helpful comment:**  *"This is wrong."*
+
+* **Good question:** *"I see we're checking `user.is_active` here, but I don't see where inactive users are filtered out in the query. Should we add that filter to prevent inactive users from being returned?"*
+
+* **Good suggestion:** *"The variable name `data` is a bit generic. Since this contains user information, maybe `user_data` or `user_info` would be clearer?"*
+
+### 2.6. Approving vs. Requesting Changes
+
+- **Approve**: The PR looks good and is ready to merge (after rebase if needed)
+- **Request changes**: There are issues that need to be addressed before merging
+- **Comment**: You have feedback but it's not blocking (optional improvements)
+
+**Note:** Even if you approve, the author should still rebase onto latest `main` before merging.
+
+## 3. Git Workflow Concepts
+
+> **Quick Reference:** For Git commands, see the [Cheatsheet](/resources/cheatsheet#9-git-commands).
+
+### 3.1. Feature Branches
+
+Never commit directly to `main`. Create a branch for each feature/assignment.
 
 **Why?** Feature branches keep your work isolated and make it easier to review changes before they're merged into the main codebase.
 
-### 2. Commit Logical Units of Work
+### 3.2. Commit Logical Units of Work
 
 Commit when you've completed a logical piece of work (not just every 5 minutes!)
 
@@ -33,7 +154,7 @@ Commit when you've completed a logical piece of work (not just every 5 minutes!)
 - Clear commit messages that describe what changed and why
 
 **❌ Bad times to commit:**
-- Every 5 minutes "just to save" (use Git's stash instead: `git stash`)
+- Every 5 minutes "just to save" (use Git's stash instead)
 - Code is broken and doesn't compile
 - Incomplete features
 - You're in the middle of implementing something
@@ -41,84 +162,18 @@ Commit when you've completed a logical piece of work (not just every 5 minutes!)
 
 **Rule of thumb:** Each commit should represent a working state that you'd be okay showing in a PR.
 
-### 3. Clean Up Commits (Before Pushing)
+### 3.3. Clean Up Commits Before Pushing
 
 Before pushing your branch, clean up your commit history.
 
-**Amend the last commit** if you realize it's broken or incomplete:
-
-```bash
-# Fix the issue, then:
-git add .
-# Updates last commit without changing message
-git commit --amend --no-edit  
-# Or with new message:
-git commit --amend -m "Add tests for login endpoint (fixed typo)"
-```
-
-**Rebase to clean up multiple commits** before pushing:
-
-```bash
-# Interactive rebase of last 3 commits:
-git rebase -i HEAD~3
-```
-
-In the editor that opens:
-- Change `pick` to `squash` to combine commits
-- Change `pick` to `edit` to modify a commit
-- Delete lines to remove commits
+1. Amend the last commit if you realize it's broken or incomplete.
+1. Rebase to clean up multiple commits before pushing using interactive rebase.
 
 **Why clean up?** Your commit history tells a story. Make it a good one! Clean history makes code reviews easier and helps teammates understand what changed.
 
-### 4. Push to Team's GitHub Repo
+### 3.4. Rebase Before Merging (Required)
 
-Push your cleaned-up branch:
-
-```bash
-git push origin your-branch
-```
-
-**If you've amended/rebased:** You may need to force push (only on feature branches!):
-
-```bash
-git push --force-with-lease origin your-branch
-```
-
-⚠️ **Never force push to `main`!** Only use `--force-with-lease` on your feature branches.
-
-### 5. Create Pull Request
-
-1. Go to GitHub
-2. Click "New Pull Request"
-3. Compare: `your-branch` → `main`
-4. Add a description explaining what the PR does
-5. Request review from teammates
-
-### 6. Code Review
-
-- Teammates review your PR
-- Make changes based on feedback
-- **If you need to fix something:** Make changes, commit, then push (or amend if it's a small fix)
-
-**Review guidelines:**
-- Reviews should be constructive and kind
-- Focus on code quality, not personal criticism
-- Ask questions if something is unclear
-- Everyone reviews, everyone gets reviewed
-
-### 7. Rebase Before Merging (Required)
-
-**Before your PR can be merged, you must rebase your branch onto the latest `main`:**
-
-```bash
-# Update main with latest changes
-git checkout main
-git pull
-
-# Rebase your branch onto the latest main
-git checkout your-branch
-git rebase main
-```
+**Before your PR can be merged, you must rebase your branch onto the latest `main`.**
 
 **What is rebase?** Rebase rewrites commit history by replaying your commits on top of the latest `main`. It creates a clean, linear history without merge commits.
 
@@ -131,15 +186,9 @@ git rebase main
 **If there are conflicts:**
 1. Git will pause and show conflicted files
 2. Resolve conflicts in those files
-3. Stage resolved files: `git add <file>`
-4. Continue rebase: `git rebase --continue`
+3. Stage resolved files
+4. Continue rebase
 5. Repeat until all commits are replayed
-
-**After rebasing:**
-```bash
-# Force push your rebased branch (safe on feature branches)
-git push --force-with-lease origin your-branch
-```
 
 **Why rebase before merging?**
 - Ensures your PR is based on the latest code
@@ -149,20 +198,9 @@ git push --force-with-lease origin your-branch
 
 **Policy:** All PRs must be rebased onto the latest `main` before they can be merged. This keeps the project history clean and linear.
 
-### 8. Update Main
+## 4. Common Scenarios
 
-After your PR is merged, update your local `main`:
-
-```bash
-git checkout main
-git pull origin main
-```
-
-**Note:** This pulls from your team's fork, so all team members get the updates.
-
-## Common Scenarios
-
-### Scenario 1: Good Commit Workflow
+### 4.1. Scenario 1: Good Commit Workflow
 
 1. Create a feature branch
 2. Make a small change (add a comment, fix a bug, add a test)
@@ -170,31 +208,20 @@ git pull origin main
 4. Commit with clear message
 5. Push and create PR
 
-### Scenario 2: Oops, I Committed Broken Code
+### 4.2. Scenario 2: Oops, I Committed Broken Code
 
 1. Realize the last commit has a bug
 2. Fix the bug
-3. Amend the commit:
-   ```bash
-   git add .
-   git commit --amend --no-edit
-   ```
-4. Force push (since we amended):
-   ```bash
-   git push --force-with-lease origin your-branch
-   ```
+3. Amend the commit (see [Cheatsheet](/resources/cheatsheet#92-committing) for commands)
+4. Force push (since we amended)
 
-### Scenario 3: Too Many Small Commits
+### 4.3. Scenario 3: Too Many Small Commits
 
 1. You have 5 "save point" commits
-2. Interactive rebase to squash them:
-   ```bash
-   git rebase -i HEAD~5
-   # Change "pick" to "squash" for commits to combine
-   ```
+2. Interactive rebase to squash them (see [Cheatsheet](/resources/cheatsheet#93-rebasing) for commands)
 3. Result: Clean history with logical commits
 
-## Team Fork Structure
+## 5. Team Fork Structure
 
 In Phase 1:
 - One team member forks the starter repository
