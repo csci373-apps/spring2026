@@ -202,7 +202,20 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
   const [isQuizDrawerOpen, setIsQuizDrawerOpen] = useState<boolean>(false);
   const [isDrawerAnimating, setIsDrawerAnimating] = useState<boolean>(false);
   const [isDrawerClosing, setIsDrawerClosing] = useState<boolean>(false);
+  const [circleWindowStart, setCircleWindowStart] = useState<number>(0);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
   const isDark = useDarkMode();
+
+  // Detect mobile screen size
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(typeof window !== 'undefined' && window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const previousCompletedRef = useRef<boolean>(false);
   const previousShowSummaryRef = useRef<boolean>(false);
@@ -250,6 +263,8 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
     }
     
     setShuffledQuestions(questionsToUse);
+    // Reset circle window when questions change
+    setCircleWindowStart(0);
   }, [quizData.questions, randomMode]);
 
   // Load quiz state from localStorage on mount (after questions are shuffled)
@@ -315,7 +330,7 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
     }
   }, [selectedAnswers, shuffledQuestions, storageKey]);
 
-  // Trigger confetti when quiz is completed AND user is viewing the summary screen AND score > 85%
+  // Trigger confetti when quiz is completed AND user is viewing the summary screen AND score >= 85%
   useEffect(() => {
     if (shuffledQuestions.length === 0) return;
     
@@ -332,16 +347,20 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
       previousShowSummaryRef.current = showSummary;
       return;
     }
-
+    
     // Trigger confetti when:
     // 1. Quiz is completed
     // 2. User is viewing the summary screen (currentQuestionIndex >= shuffledQuestions.length)
     // 3. User just navigated to the summary screen (wasn't showing summary before)
-    // 4. Score is greater than 85%
-    if (completed && showSummary && !previousShowSummaryRef.current && scorePercentage > 85) {
-      triggerConfetti();
+    // 4. Score is >= 85%
+    if (completed && showSummary && !previousShowSummaryRef.current && scorePercentage >= 85) {
+      // Small delay to ensure summary screen is rendered
+      const timer = setTimeout(() => {
+        triggerConfetti();
+      }, 300);
+      return () => clearTimeout(timer);
     }
-
+    
     previousCompletedRef.current = completed;
     previousShowSummaryRef.current = showSummary;
   }, [completed, currentQuestionIndex, shuffledQuestions.length, score]);
@@ -420,7 +439,10 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
   };
 
   const handlePrevious = () => {
-    if (currentQuestionIndex > -1) {
+    if (currentQuestionIndex === 0) {
+      // Go back to instructions from first question
+      setCurrentQuestionIndex(-1);
+    } else if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(prev => prev - 1);
     }
   };
@@ -450,6 +472,105 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
       const selected = selectedAnswers[question.id];
       return selected !== undefined && selected !== question.correct;
     });
+  };
+
+  // Update circle window when current question reaches the edge of the visible batch
+  useEffect(() => {
+    if (shuffledQuestions.length === 0 || currentQuestionIndex < 0) return;
+    
+    // Use 5 for mobile, 10 for desktop
+    const maxVisible = isMobile ? 5 : 10;
+    const totalQuestions = shuffledQuestions.length;
+    
+    if (totalQuestions <= maxVisible) {
+      // All questions fit, no need for windowing
+      setCircleWindowStart(0);
+      return;
+    }
+    
+    const windowEnd = circleWindowStart + maxVisible;
+    const relativePosition = currentQuestionIndex - circleWindowStart;
+    
+    // Only shift window if current question is outside the window or at the edge
+    if (currentQuestionIndex < circleWindowStart) {
+      // Moved before the window, shift window to include current question at the start
+      setCircleWindowStart(Math.max(0, currentQuestionIndex));
+    } else if (currentQuestionIndex >= windowEnd) {
+      // Moved past the window, shift window to include current question at the end
+      const newStart = Math.min(totalQuestions - maxVisible, currentQuestionIndex - maxVisible + 1);
+      setCircleWindowStart(newStart);
+    } else if (relativePosition === 0 && circleWindowStart > 0 && currentQuestionIndex > 0) {
+      // At the first position of window and not at the start, shift window left by up to 10
+      // Position current question at the last position of the new window
+      const newStart = Math.max(0, currentQuestionIndex - maxVisible + 1);
+      setCircleWindowStart(newStart);
+    } else if (relativePosition === maxVisible - 1 && windowEnd < totalQuestions && currentQuestionIndex < totalQuestions - 1) {
+      // At the last position of window and not at the end, shift window right by up to 10
+      // Position current question at the first position of the new window
+      const newStart = Math.min(totalQuestions - maxVisible, currentQuestionIndex);
+      setCircleWindowStart(newStart);
+    }
+  }, [currentQuestionIndex, shuffledQuestions.length, isMobile]);
+
+  const renderQuestionCircles = () => {
+    const totalQuestions = shuffledQuestions.length;
+    // Use 5 for mobile, 10 for desktop
+    const maxVisible = isMobile ? 5 : 10;
+    
+    const startIndex = totalQuestions <= maxVisible ? 0 : circleWindowStart;
+    const endIndex = Math.min(startIndex + maxVisible, totalQuestions);
+    
+    const visibleQuestions = shuffledQuestions.slice(startIndex, endIndex);
+    
+    return (
+      <div className="flex justify-center items-center gap-2 pb-4 pt-1 flex-wrap">
+        {startIndex > 0 && (
+          <span className="text-xs text-gray-600 dark:text-gray-300 px-2">...</span>
+        )}
+        {visibleQuestions.map((question, relativeIndex) => {
+          const index = startIndex + relativeIndex;
+          const answered = hasAnswered(question.id);
+          const isCurrent = index === currentQuestionIndex;
+          const isCorrect = answered && selectedAnswers[question.id] === question.correct;
+          
+          let bgColor = 'bg-gray-300 dark:bg-gray-600';
+          let borderColor = 'border-gray-400 dark:border-gray-500';
+          
+          if (isCurrent) {
+            bgColor = 'bg-blue-600 dark:bg-blue-500';
+            borderColor = 'border-blue-700 dark:border-blue-400';
+          } else if (answered) {
+            if (isCorrect) {
+              bgColor = 'bg-green-500 dark:bg-green-600';
+              borderColor = 'border-green-600 dark:border-green-500';
+            } else {
+              bgColor = 'bg-red-500 dark:bg-red-600';
+              borderColor = 'border-red-600 dark:border-red-500';
+            }
+          }
+          
+          return (
+            <button
+              key={question.id}
+              onClick={() => setCurrentQuestionIndex(index)}
+              className={`w-4 h-4 rounded-full border transition-all hover:scale-125 flex items-center justify-center ${bgColor} ${borderColor} ${
+                isCurrent ? 'ring-1 ring-blue-400 dark:ring-blue-300 w-6 h-6' : ''
+              }`}
+              title={`Question ${index + 1}${answered ? (isCorrect ? ' - Correct' : ' - Incorrect') : ' - Not answered'}`}
+            >
+              {isCurrent && (
+                <span className="text-[12px] text-white leading-none">
+                  {index + 1}
+                </span>
+              )}
+            </button>
+          );
+        })}
+        {endIndex < totalQuestions && (
+          <span className="text-xs text-gray-600 dark:text-gray-300 px-2">...</span>
+        )}
+      </div>
+    );
   };
 
   // Helper to strip markdown formatting for plain text report
@@ -536,16 +657,26 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
 
   // If quiz drawer is not open, show the "Take Quiz" button
   if (!isQuizDrawerOpen) {
+    const hasCompleted = completed && shuffledQuestions.length > 0;
+    const scorePercentage = shuffledQuestions.length > 0 ? Math.round((score / shuffledQuestions.length) * 100) : 0;
+    
     return (
       <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
         <div className="text-center">
-            <h2>Take the Quiz</h2>
+          <h2>Take the Quiz</h2>
           <button
             onClick={() => setIsQuizDrawerOpen(true)}
             className="px-8 py-4 text-lg font-medium text-white bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 rounded-lg transition-colors shadow-lg"
           >
-            Take Quiz
+            {hasCompleted ? 'Take Quiz Again' : 'Take Quiz'}
           </button>
+          {hasCompleted && (
+            <div className="mt-4">
+              <p className="text-gray-600 dark:text-gray-400" style={isDark ? { color: '#9ca3af' } : undefined}>
+                Previous score: <span className="font-semibold">{score} / {shuffledQuestions.length}</span> ({scorePercentage}%)
+              </p>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -585,49 +716,8 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
 
           {/* Main Content Area */}
           <div className="flex-1 flex overflow-hidden">
-            {/* Left Navigation Sidebar */}
-            {!showSummary && !showInstructions && (
-              <div className="w-64 border-r border-gray-200 dark:border-gray-700 flex-shrink-0 flex flex-col" style={isDark ? { borderColor: '#374151' } : undefined}>
-                <div className="flex-1 overflow-y-auto pb-2">
-                    <h3 className="hidden md:flex !text-xl !font-normal !m-0 px-8 mb-2 py-6 bg-gray-100 dark:bg-gray-800">
-                        Questions
-                    </h3>
-                  
-                  <div className="space-y-0 my-2">
-                    {shuffledQuestions.map((question, index) => {
-                      const answered = hasAnswered(question.id);
-                      const isCurrent = index === currentQuestionIndex;
-                      const isCorrect = answered && selectedAnswers[question.id] === question.correct;
-                      const isLast = index === shuffledQuestions.length - 1;
-                      
-                      return (
-                        <button
-                          key={question.id}
-                          onClick={() => setCurrentQuestionIndex(index)}
-                          className={`w-full p-8 text-left text-sm font-normal transition-colors !border-0 !border-b-1  border-gray-200 dark:border-gray-700 leading-compact block py-2 ${
-                            !isLast ? 'border-b' : ''
-                          } ${
-                            isCurrent
-                              ? '!font-bold text-blue-400 dark:text-white hover:text-blue-600 dark:hover:text-blue-200'
-                              : answered
-                                ? isCorrect
-                                  ? 'text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300'
-                                  : 'text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300'
-                                : 'text-gray-500 dark:!text-gray-100 hover:text-gray-900 dark:hover:text-gray-100'
-                          }`}
-                          style={!isLast && isDark ? { borderColor: '#374151' } : undefined}
-                        >
-                          {answered && (isCorrect ? '✓ ' : '✗ ')}Question {index + 1}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            )}
-
             {/* Quiz Content Area with Navigation */}
-            <div className="flex-1 flex flex-col overflow-hidden">
+            <div className="flex-1 flex flex-col overflow-hidden w-full">
               <div className="flex-1 overflow-y-auto pb-24">
               <div className="max-w-4xl mx-auto p-6">
                 {/* Instructions Page */}
@@ -649,68 +739,55 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
                       </div>
                     </div>
                     
-                    <div className="flex items-center gap-6 pt-4 border-t border-gray-200 dark:border-gray-700" style={isDark ? { borderColor: '#374151' } : undefined}>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-600 dark:text-gray-400" style={isDark ? { color: '#9ca3af' } : undefined}>
-                          Shuffle
-                        </span>
-                        <button
-                          onClick={handleToggleRandomMode}
-                          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                            randomMode
-                              ? 'bg-blue-600 dark:bg-blue-500'
-                              : 'bg-gray-200 dark:bg-gray-700'
-                          }`}
-                          style={isDark && !randomMode ? { backgroundColor: '#374151' } : undefined}
-                          role="switch"
-                          aria-checked={randomMode}
-                          title={randomMode ? 'Random mode: Questions and options are shuffled' : 'Click to enable random mode: Questions and options will be shuffled'}
-                        >
-                          <span
-                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                              randomMode ? 'translate-x-6' : 'translate-x-1'
+                    <div className="pt-6 border-t border-gray-200 dark:border-gray-700" style={isDark ? { borderColor: '#374151' } : undefined}>
+                      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-gray-600 dark:text-gray-400" style={isDark ? { color: '#9ca3af' } : undefined}>
+                            Shuffle
+                          </span>
+                          <button
+                            onClick={handleToggleRandomMode}
+                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                              randomMode
+                                ? 'bg-blue-600 dark:bg-blue-500'
+                                : 'bg-gray-200 dark:bg-gray-700'
                             }`}
-                          />
-                        </button>
+                            style={isDark && !randomMode ? { backgroundColor: '#374151' } : undefined}
+                            role="switch"
+                            aria-checked={randomMode}
+                            title={randomMode ? 'Random mode: Questions and options are shuffled' : 'Click to enable random mode: Questions and options will be shuffled'}
+                          >
+                            <span
+                              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                randomMode ? 'translate-x-6' : 'translate-x-1'
+                              }`}
+                            />
+                          </button>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={handleClearQuiz}
+                            className="px-6 py-3 text-base font-medium text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md transition-colors border border-gray-300 dark:border-gray-800"
+                            style={isDark ? { backgroundColor: '#374151', borderColor: '#1f2937', color: '#e5e7eb' } : undefined}
+                          >
+                            Reset Quiz
+                          </button>
+                          <button
+                            onClick={handleNext}
+                            className="px-6 py-3 text-base font-medium text-white bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 rounded-md transition-colors"
+                          >
+                            Start Quiz →
+                          </button>
+                        </div>
                       </div>
-                      <button
-                        onClick={handleClearQuiz}
-                        className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md transition-colors border border-gray-300 dark:border-gray-800"
-                        style={isDark ? { backgroundColor: '#374151', borderColor: '#1f2937', color: '#e5e7eb' } : undefined}
-                      >
-                        Reset Quiz
-                      </button>
-                    </div>
-                    
-                    <div className="pt-4">
-                      <button
-                        onClick={handleNext}
-                        className="px-6 py-3 text-base font-medium text-white bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 rounded-md transition-colors"
-                      >
-                        Start Quiz →
-                      </button>
                     </div>
                   </div>
                 ) : (
                   <>
-                    {/* Progress bar */}
-                    {!showSummary && !showInstructions && shuffledQuestions.length > 0 && (
-                      <div className="mb-6">
-                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2" style={isDark ? { backgroundColor: '#374151' } : undefined}>
-                          <div
-                            className="h-2 rounded-full transition-all duration-300"
-                            style={{
-                              width: `${((currentQuestionIndex + 1) / shuffledQuestions.length) * 100}%`,
-                              backgroundColor: isDark ? '#3b82f6' : '#2563eb'
-                            }}
-                          />
-                        </div>
-                      </div>
-                    )}
 
                 {/* Summary Screen */}
                 {showSummary ? (
-                  <div className="p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-lg shadow-sm dark:shadow-none" style={isDark ? { backgroundColor: '#1f2937', borderColor: '#1f2937' } : undefined}>
+                  <div className="max-w-2xl mx-auto p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-lg shadow-sm dark:shadow-none" style={isDark ? { backgroundColor: '#1f2937', borderColor: '#1f2937' } : undefined}>
                     <div className="text-center mb-6">
                       <h3 
                         className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2"
@@ -756,7 +833,7 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
                       />
                     </div>
 
-                    <div className="flex justify-center gap-4">
+                    <div className="flex justify-between gap-4">
                       <button
                         onClick={generateReport}
                         disabled={isGeneratingReport}
@@ -764,19 +841,21 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
                       >
                         {isGeneratingReport ? 'Generating...' : 'Download Report'}
                       </button>
-                      <button
-                        onClick={() => setCurrentQuestionIndex(0)}
-                        className="px-6 py-2 text-sm font-medium text-white bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 rounded-md transition-colors"
-                      >
-                        Review Questions
-                      </button>
-                      <button
-                        onClick={handleClearQuiz}
-                        className="px-6 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md transition-colors border border-gray-300 dark:border-gray-800"
-                        style={isDark ? { backgroundColor: '#374151', borderColor: '#1f2937', color: '#e5e7eb' } : undefined}
-                      >
-                        Start Over
-                      </button>
+                      <div className="flex gap-2">
+                        <button
+                            onClick={handleClearQuiz}
+                            className="px-6 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md transition-colors border border-gray-300 dark:border-gray-800"
+                            style={isDark ? { backgroundColor: '#374151', borderColor: '#1f2937', color: '#e5e7eb' } : undefined}
+                        >
+                            Start Over
+                        </button>
+                        <button
+                            onClick={() => setCurrentQuestionIndex(0)}
+                            className="px-6 py-2 text-sm font-medium text-white bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 rounded-md transition-colors"
+                        >
+                            Review
+                        </button>
+                      </div>
                     </div>
 
                     {/* Hidden Report Content for Export */}
@@ -944,15 +1023,15 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
               
               {/* Fixed Navigation buttons at bottom - only in content area */}
               {!showSummary && !showInstructions && currentQuestion && (
-                <div className="max-w-4xl mx-auto w-full px-6 pt-0">
-                  <div className="flex items-center py-4 border-t border-gray-200 dark:border-gray-800" style={isDark ? { borderColor: '#374151' } : undefined}>
+                <div className=" border-t border-gray-200 dark:border-gray-800">
+                  <div className="max-w-4xl mx-auto w-full px-6 flex items-center py-4" style={isDark ? { borderColor: '#374151' } : undefined}>
                   <button
                     onClick={handlePrevious}
-                    disabled={currentQuestionIndex === 0}
+                    disabled={currentQuestionIndex === -1}
                     className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md transition-colors border border-gray-300 dark:border-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
                     style={isDark ? { backgroundColor: '#374151', borderColor: '#1f2937', color: '#e5e7eb' } : undefined}
                   >
-                    ← Previous
+                    {currentQuestionIndex === 0 ? '← Instructions' : '← Previous'}
                   </button>
                   <div className="flex-1 text-center">
                     <span 
@@ -961,6 +1040,9 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
                     >
                       Question {currentQuestionIndex + 1} of {shuffledQuestions.length}
                     </span>
+
+                    {/* Question Circles */}
+                    {renderQuestionCircles()}
                   </div>
                   <button
                     onClick={handleNext}
@@ -974,6 +1056,7 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
                         : 'Next →'}
                   </button>
                   </div>
+                  
                 </div>
               )}
             </div>
