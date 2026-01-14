@@ -1,8 +1,8 @@
 ---
-title: "Git Workflow for Phase 1"
+title: "Git Workflow"
 group: "How To Guides"
 group_order: 2
-order: 1
+order: 3
 quicklink: 1
 ---
 

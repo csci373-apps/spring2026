@@ -1,7 +1,7 @@
 ---
 title: "Development Cheatsheet"
-group: "Getting Started"
-group_order: 1
+group: "How To Guides"
+group_order: 2
 order: 2
 quicklink: 1
 heading_max_level: 2

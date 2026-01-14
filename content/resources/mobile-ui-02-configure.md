@@ -1,5 +1,5 @@
 ---
-title: "Getting Started"
+title: "Installation & Configuration"
 group: "Mobile UI"
 group_order: 5
 order: 2

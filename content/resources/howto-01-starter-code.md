@@ -1,7 +1,7 @@
 ---
 title: "Starter Code Overview"
-group: "Getting Started"
-group_order: 1
+group: "How To Guides"
+group_order: 2
 order: 1
 quicklink: 1
 heading_max_level: 3
@@ -12,7 +12,9 @@ The starter code is a simplified version of the Three Moves Ahead health applica
 ## Architecture Diagrams
 
 ### 1. Development
-All containers managed by `docker-compose.yaml`. Expo runs locally, connects to Backend via localhost:8000 
+The set-up:
+* The database server, backend server (FastAPI), and frontend server (React) each run in their own container managed by `docker-compose.yaml`. 
+* Expo (for mobile, React Native development) ***is not containerized,*** and must run it on your local system. That said, it can still interact with the containerized FastAPI server (via localhost:8000).
 
 ```bash
 ┌─────────────────────────────────────────────────────────────┐
@@ -64,7 +66,7 @@ Single container serves both frontend (static) and backend (FastAPI). Mobile app
 └─────────────────────────────────────────────────────────────┘
                                       │
                                       │ HTTPS
-                                      │ (https://tma.unca.info)
+                                      │ (https://dev.tma.unca.info)
                                       │
                                       ▼
 ┌────────────────────────────────────────────────────────────┐
@@ -97,7 +99,7 @@ Single container serves both frontend (static) and backend (FastAPI). Mobile app
                                       ▲
                                       │
                                       │ HTTPS API Calls
-                                      │ (https://tma.unca.info)
+                                      │ (https://dev.tma.unca.info)
                                       │
 ┌─────────────────────────────────────────────────────────────┐
 │                    Mobile Users                             │
@@ -334,39 +336,7 @@ The Mobile App Setup does not use Docker, so you will have to configure Expo and
 
 ### 5. Useful Commands
 
-**Docker:**
-```bash
-# View running containers
-docker compose ps
-
-# View logs
-docker compose logs -f
-
-# Stop all services
-docker compose down
-
-# Rebuild everything
-docker compose down --rmi all -v --remove-orphans
-docker compose up --build -d
-```
-
-**Backend Formatting / Linting:**
-```sh
-# Check for code formatting / linter errors (Python):
-docker exec -it tma_backend bash scripts/check.sh
-
-# Auto-fix code formatting and some linter errors (Python):
-docker exec -it tma_backend bash scripts/fix.sh
-```
-
-**Frontend Formatting / Linting:**
-```sh
-# Check for code formatting / linter errors (TypeScript, React):
-docker exec -it tma_frontend npm run check  
-
-# Auto-fix code formatting and some linter errors (TypeScript, React):
-docker exec -it tma_frontend npm run fix
-```
+For a comprehensive list of development commands, see the [Development Cheatsheet](/resources/cheatsheet).
 
 ## Project Structure
 

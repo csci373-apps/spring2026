@@ -160,7 +160,10 @@ export default function TableOfContents({ maxLevel = 2 }: TableOfContentsProps) 
                 href={`#${item.id}`}
                 onClick={(e) => {
                   e.preventDefault();
-                  const isQuizSection = item.id.startsWith('quiz-');
+                  const isQuizSection = item.id === 'quiz' || item.id.startsWith('quiz-');
+                  
+                  // Match intersection observer rootMargin (-80px top) for consistent positioning
+                  const headerOffset = 20;
                   
                   // Update URL hash
                   window.history.pushState(null, '', `#${item.id}`);
@@ -174,13 +177,26 @@ export default function TableOfContents({ maxLevel = 2 }: TableOfContentsProps) 
                   
                   if (isContainerScrollable) {
                     if (isQuizSection) {
-                      // For quiz sections, just scroll to near the bottom
-                      const maxScroll = scrollContainer.scrollHeight - scrollContainer.clientHeight;
-                      const targetScroll = Math.max(0, maxScroll - 100); // Leave 100px buffer
-                      scrollContainer.scrollTo({
-                        top: targetScroll,
-                        behavior: 'smooth'
-                      });
+                      // For quiz sections, find the quiz element and scroll to it
+                      const quizElement = document.getElementById(item.id);
+                      if (quizElement && scrollContainer.contains(quizElement)) {
+                        const containerRect = scrollContainer.getBoundingClientRect();
+                        const elementRect = quizElement.getBoundingClientRect();
+                        const elementTopInContent = (elementRect.top - containerRect.top) + scrollContainer.scrollTop;
+                        const targetScroll = Math.max(0, elementTopInContent - headerOffset);
+                        scrollContainer.scrollTo({
+                          top: targetScroll,
+                          behavior: 'smooth'
+                        });
+                      } else {
+                        // Fallback: scroll to near the bottom
+                        const maxScroll = scrollContainer.scrollHeight - scrollContainer.clientHeight;
+                        const targetScroll = Math.max(0, maxScroll - 100); // Leave 100px buffer
+                        scrollContainer.scrollTo({
+                          top: targetScroll,
+                          behavior: 'smooth'
+                        });
+                      }
                     } else {
                       // Normal scroll calculation for other headings
                       const element = document.getElementById(item.id);
@@ -191,9 +207,6 @@ export default function TableOfContents({ maxLevel = 2 }: TableOfContentsProps) 
                         
                         // Calculate element's position relative to container's scrollable content
                         const elementTopInContent = (elementRect.top - containerRect.top) + scrollContainer.scrollTop;
-                        
-                        // Account for fixed header (64px) + some padding
-                        const headerOffset = 80;
                         const targetScroll = Math.max(0, elementTopInContent - headerOffset);
                         
                         scrollContainer.scrollTo({
@@ -204,23 +217,14 @@ export default function TableOfContents({ maxLevel = 2 }: TableOfContentsProps) 
                     }
                   } else {
                     // Fallback to window scroll if container not found or not scrollable
-                    const headerOffset = 80;
                     const element = document.getElementById(item.id);
                     if (element) {
-                      if (isQuizSection) {
-                        // For quiz sections, scroll to near bottom of page
-                        window.scrollTo({
-                          top: document.documentElement.scrollHeight - window.innerHeight - 100,
-                          behavior: 'smooth'
-                        });
-                      } else {
-                        const elementTop = element.getBoundingClientRect().top + window.pageYOffset;
-                        const offsetPosition = Math.max(0, elementTop - headerOffset);
-                        window.scrollTo({
-                          top: offsetPosition,
-                          behavior: 'smooth'
-                        });
-                      }
+                      const elementTop = element.getBoundingClientRect().top + window.pageYOffset;
+                      const offsetPosition = Math.max(0, elementTop - headerOffset);
+                      window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                      });
                     }
                   }
                 }}
