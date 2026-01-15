@@ -2,6 +2,7 @@
 title: "Domain Modeling"
 start_date: "2026-01-27"
 type: "activity"
+draft: 1
 ---
 
 

@@ -2,6 +2,7 @@
 title: "React Architecture"
 start_date: "2026-02-10"
 type: "activity"
+draft: 1
 ---
 
 

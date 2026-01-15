@@ -2,6 +2,7 @@
 title: "Mobile UI Integration"
 start_date: "2026-02-19"
 type: "activity"
+draft: 1
 ---
 
 

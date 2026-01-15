@@ -2,6 +2,7 @@
 title: "High-Fidelity Prototyping + Implementation"
 start_date: "2026-02-26"
 type: "activity"
+draft: 1
 ---
 
 ## Learning Objectives

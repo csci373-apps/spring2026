@@ -70,7 +70,7 @@ export default async function ResourcePage({ params }: PageProps) {
         <PageHeader title={title} excerpt={excerpt} group={group} />
         
         <div>
-          <MarkdownContent content={postData.content} />
+          <MarkdownContent content={postData.content} storageKey={`resource-${slug}`} />
           
           {/* Quiz */}
           {quizData && (

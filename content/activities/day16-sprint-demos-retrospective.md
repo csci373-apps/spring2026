@@ -2,6 +2,7 @@
 title: "Sprint 1 Demos + Phase 1 Retrospective"
 start_date: "2026-03-05"
 type: "activity"
+draft: 1
 ---
 
 ## Learning Objectives

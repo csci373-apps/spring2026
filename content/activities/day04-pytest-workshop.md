@@ -2,6 +2,7 @@
 title: "Pytest Workshop"
 start_date: "2026-01-22"
 type: "activity"
+draft: 1
 ---
 
 ## Learning Objectives

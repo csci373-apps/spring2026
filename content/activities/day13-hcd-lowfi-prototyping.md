@@ -2,6 +2,7 @@
 title: "Human-Centered Design + Low-Fi Prototyping"
 start_date: "2026-02-24"
 type: "activity"
+draft: 1
 ---
 
 ## Learning Objectives

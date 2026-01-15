@@ -1,5 +1,5 @@
 ---
-title: "Starter Code Overview"
+title: "Starter Code Setup Instructions"
 group: "How To Guides"
 group_order: 2
 order: 1
@@ -7,12 +7,12 @@ quicklink: 1
 heading_max_level: 3
 ---
 
-The starter code is a simplified version of the Three Moves Ahead health application that provides the foundational infrastructure for your semester project. It includes core authentication, basic CRUD operations, and development tooling, but intentionally excludes advanced features that you'll implement during the course.
+The goal of the starter code is to provide a foundation for the Three Moves Ahead health application, including authentication, a few API Endpoints and starter web / mobile screens, and development tooling. You all will design and build the rest!
 
-## Architecture Diagrams
+## How the Code is Organized
 
-### 1. Development
-The set-up:
+### 1. Development Architecture
+For development, the app is organized as follows:
 * The database server, backend server (FastAPI), and frontend server (React) each run in their own container managed by `docker-compose.yaml`. 
 * Expo (for mobile, React Native development) ***is not containerized,*** and must run it on your local system. That said, it can still interact with the containerized FastAPI server (via localhost:8000).
 
@@ -172,7 +172,7 @@ Single container serves both frontend (static) and backend (FastAPI). Mobile app
 - Expo Router for file-based routing
 - React Native Paper (Material Design 3)
 - React Query for data fetching
-- Axios for API calls
+- Fetch for API calls
 - Expo Secure Store for token storage
 
 **Features:**
@@ -231,9 +231,10 @@ The following features are intentionally excluded from the starter code and will
 
 ### 2. Initial Setup
 
-1. One member of your team forks the base repository, located here: https://github.com/csci373-apps/tma-starter-app
+1. **ONE member of your team** will fork the base repository, located here: https://github.com/csci373-apps/tma-starter-app. This person will then add the rest of their teammates as collaborators. 
 
 1. **Clone the repository:**
+   Once everyone on your team has access to your version of the repository, each person will clone it:
    ```bash
    git clone git@github.com:<teammates_github_handle>/tma-starter-app.git
    cd tma
@@ -250,10 +251,12 @@ The following features are intentionally excluded from the starter code and will
    ```
    Edit `.env` if needed (defaults usually work for local development).
 
-1. **Build your Docker images, volumes, and containers:**
-First, make sure that Docker Desktop is running on your machine. Also, if you've previously built a container that also uses ports 5433, 5173, or 8000, please stop those containers before proceeding.
+### 3. Backend + Web-UI Setup
 
-When you're ready, issue the following command to build your containers:
+1. **Build your Docker images, volumes, and containers:**
+    First, make sure that Docker Desktop is running on your machine. Also, if you've previously built a container that also uses ports 5433, 5173, or 8000, please stop those containers before proceeding.
+
+    When you're ready, issue the following command to build your containers:
 
    ```bash
    docker compose up -d
@@ -263,24 +266,23 @@ When you're ready, issue the following command to build your containers:
    - Backend API on port 8000
    - Frontend on port 5173
 
-5. **Seed the database:**
-After creating your containers, run the test database script to populate your database with fake information (just for testing). You can modify your fake data by navigating to `backend/scripts/sample_data` and editing the relevant CSV files with the data you want.
+1. **Seed the database:**
+    After creating your containers, run the test database script to populate your database with fake information (just for testing). You can modify your fake data by navigating to `backend/scripts/sample_data` and editing the relevant CSV files with the data you want.
 
    ```bash
    docker exec -it tma_backend poetry run python scripts/populate.py --reset
    ```
    The `--reset` flag drops all tables and recreates them with fresh data.
 
-6. **Access the application:**
+1. **Access the application:**
    - Frontend: http://localhost:5173
    - Backend API: http://localhost:8000
    - API Documentation: http://localhost:8000/docs
 
-### 3. Default Credentials
+   Note, to login, use the test acconts:
+   - **Admin account**: admin/password
+   - **User account**: user/password
 
-After seeding, you can log into the web app (http://localhost:5173) with:
-- **Admin:** `admin` / `password` (or check `backend/scripts/sample_data/users.csv`)
-- **Regular User:** `tester` / `password` (or check `backend/scripts/sample_data/users.csv`)
 
 ### 4. Mobile App Setup
 
@@ -305,18 +307,17 @@ The Mobile App Setup does not use Docker, so you will have to configure Expo and
    npm install
    ```
 
-3. **Create `.env` file (optional):**
+3. **Create `.env` file:**
    ```bash
-   # For iOS simulator and web: leave EXPO_PUBLIC_API_URL unset (uses localhost:8000)
-   # For Android emulator: leave unset (automatically uses 10.0.2.2:8000)
-   # For physical device: set to your computer's IP address
-   echo "EXPO_PUBLIC_API_URL=http://YOUR_IP:8000" > .env
+   cp .env.example .env
    ```
-   
-   **Note:** The app automatically uses the correct URL based on platform:
-   - **iOS Simulator:** `http://localhost:8000` (default)
-   - **Android Emulator:** `http://10.0.2.2:8000` (default)
-   - **Physical Device:** Set `EXPO_PUBLIC_API_URL` to your computer's IP (e.g., `http://192.168.1.228:8000`)
+   Edit `.env` if needed. The app automatically uses the correct URL based on platform:
+
+   | Platform | `EXPO_PUBLIC_API_URL` Setting | Default URL Used |
+   |----------|-------------------------------|------------------|
+   | iOS Simulator | Leave unset | `http://localhost:8000` |
+   | Android Emulator | Leave unset | `http://10.0.2.2:8000` |
+   | Physical Mobile Device | Set to your computer's IP (e.g., `http://192.168.1.228:8000`) | Uses the value you set |
 
 4. **Start Expo:**
    ```bash
@@ -325,14 +326,11 @@ The Mobile App Setup does not use Docker, so you will have to configure Expo and
    Or use: `npx expo start` (both work the same)
 
 5. **Run on device:**
-   - **iOS Simulator:** Press `i` (requires Xcode)
+   - **iOS Simulator:** Press `i` (only for Mac users...requires Xcode)
    - **Android Emulator:** Press `a` (requires Android Studio with AVD)
-   - **Physical Device:** 
+   - **Physical Mobile Device:** 
      - Install Expo Go app on your phone (see Prerequisites above)
-     - Scan the QR code shown in the terminal with:
-       - **iOS:** Camera app (opens in Expo Go)
-       - **Android:** Expo Go app's built-in scanner
-`
+     - Scan the QR code shown in the terminal with your device's camera
 
 ### 5. Useful Commands
 

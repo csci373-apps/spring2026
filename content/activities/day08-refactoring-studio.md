@@ -2,6 +2,7 @@
 title: "Refactoring Studio"
 start_date: "2026-02-05"
 type: "activity"
+draft: 1
 ---
 
 

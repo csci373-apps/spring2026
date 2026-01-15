@@ -48,7 +48,7 @@ export default async function AssignmentPage({ params }: AssignmentPageProps) {
       />
       { postData.due_date && <p className="mt-2 text-lg font-bold">Due {formatDate(postData.due_date)} at 11:59pm</p> }
       {isStyleGuideDemo && <StyleGuideStyles />}
-      <MarkdownContent content={postData.content} />
+      <MarkdownContent content={postData.content} storageKey={`assignment-${slug}`} />
     </ContentLayout>
   );
 }

@@ -2,6 +2,7 @@
 title: "Demo Prep + Phase 1 Reflection"
 start_date: "2026-03-03"
 type: "activity"
+draft: 1
 ---
 
 ## Learning Objectives

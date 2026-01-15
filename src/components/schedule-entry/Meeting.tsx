@@ -4,6 +4,8 @@ import clsx from 'clsx';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useMeetingChecklist } from './useMeetingChecklist';
+import ResourceQuiz from '@/components/ResourceQuiz';
+import { QuizData } from '@/components/quiz/types';
 
 interface Reading {
   citation: string | React.ReactElement;
@@ -15,7 +17,13 @@ interface Activity {
   url?: string;
   draft?: number;
   excluded?: number;
-  notes?: string;
+}
+
+interface Quiz {
+  title: string;
+  slug: string;
+  quizData?: QuizData;
+  draft?: number;
 }
 
 interface Assignment {
@@ -30,6 +38,7 @@ export interface MeetingData {
   topic: string;
   description?: string | React.ReactElement;
   activities?: Activity[];
+  quizzes?: Quiz[];
   readings?: Reading[];
   optionalReadings?: Reading[];
   holiday?: boolean;
@@ -56,13 +65,15 @@ export default function Meeting({
   enableConfetti = true,
 }: MeetingProps) {
   const [isDark, setIsDark] = useState(false);
+  const [openQuizSlug, setOpenQuizSlug] = useState<string | null>(null);
   const meetingKey = `meeting-${meeting.date}-${meeting.topic.replace(/\s+/g, '-').toLowerCase()}`;
   // Filter out excluded activities
   const filteredActivities = meeting.activities?.filter(activity => !(activity.excluded === 1)) || [];
   const hasActivities = filteredActivities.length > 0;
+  const hasQuizzes = meeting.quizzes && meeting.quizzes.length > 0;
   const hasReadings = 'readings' in meeting && meeting.readings && meeting.readings.length > 0;
   const hasOptionalReadings = 'optionalReadings' in meeting && meeting.optionalReadings && meeting.optionalReadings.length > 0;
-  const hasMoreDetails = hasActivities || hasReadings;
+  const hasMoreDetails = hasActivities || hasQuizzes || hasReadings;
   const hasDiscussionQuestions = 'discussionQuestions' in meeting && meeting.discussionQuestions;
   const isHoliday = 'holiday' in meeting && meeting.holiday;
 
@@ -146,26 +157,9 @@ export default function Meeting({
                 const linkClass = `text-blue-600 dark:text-blue-400 hover:underline ${isChecked ? '!line-through opacity-60' : ''}`;
                 
                 if (isExternalLink) {
-                  return ( 
-                  <>
-                    <Link href={url} target="_blank" className={linkClass} onClick={(e) => e.stopPropagation()}>{activity.title}</Link>
-                    {activity.notes && (
-                      <>
-                      {" - "} 
-                      <span className="text-md text-gray-500 dark:text-gray-400">{activity.notes}</span>
-                      </>
-                    )}
-                  </>
-                  );
+                  return <Link href={url} target="_blank" className={linkClass} onClick={(e) => e.stopPropagation()}>{activity.title}</Link>;
                 }
-                return (
-                  <>
-                    <Link href={url} className={linkClass} onClick={(e) => e.stopPropagation()}>{activity.title}</Link>
-                    {activity.notes && (
-                      <>{" - "} <span className="text-md text-gray-500 dark:text-gray-400">{activity.notes}</span></>
-                    )}
-                  </>
-                );
+                return <Link href={url} className={linkClass} onClick={(e) => e.stopPropagation()}>{activity.title}</Link>;
               })()}
             </>
           )}
@@ -177,7 +171,7 @@ export default function Meeting({
   function renderActivities() {
     if (hasActivities) {
       return (
-        <div className="mb-6">
+        <div className="mb-6 mt-6">
             {hasActivities ? <strong className="text-gray-700 dark:text-gray-300" style={isDark ? { color: '#d1d5db' } : undefined}>Slides / Activities</strong> : ``}
             <ul className="!list-none !pl-4">
                 {filteredActivities.map((activity: Activity, filteredIndex: number) => {
@@ -189,6 +183,123 @@ export default function Meeting({
                     </li>
                   );
                 })}
+            </ul>
+        </div>
+      )
+    }
+    return ``;
+  }
+
+  function QuizItem({ quiz, index, onOpen }: { quiz: Quiz; index: number; onOpen: (slug: string) => void }) {
+    const isDraft = quiz.draft && quiz.draft === 1;
+    const itemKey = `${meetingKey}-quiz-${index}`;
+    const isChecked = enableChecklist && !isDraft ? checklist.isChecked(itemKey) : false;
+    
+    // Get quiz completion status and score from localStorage
+    const [quizStatus, setQuizStatus] = useState<{ completed: boolean; score: number; total: number } | null>(null);
+    
+    useEffect(() => {
+      if (typeof window === 'undefined' || isDraft) return;
+      
+      const updateQuizStatus = () => {
+        try {
+          const storageKey = `quiz-${quiz.slug}`;
+          const saved = localStorage.getItem(storageKey);
+          if (saved) {
+            const savedState = JSON.parse(saved);
+            const totalQuestions = quiz.quizData?.questions?.length || 0;
+            setQuizStatus({
+              completed: savedState.completed || false,
+              score: savedState.score || 0,
+              total: totalQuestions
+            });
+          } else {
+            setQuizStatus(null);
+          }
+        } catch (error) {
+          console.error('Error reading quiz status:', error);
+          setQuizStatus(null);
+        }
+      };
+      
+      updateQuizStatus();
+      
+      // Listen for storage changes (when quiz is completed)
+      const handleStorageChange = (e: StorageEvent) => {
+        if (e.key === `quiz-${quiz.slug}`) {
+          updateQuizStatus();
+        }
+      };
+      
+      window.addEventListener('storage', handleStorageChange);
+      
+      // Also poll for changes (for same-tab updates)
+      const interval = setInterval(updateQuizStatus, 500);
+      
+      return () => {
+        window.removeEventListener('storage', handleStorageChange);
+        clearInterval(interval);
+      };
+    }, [quiz.slug, quiz.quizData, isDraft]);
+    
+    return (
+      <div className="flex items-start gap-2">
+        {!isDraft && (
+          <input
+            type="checkbox"
+            aria-label={`Mark quiz "${quiz.title}" as ${isChecked ? 'uncompleted' : 'completed'}`}
+            checked={isChecked}
+            onChange={() => enableChecklist && checklist.toggleChecked(itemKey)}
+            disabled={!enableChecklist}
+            onClick={(e) => e.stopPropagation()}
+            className="mt-1 w-4 h-4 rounded border-2 border-gray-300 dark:border-gray-600 accent-blue-600 dark:accent-blue-400 cursor-pointer flex-shrink-0"
+            style={isDark ? { 
+              backgroundColor: isChecked ? '#3b82f6' : '#1f2937',
+              borderColor: isChecked ? '#3b82f6' : '#4b5563'
+            } : undefined}
+          />
+        )}
+        <div className="flex-1">
+          {isDraft ? (
+            <span>{quiz.title}</span>
+          ) : (
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpen(quiz.slug);
+                }}
+                className={`text-left text-blue-600 dark:text-blue-400 hover:underline ${isChecked ? '!line-through opacity-60' : ''}`}
+              >
+                {quiz.title}
+              </button>
+              {quizStatus && quizStatus.completed && (
+                <span className="text-sm text-gray-600 dark:text-gray-400" style={isDark ? { color: '#9ca3af' } : undefined}>
+                  Previous score: {quizStatus.score} / {quizStatus.total} ({quizStatus.total > 0 ? Math.round((quizStatus.score / quizStatus.total) * 100) : 0}%)
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  function renderQuiz(quiz: Quiz, index: number) {
+    return <QuizItem key={index} quiz={quiz} index={index} onOpen={setOpenQuizSlug} />;
+  }
+
+  function renderQuizzes() {
+    if (hasQuizzes) {
+      return (
+        <div className="mb-6">
+            <strong className="text-gray-700 dark:text-gray-300" style={isDark ? { color: '#d1d5db' } : undefined}>Quizzes</strong>
+            <ul className="!list-none !pl-4">
+                {meeting.quizzes!.map((quiz: Quiz, index: number) => (
+                    <li key={index} className="text-gray-700 dark:text-gray-300">
+                        {renderQuiz(quiz, index)}
+                    </li>
+                ))}
             </ul>
         </div>
       )
@@ -389,7 +500,10 @@ export default function Meeting({
   const allChecked = enableChecklist ? checklist.areAllItemsChecked() : false;
   const { className: containerClassName, style: containerStyle } = getMeetingContainerStyles(allChecked);
   
+  const openQuiz = meeting.quizzes?.find(q => q.slug === openQuizSlug);
+  
   return (
+    <>
     <div 
       className={containerClassName}
       style={containerStyle}
@@ -427,6 +541,7 @@ export default function Meeting({
                     {renderActivities()}
                     {hasReadings ? renderReadings({title: 'Required Readings', readings: meeting.readings || [], isOptional: false}) : ``}
                     {hasOptionalReadings ? renderReadings({title: 'Optional Readings', readings: meeting.optionalReadings || [], isOptional: true}) : ``}
+                    {renderQuizzes()}
                     {renderDiscussionQuestions()}
                     {
                       meeting.assigned ? ( 
@@ -461,5 +576,18 @@ export default function Meeting({
             {renderDetailsButton(allChecked)}
         </div>
     </div>
+    {/* Render quiz drawer when a quiz is opened */}
+    {openQuizSlug && openQuiz && openQuiz.quizData && (
+      <div className="fixed inset-0 z-[500]">
+        <ResourceQuiz 
+          quizData={openQuiz.quizData} 
+          resourceSlug={openQuiz.slug} 
+          variant="desktop"
+          autoOpen={true}
+          onClose={() => setOpenQuizSlug(null)}
+        />
+      </div>
+    )}
+    </>
   )
 }

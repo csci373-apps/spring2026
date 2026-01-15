@@ -18,7 +18,7 @@ export default async function SyllabusPage() {
       tocMaxLevel={heading_max_level || 2}
     >
       <PageHeader title={title} excerpt={excerpt} />
-      <MarkdownContent content={postData.content} />
+      <MarkdownContent content={postData.content} storageKey="syllabus" />
       
       {/* Quiz */}
       {quizData && (

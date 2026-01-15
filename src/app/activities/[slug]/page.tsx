@@ -33,9 +33,9 @@ export default async function ActivityPage({ params }: ActivityPageProps) {
             type="activity"
           />
           
-          <Suspense fallback={<MarkdownContent content={postData.content} />}>
+          <Suspense fallback={<MarkdownContent content={postData.content} storageKey={`activity-${slug}`} />}>
             <InstructorNotesToggle>
-              <MarkdownContent content={postData.content} />
+              <MarkdownContent content={postData.content} storageKey={`activity-${slug}`} />
             </InstructorNotesToggle>
           </Suspense>
         </div>

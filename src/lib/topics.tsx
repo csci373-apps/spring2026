@@ -1,4 +1,4 @@
-import { getAllPosts, PostData } from './markdown';
+import { getAllPosts, PostData, getAllQuizMetadata, QuizMetadata, getQuizData, QuizData } from './markdown';
 import React from 'react';
 
 // Type definitions for topics structure
@@ -6,6 +6,7 @@ interface Activity {
   title: string;
   url?: string;
   draft?: number;
+  excluded?: number;
 }
 
 interface Assignment {
@@ -20,17 +21,25 @@ export interface Reading {
   url?: string;
 }
 
+export interface Quiz {
+  title: string;
+  slug: string;
+  quizData?: QuizData;
+  draft?: number;
+}
+
 export interface Meeting {
   date: string;
   topic: string;
   description?: string | React.ReactElement;
   activities?: Activity[];
+  quizzes?: Quiz[];
   readings?: Reading[];
   optionalReadings?: Reading[];
   holiday?: boolean;
   discussionQuestions?: string;
   assigned?: Assignment | string;
-  due?: Assignment | string;
+  due?: Assignment | string | (Assignment | string)[];
 }
 
 export interface Topic {
@@ -77,19 +86,27 @@ function normalizeDate(dateStr: string | undefined): string | null {
 
 // Enrichment function
 async function enrichTopicsWithMarkdown(baseTopics: TopicsArray): Promise<TopicsArray> {
-  // Read all activities and assignments
+  // Read all activities, assignments, and quizzes
   const allActivities = getAllPosts('activities');
   const allAssignments = getAllPosts('assignments');
+  const allQuizzes = getAllQuizMetadata();
   
   // Filter activities with start_date and assignments with assigned_date or due_date
-  const activitiesWithDates = allActivities.filter(a => a.start_date);
-  const assignmentsWithAssignedDates = allAssignments.filter(a => a.assigned_date);
-  const assignmentsWithDueDates = allAssignments.filter(a => a.due_date);
+  // Also filter out excluded activities (handle both boolean and number)
+  const activitiesWithDates = allActivities.filter(a => {
+    if (!a.start_date) return false;
+    // Exclude if excluded is truthy (handles boolean true, number 1, etc.)
+    return !a.excluded;
+  });
+  const assignmentsWithAssignedDate = allAssignments.filter(a => a.assigned_date);
+  const assignmentsWithDueDate = allAssignments.filter(a => a.due_date);
+  const quizzesWithDates = allQuizzes.filter(q => q.start_date);
   
   // Create maps for quick lookup by date
   const activitiesByDate = new Map<string, PostData[]>();
   const assignmentsByAssignedDate = new Map<string, PostData[]>();
   const assignmentsByDueDate = new Map<string, PostData[]>();
+  const quizzesByDate = new Map<string, QuizMetadata[]>();
   
   activitiesWithDates.forEach(activity => {
     const date = normalizeDate(activity.start_date);
@@ -101,7 +118,7 @@ async function enrichTopicsWithMarkdown(baseTopics: TopicsArray): Promise<Topics
     }
   });
   
-  assignmentsWithAssignedDates.forEach(assignment => {
+  assignmentsWithAssignedDate.forEach(assignment => {
     const date = normalizeDate(assignment.assigned_date);
     if (date) {
       if (!assignmentsByAssignedDate.has(date)) {
@@ -111,13 +128,23 @@ async function enrichTopicsWithMarkdown(baseTopics: TopicsArray): Promise<Topics
     }
   });
   
-  assignmentsWithDueDates.forEach(assignment => {
+  assignmentsWithDueDate.forEach(assignment => {
     const date = normalizeDate(assignment.due_date);
     if (date) {
       if (!assignmentsByDueDate.has(date)) {
         assignmentsByDueDate.set(date, []);
       }
       assignmentsByDueDate.get(date)!.push(assignment);
+    }
+  });
+  
+  quizzesWithDates.forEach(quiz => {
+    const date = normalizeDate(quiz.start_date!);
+    if (date) {
+      if (!quizzesByDate.has(date)) {
+        quizzesByDate.set(date, []);
+      }
+      quizzesByDate.get(date)!.push(quiz);
     }
   });
   
@@ -129,7 +156,6 @@ async function enrichTopicsWithMarkdown(baseTopics: TopicsArray): Promise<Topics
       ...meeting,
       activities: meeting.activities ? [...meeting.activities] : undefined,
       assigned: meeting.assigned ? (typeof meeting.assigned === 'object' ? { ...meeting.assigned } : meeting.assigned) : undefined,
-      due: meeting.due ? (typeof meeting.due === 'object' ? { ...meeting.due } : meeting.due) : undefined,
     }))
   }));
   
@@ -143,47 +169,63 @@ async function enrichTopicsWithMarkdown(baseTopics: TopicsArray): Promise<Topics
       const matchingActivities = activitiesByDate.get(meetingDateStr) || [];
       
       // Find matching assignments by assigned_date
-      const matchingAssignedAssignments = assignmentsByAssignedDate.get(meetingDateStr) || [];
+      const matchingAssignmentsByAssigned = assignmentsByAssignedDate.get(meetingDateStr) || [];
       
       // Find matching assignments by due_date
-      const matchingDueAssignments = assignmentsByDueDate.get(meetingDateStr) || [];
+      const matchingAssignmentsByDue = assignmentsByDueDate.get(meetingDateStr) || [];
       
-      // Create auto-populated activity entries
-      const autoActivities = matchingActivities.map((activity: PostData) => ({
-        title: activity.title,
-        url: `/activities/${activity.id}/`,
-        draft: activity.draft !== undefined ? activity.draft : 1
-      }));
+      // Find matching quizzes
+      const matchingQuizzes = quizzesByDate.get(meetingDateStr) || [];
+      
+      // Create auto-populated activity entries (excluding excluded activities)
+      const autoActivities = matchingActivities
+        .filter((activity: PostData) => !activity.excluded)
+        .map((activity: PostData) => ({
+          title: activity.title,
+          url: `/activities/${activity.id}/`,
+          draft: activity.draft || 0,
+          excluded: activity.excluded ? 1 : 0
+        }));
       
       // Create auto-populated assignment entry for assigned (take first match if multiple)
-      const autoAssignedAssignment = matchingAssignedAssignments.length > 0 
+      const autoAssignment = matchingAssignmentsByAssigned.length > 0 
         ? (() => {
-            const assignment = matchingAssignedAssignments[0];
-            // Format titleShort as "HW" + number (e.g., "HW0", "HW1")
-            const titleShort = assignment.num ? `HW ${assignment.num}` : 'HW';
+            const assignment = matchingAssignmentsByAssigned[0];
+            const titleShort = (assignment.type === 'homework' || assignment.type === 'assignment') 
+              ? `HW ${assignment.num}` 
+              : `Tutorial ${assignment.num}`;
             return {
               titleShort: titleShort,
               title: assignment.title,
               url: `/assignments/${assignment.id}/`,
-              draft: assignment.draft !== undefined ? assignment.draft : 0
+              draft: assignment.draft || 0
             };
           })()
         : null;
       
-      // Create auto-populated assignment entry for due (take first match if multiple)
-      const autoDueAssignment = matchingDueAssignments.length > 0 
-        ? (() => {
-            const assignment = matchingDueAssignments[0];
-            // Format titleShort as "HW" + number (e.g., "HW0", "HW1")
-            const titleShort = assignment.num ? `HW ${assignment.num}` : 'HW';
-            return {
-              titleShort: titleShort,
-              title: assignment.title,
-              url: `/assignments/${assignment.id}/`,
-              draft: assignment.draft !== undefined ? assignment.draft : 0
-            };
-          })()
-        : null;
+      // Create auto-populated assignment entries for due (all matches, including drafts)
+      const autoDueAssignments = matchingAssignmentsByDue.map((assignment) => {
+        const titleShort = (assignment.type === 'homework' || assignment.type === 'assignment') 
+          ? `HW ${assignment.num}` 
+          : `Tutorial ${assignment.num}`;
+        return {
+          titleShort: titleShort,
+          title: assignment.title,
+          url: `/assignments/${assignment.id}/`,
+          draft: assignment.draft || 0
+        };
+      });
+      
+      // Create auto-populated quiz entries (include full quiz data for client-side rendering)
+      const autoQuizzes = matchingQuizzes.map((quiz: QuizMetadata) => {
+        const quizData = getQuizData(quiz.slug);
+        return {
+          title: quiz.quizName,
+          slug: quiz.slug,
+          quizData: quizData || undefined,
+          draft: 0
+        };
+      });
       
       // Merge activities: keep manual entries, add auto-populated ones
       if (autoActivities.length > 0) {
@@ -194,14 +236,42 @@ async function enrichTopicsWithMarkdown(baseTopics: TopicsArray): Promise<Topics
         meeting.activities = [...existingActivities, ...newAutoActivities];
       }
       
-      // Merge assigned assignment: only set if not already set manually
-      if (autoAssignedAssignment && !meeting.assigned) {
-        meeting.assigned = autoAssignedAssignment;
+      // Merge assignment: only set if not already set manually
+      if (autoAssignment && !meeting.assigned) {
+        meeting.assigned = autoAssignment;
       }
       
-      // Merge due assignment: only set if not already set manually
-      if (autoDueAssignment && !meeting.due) {
-        meeting.due = autoDueAssignment;
+      // Merge quizzes: keep manual entries, add auto-populated ones
+      if (autoQuizzes.length > 0) {
+        const existingQuizzes = meeting.quizzes || [];
+        // Check if auto-populated quizzes already exist (by slug) to avoid duplicates
+        const existingSlugs = new Set(existingQuizzes.map((q: Quiz) => q.slug));
+        const newAutoQuizzes = autoQuizzes.filter((q: Quiz) => !existingSlugs.has(q.slug));
+        meeting.quizzes = [...existingQuizzes, ...newAutoQuizzes];
+      }
+      
+      // Merge due assignments: add all auto-populated ones (including drafts)
+      if (autoDueAssignments.length > 0) {
+        if (!meeting.due) {
+          // If no manual due items, set to array of auto-populated ones
+          meeting.due = autoDueAssignments.length === 1 ? autoDueAssignments[0] : autoDueAssignments;
+        } else if (Array.isArray(meeting.due)) {
+          // If already an array, merge (avoid duplicates by URL)
+          const existingUrls = new Set(
+            meeting.due
+              .filter((d): d is Assignment => typeof d !== 'string')
+              .map((d) => d.url)
+          );
+          const newDueAssignments = autoDueAssignments.filter((a) => !existingUrls.has(a.url));
+          meeting.due = [...meeting.due, ...newDueAssignments];
+        } else {
+          // If single item, convert to array and merge
+          const existingUrl = typeof meeting.due === 'object' ? meeting.due.url : null;
+          const newDueAssignments = autoDueAssignments.filter((a) => a.url !== existingUrl);
+          if (newDueAssignments.length > 0) {
+            meeting.due = [meeting.due, ...newDueAssignments];
+          }
+        }
       }
     });
   });
@@ -248,15 +318,11 @@ const baseTopics = [
         topic: "Teams + Working Agreement (Phase 1) + dev setup",
         description: (
           <>
-            <ul>
-              <li>Team formation, Phase 1 Working Agreement, and dev environment setup</li>
-              <li>Establish baseline workflow norms (feature branches + PRs + reviews)</li>
-              <li>Start building shared expectations for presence and studio participation</li>
-            </ul>
+            Reading discusion, meeting with client, and team assignments.
           </>
         ),
         activities: [
-          { title: "Slides", url: "#", draft: 1 },
+          { title: "Slides", url: "https://docs.google.com/presentation/d/1ewOuvmcgMgCMlImgjbYygeeYIVBgNe2h/edit?usp=sharing&ouid=113376576186080604800&rtpof=true&sd=true", draft: 0 },
         ],
         readings: [
           {
@@ -297,32 +363,11 @@ const baseTopics = [
         topic: "Backend deep dive: models, schemas, routes, dependencies",
         description: (
           <>
-            <ul>
-              <li>Review backend structure (models vs schemas vs routes), dependency injection, and how requests flow</li>
-              <li>Activity: read an existing endpoint and write a short 'behavior contract' in plain language</li>
-            </ul>
+            Review backend structure (models vs schemas vs routes), dependency injection, and how requests flow.
           </>
         ),
         activities: [
           { title: "Slides", url: "#", draft: 1 },
-        ],
-        readings: [
-          {
-            citation: (
-              <>
-                FastAPI Documentation. <em>Dependencies</em> (selected sections)
-              </>
-            ),
-            url: "https://fastapi.tiangolo.com/tutorial/dependencies/",
-          },
-          {
-            citation: (
-              <>
-                Beck, K. (2002). <em>Test-Driven Development</em>. (Ch. 1-2 – selected)
-              </>
-            ),
-            url: "#",
-          },
         ],
       },
       {

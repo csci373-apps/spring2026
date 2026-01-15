@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { triggerConfetti } from '@/lib/utils';
+import { QuizData } from '@/components/quiz/types';
 
 // Import types from Meeting component
 interface Reading {
@@ -21,11 +22,19 @@ interface Assignment {
   draft?: number;
 }
 
+interface Quiz {
+  title: string;
+  slug: string;
+  quizData?: QuizData;
+  draft?: number;
+}
+
 interface MeetingData {
   date: string;
   topic: string;
   description?: string | React.ReactElement;
   activities?: Activity[];
+  quizzes?: Quiz[];
   readings?: Reading[];
   optionalReadings?: Reading[];
   holiday?: boolean;
@@ -61,6 +70,15 @@ export function useMeetingChecklist(
         // Skip excluded activities and draft activities
         if (!(activity.excluded === 1) && !(activity.draft === 1)) {
           allItemKeys.push(`${meetingKey}-activity-${index}`);
+        }
+      });
+    }
+    
+    // Collect all quiz keys (excluding draft quizzes)
+    if (meeting.quizzes) {
+      meeting.quizzes.forEach((quiz, index) => {
+        if (!(quiz.draft === 1)) {
+          allItemKeys.push(`${meetingKey}-quiz-${index}`);
         }
       });
     }
@@ -122,6 +140,17 @@ export function useMeetingChecklist(
     if (meeting.activities) {
       meeting.activities.forEach((activity, index) => {
         const key = `${meetingKey}-activity-${index}`;
+        const saved = localStorage.getItem(key);
+        if (saved !== null) {
+          savedCheckedItems[key] = JSON.parse(saved);
+        }
+      });
+    }
+    
+    // Load quizzes
+    if (meeting.quizzes) {
+      meeting.quizzes.forEach((quiz, index) => {
+        const key = `${meetingKey}-quiz-${index}`;
         const saved = localStorage.getItem(key);
         if (saved !== null) {
           savedCheckedItems[key] = JSON.parse(saved);

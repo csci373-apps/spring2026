@@ -202,7 +202,15 @@ export interface QuizQuestion {
 }
 
 export interface QuizData {
+  quizName?: string;
+  start_date?: string;
   questions: QuizQuestion[];
+}
+
+export interface QuizMetadata {
+  slug: string;
+  quizName: string;
+  start_date?: string;
 }
 
 export function getQuizData(slug: string): QuizData | null {
@@ -220,4 +228,37 @@ export function getQuizData(slug: string): QuizData | null {
     console.error(`Error reading quiz data for ${slug}:`, error);
     return null;
   }
+}
+
+export function getAllQuizMetadata(): QuizMetadata[] {
+  if (!fs.existsSync(quizzesDirectory)) {
+    return [];
+  }
+  
+  const fileNames = fs.readdirSync(quizzesDirectory);
+  const allQuizzes: QuizMetadata[] = [];
+  
+  fileNames
+    .filter(fileName => fileName.endsWith('.json'))
+    .forEach(fileName => {
+      // Remove ".json" from file name to get slug
+      const slug = fileName.replace(/\.json$/, '');
+      
+      try {
+        // Read quiz file
+        const fullPath = path.join(quizzesDirectory, fileName);
+        const fileContents = fs.readFileSync(fullPath, 'utf8');
+        const quizData: QuizData = JSON.parse(fileContents);
+        
+        allQuizzes.push({
+          slug,
+          quizName: quizData.quizName || slug,
+          start_date: quizData.start_date,
+        });
+      } catch (error) {
+        console.error(`Error reading quiz metadata for ${fileName}:`, error);
+      }
+    });
+  
+  return allQuizzes;
 } 

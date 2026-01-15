@@ -2,6 +2,7 @@
 title: "Backend Deep Dive"
 start_date: "2026-01-20"
 type: "activity"
+draft: 1
 ---
 
 ## Learning Objectives
