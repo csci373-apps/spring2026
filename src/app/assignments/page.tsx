@@ -3,7 +3,7 @@ import PageHeader from '@/components/PageHeader';
 import ContentLayout from '@/components/ContentLayout';
 import QuickLinksNav from '@/components/QuickLinksNav';
 import AssignmentsTable from '@/components/assignments/AssignmentsTable';
-import externalAssignments from '@/data/external-assignments.json';
+import externalAssignments from '../../../content/config/external-assignments.json';
 
 interface AssignmentData {
   id: string;

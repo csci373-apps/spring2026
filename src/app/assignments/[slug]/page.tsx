@@ -1,10 +1,12 @@
-import { getPostData, getAllPostIds } from '@/lib/markdown';
+import { getPostData } from '@/lib/markdown';
+import { generateStaticParamsForContentType, validatePostForRender } from '@/lib/static-params';
 import PageHeader from '@/components/PageHeader';
 import MarkdownContent from '@/components/MarkdownContent';
 import ContentLayout from '@/components/ContentLayout';
 import QuickLinksNav from '@/components/QuickLinksNav';
 import StyleGuideStyles from '@/components/StyleGuideStyles';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 
 interface AssignmentPageProps {
   params: Promise<{
@@ -22,42 +24,52 @@ function formatDate(dateString: string): string {
 }
 
 export default async function AssignmentPage({ params }: AssignmentPageProps) {
-  const { slug } = await params;
-  const postData = await getPostData(slug, 'assignments');
-  const { heading_max_level } = postData;
-  const isStyleGuideDemo = slug === 'style-guide-demo';
-  
-  return (
-    <ContentLayout
-      variant="detail-with-toc"
-      leftNav={<QuickLinksNav />}
-      showToc={postData.toc !== false}
-      tocMaxLevel={heading_max_level || 2}
-    >
-      <div className="mb-4">
-        <Link href="/assignments" className="text-blue-600 dark:text-blue-400 hover:underline">
-          Assignments
-        </Link>
-        {' > '}
-        <span className="text-gray-900 dark:text-gray-100">{postData.title}</span>
-      </div>
-      <PageHeader 
-        title={postData.title} 
-        excerpt={postData.excerpt}
-        type={postData.type}
-      />
-      { postData.due_date && <p className="mt-2 text-lg font-bold">Due {formatDate(postData.due_date)} at 11:59pm</p> }
-      {isStyleGuideDemo && <StyleGuideStyles />}
-      <MarkdownContent content={postData.content} storageKey={`assignment-${slug}`} />
-    </ContentLayout>
-  );
+  try {
+    const { slug } = await params;
+    const postData = await getPostData(slug, 'assignments');
+    
+    // Validate post (handles placeholder slugs and draft/excluded posts)
+    if (!validatePostForRender(slug, postData, 'assignments')) {
+      notFound();
+    }
+    
+    const { heading_max_level } = postData;
+    const isStyleGuideDemo = slug === 'style-guide-demo';
+    
+    return (
+      <ContentLayout
+        variant="detail-with-toc"
+        leftNav={<QuickLinksNav />}
+        showToc={postData.toc !== false}
+        tocMaxLevel={heading_max_level || 2}
+      >
+        <div className="mb-4">
+          <Link href="/assignments" className="text-blue-600 dark:text-blue-400 hover:underline">
+            Assignments
+          </Link>
+          {' > '}
+          <span className="text-gray-900 dark:text-gray-100">{postData.title}</span>
+        </div>
+        <PageHeader 
+          title={postData.title} 
+          excerpt={postData.excerpt}
+          type={postData.type}
+        />
+        { postData.due_date && <p className="mt-2 text-lg font-bold">Due {formatDate(postData.due_date)} at 11:59pm</p> }
+        {isStyleGuideDemo && <StyleGuideStyles />}
+        <MarkdownContent content={postData.content} />
+      </ContentLayout>
+    );
+  } catch {
+    notFound();
+  }
 }
 
+// Tell Next.js to only generate routes that are in generateStaticParams()
+// We include ALL posts (including drafts) in generateStaticParams() so they can return 404 gracefully
+export const dynamicParams = false;
+
 // Generate static params for all assignments
-export async function generateStaticParams() {
-  const assignmentIds = getAllPostIds('assignments');
-  
-  return assignmentIds.map(({ params }) => ({
-    slug: params.id,
-  }));
+export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
+  return generateStaticParamsForContentType('assignments');
 } 

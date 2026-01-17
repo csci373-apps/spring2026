@@ -6,6 +6,7 @@ import html from 'remark-html';
 import gfm from 'remark-gfm';
 import highlight from 'remark-highlight.js';
 import smartypants from 'remark-smartypants';
+import { preprocessCheckboxes, postprocessCheckboxes } from './markdown-checkboxes';
 
 const postsDirectory = path.join(process.cwd(), 'content');
 const quizzesDirectory = path.join(process.cwd(), 'content', 'quizzes');
@@ -95,10 +96,16 @@ export async function getPostData(id: string, subdirectory?: string): Promise<Po
         processedLines.push(emptyHeaderRow);
       }
     }
+    
     processedLines.push(line);
   }
   
   markdownContent = processedLines.join('\n');
+  
+  // Pre-process checkboxes: replace [ ] patterns with placeholders
+  // This prevents GFM from converting them into disabled task list items
+  const { processedMarkdown: markdownWithCheckboxPlaceholders } = preprocessCheckboxes(markdownContent);
+  markdownContent = markdownWithCheckboxPlaceholders;
 
   // Use remark to convert markdown into HTML string with GFM support and syntax highlighting
   const processedContent = await remark()
@@ -109,6 +116,10 @@ export async function getPostData(id: string, subdirectory?: string): Promise<Po
     .use(html, { sanitize: false })  // Allow HTML without sanitization
     .process(markdownContent);
   let contentHtml = processedContent.toString();
+
+  // Post-process HTML to convert checkbox placeholders to stateful checkboxes
+  // The placeholders were inserted before GFM processing to avoid disabled checkboxes
+  contentHtml = await postprocessCheckboxes(contentHtml, id);
 
   // Wrap each instructor notes section with data attribute for conditional rendering
   // Find all "## Instructor Notes" headings and wrap each section individually

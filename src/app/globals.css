@@ -38,7 +38,9 @@ h2 {
   @apply text-xl md:text-2xl mb-4 mt-8 font-bold;
   font-family: var(--font-outfit), serif;
   color: var(--foreground);
-  scroll-margin-top: 80px; /* Account for fixed header */
+  /* scroll-margin-top should match SCROLL_OFFSET_PX in src/lib/utils.ts */
+  /* This ensures browser's native anchor scrolling aligns with our custom scrollToAnchor function */
+  scroll-margin-top: 20px;
 }
 
 h3,
@@ -105,43 +107,6 @@ li {
   color: var(--foreground);
 }
 
-/* Hide bullets for list items with checkboxes and use flexbox layout */
-li:has(input[type="checkbox"]) {
-  list-style: none;
-  padding-left: 0;
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  margin-bottom: 0.75rem; /* Add spacing between checkbox items */
-}
-
-/* Checkbox column - narrow, fixed width */
-li:has(input[type="checkbox"]) input[type="checkbox"] {
-  flex-shrink: 0;
-  margin-right: 0;
-  margin-top: 0.4rem;
-}
-
-/* Text content column - takes remaining space */
-li:has(input[type="checkbox"]) .checkbox-content-wrapper {
-  flex: 1;
-  min-width: 0; /* Allows text to wrap properly */
-}
-
-/* Strikethrough for checked items - target the content wrapper */
-li:has(input[type="checkbox"]:checked) .checkbox-content-wrapper,
-li.checkbox-checked .checkbox-content-wrapper {
-  text-decoration: line-through;
-  opacity: 0.6;
-}
-
-/* But don't strikethrough the checkbox itself */
-li:has(input[type="checkbox"]:checked) input[type="checkbox"],
-li.checkbox-checked input[type="checkbox"] {
-  text-decoration: none;
-  opacity: 1;
-}
-
 blockquote {
   @apply bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-800 p-4 mb-4;
 }
@@ -151,6 +116,43 @@ blockquote {
   border-color: #4b5563 !important;
   color: #e5e7eb;
 }
+
+/* Hide bullets for list items with checkboxes and use flexbox layout */
+li:has(input[type="checkbox"]) {
+    list-style: none;
+    padding-left: 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem; /* Add spacing between checkbox items */
+  }
+  
+  /* Checkbox column - narrow, fixed width */
+  li:has(input[type="checkbox"]) input[type="checkbox"] {
+    flex-shrink: 0;
+    margin-right: 0;
+    margin-top: 0.4rem;
+  }
+  
+  /* Text content column - takes remaining space */
+  li:has(input[type="checkbox"]) .checkbox-content-wrapper {
+    flex: 1;
+    min-width: 0; /* Allows text to wrap properly */
+  }
+  
+  /* Strikethrough for checked items - target the content wrapper */
+  li:has(input[type="checkbox"]:checked) .checkbox-content-wrapper,
+  li.checkbox-checked .checkbox-content-wrapper {
+    text-decoration: line-through;
+    opacity: 0.6;
+  }
+  
+  /* But don't strikethrough the checkbox itself */
+  li:has(input[type="checkbox"]:checked) input[type="checkbox"],
+  li.checkbox-checked input[type="checkbox"] {
+    text-decoration: none;
+    opacity: 1;
+  }
 
 .syllabus-page,
 .assignment-page {
@@ -347,6 +349,30 @@ blockquote {
   .dark .prose a {
     color: #60a5fa; /* blue-400 */
   }
+}
+
+/* Markdown checkbox styles - scoped to avoid interfering with other checkboxes */
+.markdown-checkbox {
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  flex-shrink: 0;
+  margin-top: 0.4rem;
+}
+
+.markdown-checkbox-line {
+  pointer-events: auto !important;
+}
+
+.markdown-checkbox-content {
+  flex: 1;
+  min-width: 0;
+  transition: text-decoration 0.2s ease, opacity 0.2s ease;
+}
+
+/* Strikethrough and opacity for checked checkboxes */
+.markdown-checkbox:checked + .markdown-checkbox-content {
+  text-decoration: line-through;
+  opacity: 0.6;
 }
 
 /* Prose links styling for all pages (syllabus, assignments, etc.) */
@@ -759,4 +785,10 @@ code {
   border: 1px solid #ccc;
   border-radius: 4px;
   overflow: hidden;
+}
+
+/* Custom spacing for societal-implications activity */
+.societal-implications-content.prose ol li {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }

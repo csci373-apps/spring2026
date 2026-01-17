@@ -59,6 +59,7 @@ export function useMeetingChecklist(
   const [isHydrated, setIsHydrated] = useState(false);
   const isInitialLoad = useRef(true);
   const prevAllCheckedRef = useRef(false);
+  const suppressConfettiRef = useRef(false);
 
   // Get all item keys for this meeting (excluding optional readings)
   function getAllItemKeys(): string[] {
@@ -308,7 +309,14 @@ export function useMeetingChecklist(
 
   // Check for completion changes and trigger confetti when all items become checked
   useEffect(() => {
-    if (!isHydrated || isInitialLoad.current || !enableConfetti) return;
+    if (!isHydrated || isInitialLoad.current || !enableConfetti || suppressConfettiRef.current) {
+      // Still update the ref even if we're suppressing confetti
+      if (isHydrated) {
+        const isAllChecked = areAllItemsCheckedWithState(checkedItems);
+        prevAllCheckedRef.current = isAllChecked;
+      }
+      return;
+    }
     
     const isAllChecked = areAllItemsCheckedWithState(checkedItems);
     
@@ -412,7 +420,12 @@ export function useMeetingChecklist(
     });
   }
 
-  function toggleChecked(itemKey: string) {
+  function toggleChecked(itemKey: string, suppressConfetti = false) {
+    // Set the suppress flag before updating state
+    if (suppressConfetti) {
+      suppressConfettiRef.current = true;
+    }
+    
     // Check current state - also check localStorage for assignment keys
     const currentChecked = checkedItems[itemKey] || 
       (typeof window !== 'undefined' && itemKey.startsWith('assignment-') 
@@ -431,8 +444,15 @@ export function useMeetingChecklist(
       localStorage.setItem(itemKey, JSON.stringify(newChecked));
     }
     
+    // Reset the suppress flag after state update (use setTimeout to ensure it happens after the useEffect runs)
+    if (suppressConfetti) {
+      setTimeout(() => {
+        suppressConfettiRef.current = false;
+      }, 0);
+    }
+    
     // Check if all items are now checked (only after initial load, triggered by click)
-    if (!isInitialLoad.current && enableConfetti) {
+    if (!isInitialLoad.current && enableConfetti && !suppressConfetti) {
       // Use a function that reads from both state and localStorage for accurate checking
       const wasAllChecked = areAllItemsCheckedWithState(checkedItems);
       const isAllChecked = areAllItemsCheckedWithState(updatedItems);

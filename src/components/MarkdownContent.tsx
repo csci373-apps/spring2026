@@ -5,116 +5,100 @@ import { triggerConfetti } from '@/lib/utils';
 
 interface MarkdownContentProps {
   content: string;
-  storageKey?: string; // Optional: prefix for localStorage keys (e.g., page slug)
+  className?: string;
 }
 
-export default function MarkdownContent({ content, storageKey = 'markdown' }: MarkdownContentProps) {
+export default function MarkdownContent({ content, className }: MarkdownContentProps) {
   const contentRef = useRef<HTMLDivElement>(null);
+  const previousAllCheckedRef = useRef(false);
+  const isInitialLoad = useRef(true);
 
   useEffect(() => {
     if (!contentRef.current) return;
 
-    // Find all checkboxes in the rendered markdown
-    const checkboxes = contentRef.current.querySelectorAll('input[type="checkbox"]');
-    const checkboxArray = Array.from(checkboxes) as HTMLInputElement[];
+    // Find all markdown checkboxes
+    const checkboxes = contentRef.current.querySelectorAll<HTMLInputElement>('.markdown-checkbox');
     
-    // Function to check if all checkboxes are checked
-    const checkAllChecked = () => {
-      if (checkboxArray.length === 0) return false;
-      return checkboxArray.every(cb => cb.checked);
-    };
-    
-    // Function to trigger confetti if all are checked (with debounce to avoid multiple triggers)
-    let confettiTimeout: NodeJS.Timeout | null = null;
-    const maybeTriggerConfetti = () => {
-      if (confettiTimeout) {
-        clearTimeout(confettiTimeout);
-      }
-      confettiTimeout = setTimeout(() => {
-        if (checkAllChecked()) {
-          triggerConfetti();
-        }
-      }, 100); // Small delay to ensure state is updated
-    };
-    
-    checkboxes.forEach((checkbox, index) => {
-      // Create a unique key for this checkbox
-      // Use the text content of the parent list item as part of the key
-      const listItem = checkbox.closest('li');
-      if (!listItem) return;
-      
-      const checkboxText = listItem.textContent?.trim() || '';
-      const uniqueKey = `${storageKey}-checkbox-${index}-${checkboxText.substring(0, 50)}`;
-      
-      // Wrap all non-checkbox content in a container div if not already wrapped
-      if (!listItem.querySelector('.checkbox-content-wrapper')) {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'checkbox-content-wrapper';
-        
-        // Move all siblings after the checkbox into the wrapper
-        let nextSibling = checkbox.nextSibling;
-        while (nextSibling) {
-          const currentSibling = nextSibling;
-          nextSibling = nextSibling.nextSibling;
-          wrapper.appendChild(currentSibling);
-        }
-        
-        // If there are no siblings, create an empty text node to maintain structure
-        if (wrapper.childNodes.length === 0) {
-          wrapper.appendChild(document.createTextNode(''));
-        }
-        
-        // Insert the wrapper after the checkbox
-        checkbox.parentNode?.insertBefore(wrapper, checkbox.nextSibling);
-      }
-      
-      // Restore saved state from localStorage
-      const savedState = localStorage.getItem(uniqueKey);
-      if (savedState === 'true') {
-        (checkbox as HTMLInputElement).checked = true;
-        // Apply strikethrough class immediately if checked
-        listItem.classList.add('checkbox-checked');
-      }
-      
-      // Enable the checkbox (GFM renders them as disabled)
-      (checkbox as HTMLInputElement).disabled = false;
-      
-      // Update strikethrough class when checkbox state changes
-      const updateStrikethrough = () => {
-        if ((checkbox as HTMLInputElement).checked) {
-          listItem.classList.add('checkbox-checked');
+    // Helper function to update strikethrough styling based on checkbox state
+    const updateCheckboxStyling = (checkbox: HTMLInputElement) => {
+      const checkboxLine = checkbox.closest('.markdown-checkbox-line');
+      const contentSpan = checkboxLine?.querySelector('.markdown-checkbox-content') as HTMLElement;
+      if (contentSpan) {
+        if (checkbox.checked) {
+          contentSpan.style.textDecoration = 'line-through';
+          contentSpan.style.opacity = '0.6';
         } else {
-          listItem.classList.remove('checkbox-checked');
+          contentSpan.style.textDecoration = 'none';
+          contentSpan.style.opacity = '1';
         }
-      };
-      
-      // Add change handler to save state, update strikethrough, and check for confetti
-      const handleChange = (e: Event) => {
-        const isChecked = (e.target as HTMLInputElement).checked;
-        localStorage.setItem(uniqueKey, String(isChecked));
-        updateStrikethrough();
-        maybeTriggerConfetti();
-      };
-      
-      checkbox.addEventListener('change', handleChange);
-      
-      // Store handler for cleanup
-      (checkbox as HTMLInputElement & { _changeHandler?: (e: Event) => void })._changeHandler = handleChange;
-    });
-    
-    // Cleanup: remove event listeners and clear timeout
-    return () => {
-      if (confettiTimeout) {
-        clearTimeout(confettiTimeout);
       }
-      checkboxArray.forEach((checkbox) => {
-        const handler = (checkbox as HTMLInputElement & { _changeHandler?: (e: Event) => void })._changeHandler;
-        if (handler) {
-          checkbox.removeEventListener('change', handler);
+    };
+
+    // Load saved state from localStorage and apply styling
+    checkboxes.forEach((checkbox) => {
+      const checkboxId = checkbox.getAttribute('data-checkbox-id');
+      if (checkboxId) {
+        const savedState = localStorage.getItem(checkboxId);
+        if (savedState === 'true') {
+          checkbox.checked = true;
         }
+      }
+      // Apply initial styling based on checked state
+      updateCheckboxStyling(checkbox);
+    });
+
+    // Helper function to check if all checkboxes are checked
+    const areAllCheckboxesChecked = (): boolean => {
+      if (checkboxes.length === 0) return false;
+      return Array.from(checkboxes).every((checkbox) => checkbox.checked);
+    };
+
+    // Helper function to check and trigger confetti if all are checked
+    const checkAndTriggerConfetti = () => {
+      const allChecked = areAllCheckboxesChecked();
+      
+      // Skip on initial load - just set the initial state
+      if (isInitialLoad.current) {
+        previousAllCheckedRef.current = allChecked;
+        isInitialLoad.current = false;
+        return;
+      }
+      
+      // Trigger confetti when transitioning from "not all checked" to "all checked"
+      if (allChecked && !previousAllCheckedRef.current) {
+        triggerConfetti();
+      }
+      
+      previousAllCheckedRef.current = allChecked;
+    };
+
+    // Check initial state (but don't trigger confetti on load)
+    checkAndTriggerConfetti();
+
+    // Add event listeners to save state when checkboxes are clicked
+    const handleCheckboxChange = (event: Event) => {
+      const target = event.target as HTMLInputElement;
+      const checkboxId = target.getAttribute('data-checkbox-id');
+      if (checkboxId) {
+        localStorage.setItem(checkboxId, target.checked ? 'true' : 'false');
+      }
+      // Update styling when checkbox state changes
+      updateCheckboxStyling(target);
+      // Check if all are checked and trigger confetti if needed
+      checkAndTriggerConfetti();
+    };
+
+    checkboxes.forEach((checkbox) => {
+      checkbox.addEventListener('change', handleCheckboxChange);
+    });
+
+    // Cleanup event listeners
+    return () => {
+      checkboxes.forEach((checkbox) => {
+        checkbox.removeEventListener('change', handleCheckboxChange);
       });
     };
-  }, [content, storageKey]);
+  }, [content]);
 
 //   useEffect(() => {
 //     if (!contentRef.current) return;
@@ -220,7 +204,7 @@ export default function MarkdownContent({ content, storageKey = 'markdown' }: Ma
   return (
     <div 
       ref={contentRef}
-      className="prose prose-lg max-w-none"
+      className={`prose prose-lg max-w-none ${className || ''}`}
       dangerouslySetInnerHTML={{ __html: content }}
       suppressHydrationWarning
     />

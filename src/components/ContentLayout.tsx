@@ -4,6 +4,7 @@ import { ReactNode, useEffect, useLayoutEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import TableOfContents from './TableOfContents';
 import Footer from './Footer';
+import { scrollToAnchor } from '@/lib/utils';
 
 interface ResourcePage {
   slug: string;
@@ -165,6 +166,100 @@ export default function ContentLayout({
       if (scrollTimeoutRef.current) {
         clearTimeout(scrollTimeoutRef.current);
       }
+    };
+  }, [pathname]);
+  
+  // Handle anchor link clicks and initial hash on page load
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const scrollContainer = scrollContainerRef.current || document.getElementById('main-content-scroll');
+    if (!scrollContainer) return;
+    
+    // Handle initial hash on page load
+    const handleInitialHash = () => {
+      const hash = window.location.hash.slice(1); // Remove #
+      if (hash) {
+        // Wait for content to be ready (similar to scroll restoration)
+        let lastScrollHeight = 0;
+        let stableCount = 0;
+        
+        const checkAndScroll = () => {
+          const scrollHeight = scrollContainer.scrollHeight;
+          
+          if (scrollHeight < 200) {
+            requestAnimationFrame(checkAndScroll);
+            return;
+          }
+          
+          // Check if scroll height has stabilized
+          if (scrollHeight === lastScrollHeight) {
+            stableCount++;
+            if (stableCount >= 2) {
+              // Content is stable, scroll to anchor
+              scrollToAnchor(hash, { behavior: 'auto' }); // Use 'auto' for initial load to avoid animation
+              return;
+            }
+          } else {
+            lastScrollHeight = scrollHeight;
+            stableCount = 0;
+          }
+          
+          requestAnimationFrame(checkAndScroll);
+        };
+        
+        // Start checking after initial render
+        requestAnimationFrame(checkAndScroll);
+      }
+    };
+    
+    // Handle initial hash after a short delay to ensure content is loaded
+    const initialHashTimeout = setTimeout(handleInitialHash, 100);
+    
+    // Handle anchor link clicks - use document-level delegation to catch all clicks
+    const handleAnchorClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const anchor = target.closest('a[href^="#"]') as HTMLAnchorElement;
+      
+      if (!anchor) return;
+      
+      // Skip TOC links FIRST (they have their own handlers)
+      if (anchor.classList.contains('toc-link')) {
+        return;
+      }
+      
+      // Only handle links within the scroll container
+      if (!scrollContainer.contains(anchor)) {
+        return;
+      }
+      
+      // Skip if default was already prevented by another handler
+      if (e.defaultPrevented) return;
+      
+      const href = anchor.getAttribute('href');
+      if (!href || href === '#' || !href.startsWith('#')) return;
+      
+      const targetId = href.slice(1); // Remove #
+      if (!targetId) return;
+      
+      // Check if target element exists
+      const targetElement = document.getElementById(targetId);
+      if (!targetElement) {
+        return;
+      }
+      
+      e.preventDefault();
+      e.stopPropagation();
+      scrollToAnchor(targetId);
+    };
+    
+    // Use document-level event delegation to catch all clicks, then filter by container
+    // This ensures we catch clicks even if content is rendered after the listener is attached
+    document.addEventListener('click', handleAnchorClick, true);
+    
+    return () => {
+      clearTimeout(initialHashTimeout);
+      document.removeEventListener('click', handleAnchorClick, true);
     };
   }, [pathname]);
   

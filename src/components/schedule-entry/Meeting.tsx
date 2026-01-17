@@ -2,7 +2,7 @@
 
 import clsx from 'clsx';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useMeetingChecklist } from './useMeetingChecklist';
 import ResourceQuiz from '@/components/ResourceQuiz';
 import { QuizData } from '@/components/quiz/types';
@@ -171,7 +171,7 @@ export default function Meeting({
   function renderActivities() {
     if (hasActivities) {
       return (
-        <div className="mb-6 mt-6">
+        <div className="mb-6">
             {hasActivities ? <strong className="text-gray-700 dark:text-gray-300" style={isDark ? { color: '#d1d5db' } : undefined}>Slides / Activities</strong> : ``}
             <ul className="!list-none !pl-4">
                 {filteredActivities.map((activity: Activity, filteredIndex: number) => {
@@ -195,64 +195,46 @@ export default function Meeting({
     const itemKey = `${meetingKey}-quiz-${index}`;
     const isChecked = enableChecklist && !isDraft ? checklist.isChecked(itemKey) : false;
     
-    // Get quiz completion status and score from localStorage
+    // Get quiz completion status and score from localStorage (for display only, not auto-sync)
     const [quizStatus, setQuizStatus] = useState<{ completed: boolean; score: number; total: number } | null>(null);
     
+    // Load quiz status once on mount (for informational display only)
     useEffect(() => {
       if (typeof window === 'undefined' || isDraft) return;
       
-      const updateQuizStatus = () => {
-        try {
-          const storageKey = `quiz-${quiz.slug}`;
-          const saved = localStorage.getItem(storageKey);
-          if (saved) {
-            const savedState = JSON.parse(saved);
-            const totalQuestions = quiz.quizData?.questions?.length || 0;
-            setQuizStatus({
-              completed: savedState.completed || false,
-              score: savedState.score || 0,
-              total: totalQuestions
-            });
-          } else {
-            setQuizStatus(null);
-          }
-        } catch (error) {
-          console.error('Error reading quiz status:', error);
-          setQuizStatus(null);
+      try {
+        const storageKey = `quiz-${quiz.slug}`;
+        const saved = localStorage.getItem(storageKey);
+        const totalQuestions = quiz.quizData?.questions?.length || 0;
+        
+        if (saved) {
+          const savedState = JSON.parse(saved);
+          setQuizStatus({
+            completed: savedState.completed || false,
+            score: savedState.score || 0,
+            total: totalQuestions
+          });
         }
-      };
-      
-      updateQuizStatus();
-      
-      // Listen for storage changes (when quiz is completed)
-      const handleStorageChange = (e: StorageEvent) => {
-        if (e.key === `quiz-${quiz.slug}`) {
-          updateQuizStatus();
-        }
-      };
-      
-      window.addEventListener('storage', handleStorageChange);
-      
-      // Also poll for changes (for same-tab updates)
-      const interval = setInterval(updateQuizStatus, 500);
-      
-      return () => {
-        window.removeEventListener('storage', handleStorageChange);
-        clearInterval(interval);
-      };
-    }, [quiz.slug, quiz.quizData, isDraft]);
+      } catch (error) {
+        console.error('Error reading quiz status:', error);
+      }
+    }, [quiz.slug, quiz.quizData?.questions?.length, isDraft]);
     
     return (
       <div className="flex items-start gap-2">
         {!isDraft && (
           <input
             type="checkbox"
-            aria-label={`Mark quiz "${quiz.title}" as ${isChecked ? 'uncompleted' : 'completed'}`}
+            aria-label={`Quiz "${quiz.title}" ${isChecked ? 'completed' : 'not completed'}`}
             checked={isChecked}
-            onChange={() => enableChecklist && checklist.toggleChecked(itemKey)}
+            onChange={() => {
+              if (enableChecklist) {
+                checklist.toggleChecked(itemKey);
+              }
+            }}
             disabled={!enableChecklist}
             onClick={(e) => e.stopPropagation()}
-            className="mt-1 w-4 h-4 rounded border-2 border-gray-300 dark:border-gray-600 accent-blue-600 dark:accent-blue-400 cursor-pointer flex-shrink-0"
+            className="mt-1 w-4 h-4 rounded border-2 border-gray-300 dark:border-gray-600 accent-blue-600 dark:accent-blue-400 cursor-default flex-shrink-0"
             style={isDark ? { 
               backgroundColor: isChecked ? '#3b82f6' : '#1f2937',
               borderColor: isChecked ? '#3b82f6' : '#4b5563'

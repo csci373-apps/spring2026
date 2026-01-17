@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useDarkMode } from "@/hooks/useDarkMode";
+import { getCourseConfig } from "@/lib/config";
 
 export default function Navigation() {
   const pathname = usePathname();
@@ -12,6 +13,7 @@ export default function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const isDark = useDarkMode();
   const [isToggleHovered, setIsToggleHovered] = useState(false);
+  const courseConfig = getCourseConfig();
   
   const normalizePath = (path: string) => path.replace(/\/$/, "");
 
@@ -22,6 +24,7 @@ export default function Navigation() {
     { href: "/assignments", label: "Assignments" },
     // { href: "/activities", label: "Activities" },
     { href: "/resources", label: "Resources" },
+    { href: "/quizzes", label: "Quizzes" },
   ];
 
   // Only run on client side to prevent hydration mismatch
@@ -77,7 +80,7 @@ export default function Navigation() {
             style={isDark ? { color: '#f9fafb' } : undefined}
             suppressHydrationWarning
           >
-            CSCI 373
+            {courseConfig.courseNumber}: {courseConfig.semester}
           </Link>
         </div>
 

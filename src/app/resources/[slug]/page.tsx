@@ -1,4 +1,5 @@
-import { getPostData, getAllPostIds, getAllPosts, PostData, getQuizData } from '@/lib/markdown';
+import { getPostData, getAllPosts, PostData, getQuizData } from '@/lib/markdown';
+import { generateStaticParamsForContentType, validatePostForRender } from '@/lib/static-params';
 import PageHeader from '@/components/PageHeader';
 import MarkdownContent from '@/components/MarkdownContent';
 import ResourcesNav from '@/components/ResourcesNav';
@@ -14,11 +15,12 @@ interface PageProps {
   }>;
 }
 
-export async function generateStaticParams() {
-  const posts = getAllPostIds('resources');
-  return posts.map((post) => ({
-    slug: post.params.id,
-  }));
+// Tell Next.js to only generate routes that are in generateStaticParams()
+// We include ALL posts (including drafts) in generateStaticParams() so they can return 404 gracefully
+export const dynamicParams = false;
+
+export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
+  return generateStaticParamsForContentType('resources');
 }
 
 export default async function ResourcePage({ params }: PageProps) {
@@ -26,13 +28,19 @@ export default async function ResourcePage({ params }: PageProps) {
   
   try {
     const postData = await getPostData(slug, 'resources');
+    
+    // Validate post (handles placeholder slugs and draft/excluded posts)
+    if (!validatePostForRender(slug, postData, 'resources')) {
+      notFound();
+    }
+    
     const { title, excerpt, group, toc, heading_max_level } = postData;
     const quizData = getQuizData(slug);
     
     // Get all resources for navigation
     const resourcePosts = getAllPosts('resources');
     const resourcePages = resourcePosts
-      .filter(post => post.draft !== 1 && post.id !== 'overview')
+      .filter(post => post.draft !== 1 && !post.excluded && post.id !== 'overview')
       .map(post => ({
         slug: post.id,
         title: post.title || post.id.charAt(0).toUpperCase() + post.id.slice(1).replace(/-/g, ' '),
@@ -70,7 +78,7 @@ export default async function ResourcePage({ params }: PageProps) {
         <PageHeader title={title} excerpt={excerpt} group={group} />
         
         <div>
-          <MarkdownContent content={postData.content} storageKey={`resource-${slug}`} />
+          <MarkdownContent content={postData.content} />
           
           {/* Quiz */}
           {quizData && (

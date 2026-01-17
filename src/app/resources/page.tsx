@@ -19,9 +19,9 @@ interface Chapter {
 export default async function ResourcesPage() {
   const resourcePosts = getAllPosts('resources');
   
-  // Filter out draft posts and overview
+  // Filter out draft posts, excluded posts, and overview
   const resources = resourcePosts
-    .filter(post => post.draft !== 1 && post.id !== 'overview')
+    .filter(post => post.draft !== 1 && !post.excluded && post.id !== 'overview')
     .map(post => ({
       id: post.id,
       title: post.title || post.id.charAt(0).toUpperCase() + post.id.slice(1).replace(/-/g, ' '),
@@ -70,7 +70,7 @@ export default async function ResourcesPage() {
     <ContentLayout variant="list" leftNav={<QuickLinksNav />}>
       <div className="space-y-6">
         <PageHeader 
-          title="Course How To Guides" 
+          title="Course Resources" 
           excerpt="Technical guides and documentation for the course technologies"
         />
         

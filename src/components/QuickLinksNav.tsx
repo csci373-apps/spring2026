@@ -2,7 +2,7 @@ import React from 'react';
 import { getAllPosts, getAllPostIds, getPostData } from '@/lib/markdown';
 import { getTopics } from '@/lib/topics';
 import QuickLinksNavClient from './QuickLinksNavClient';
-import externalAssignments from '@/data/external-assignments.json';
+import externalAssignments from '../../content/config/external-assignments.json';
 
 interface ResourceData {
   id: string;

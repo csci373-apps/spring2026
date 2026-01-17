@@ -5,6 +5,7 @@ import { Inter, Abril_Fatface, Outfit } from "next/font/google";
 import Navigation from "@/components/Nav";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import ConditionalFooter from "@/components/ConditionalFooter";
+import { getCourseConfig } from "@/lib/config";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -19,9 +20,11 @@ const outfit = Outfit({
   variable: "--font-outfit"
 });
 
+const courseConfig = getCourseConfig();
+
 export const metadata: Metadata = {
-  title: "CSCI 373 Course Website",
-  description: "Course materials and resources for CSCI 373: Industry Team Project",
+  title: courseConfig.title,
+  description: courseConfig.description,
   icons: {
     icon: '/favicon.ico', // or '/your-favicon.png'
     // apple: '/apple-touch-icon.png', // for iOS devices
