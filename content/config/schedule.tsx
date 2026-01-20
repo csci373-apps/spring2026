@@ -88,7 +88,11 @@ export const baseTopics = [
             </>
           ),
           activities: [
-            { title: "Slides", url: "#", draft: 1 },
+            { 
+                title: "Slides", 
+                url: "https://docs.google.com/presentation/d/1U3ZZuZXAUaQKYeW8a7SbVBTJMoZ69odn/edit?usp=sharing&ouid=113376576186080604800&rtpof=true&sd=true", 
+                draft: 0 
+            },
           ],
         },
         {
@@ -110,10 +114,16 @@ export const baseTopics = [
             {
               citation: (
                 <>
-                  pytest Documentation. <em>Getting Started</em> + <em>Fixtures</em> (selected)
+                  <a href="/resources/backend-01-fastapi-intro/" target="_blank">Intro to FastAPI</a>
                 </>
               ),
-              url: "https://docs.pytest.org/en/stable/",
+            },
+            {
+              citation: (
+                <>
+                  <a href="/resources/backend-05-testing/" target="_blank">Testing API Endpoints</a>
+                </>
+              ),
             },
           ],
           assigned: {

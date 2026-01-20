@@ -20,7 +20,7 @@ heading_max_level: 3
 
 ## Part 1: Dev Setup & Verification
 
-Follow the [Starter Code Setup Instructions](/resources/howto-01-starter-code) to set up your development environment. Then verify that everything works by completing the checks below:
+Follow the [Starter Code Setup Instructions](../resources/howto-01-starter-code) to set up your development environment. Then verify that everything works by completing the checks below:
 
 - [ ] **Backend:** FastAPI docs accessible at `http://localhost:8000/docs`
 - [ ] **Frontend:** Web app loads at `http://localhost:5173`
@@ -175,6 +175,14 @@ Here are some example sections to help you get started:
 
 
 ## Part 3: Individual Reflection
+> To keep all your reflections accessible throughout the semester:
+> 1. Create a Google Doc named `LastName_FirstName_373` (e.g., `Smith_John_373`)
+> 2. Share it with both instructors (ksanft@unca.edu, svanwart@unca.edu) with edit access
+> 3. Add your reflection under a heading with today's date (e.g., "January 22, 2026")
+> 4. Copy your reflection and paste it into the <a href="https://forms.gle/m6Myw4Lxc2We3WNCA" target="_blank">Weekly Reflection Form</a>.
+> 
+> This document will serve as a learning artifact you can reference later -- useful for behavioral interview questions and for tracking your own development as an engineer.
+
 Answer the following questions in the Weekly Reflection form (aim for 200-400 words total):
 
 1. **Reflect on the team working agreement**
@@ -190,4 +198,5 @@ Answer the following questions in the Weekly Reflection form (aim for 200-400 wo
 ## Submission Checklist
 - [ ] Your have verified that all of the pieces of your local installation are working.
 - [ ] Your team has created a team working agreemend doc, which is now on the main branch of your team's repo.
-- [ ] You have completed the reflection document
+- [ ] You have created and included a reflection in your Google doc.
+- [ ] You have pasted your first response from the Google doc into the [Weekly Reflection Form](https://forms.gle/m6Myw4Lxc2We3WNCA).

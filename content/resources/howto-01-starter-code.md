@@ -27,12 +27,12 @@ For development, the app is organized as follows:
 │  │              │         │    (React)     │                │
 │  └──────────────┘         └──────┬─────────┘                │
 │                                  │                          │
-│  ┌──────────────┐                │   HTTP Requests          │
-│  │   Expo       │                │ (localhost:8000)         │
-│  │   (npm start)│                │                          │
-│  │   iOS/Android│                │                          │
-│  │   Simulator  │                │                          │
-│  └──────────────┘                ▼                          │
+│  ┌───────────────────┐           │   HTTP Requests          │
+│  │   Expo            │           │ (localhost:8000)         │
+│  │   (npx expo start)│           │                          │
+│  │   iOS/Android     │           │                          │
+│  │   Simulator       │           │                          │
+│  └───────────────────┘           ▼                          │
 │         ▲                ┌────────────────┐                 │
 │         │                │    Backend     │                 │
 │         └──────────────▶ | localhost:8000 │                 │
@@ -321,9 +321,8 @@ The Mobile App Setup does not use Docker, so you will have to configure Expo and
 
 4. **Start Expo:**
    ```bash
-   npm start
+   npx expo start
    ```
-   Or use: `npx expo start` (both work the same)
 
 5. **Run on device:**
    - **iOS Simulator:** Press `i` (only for Mac users...requires Xcode)

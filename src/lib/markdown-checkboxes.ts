@@ -11,8 +11,9 @@ const CHECKBOX_PLACEHOLDER_PREFIX = 'MARKDOWN_CHECKBOX_PLACEHOLDER_';
 /**
  * Regex pattern to match checkbox placeholders in HTML after markdown processing.
  * Placeholders are wrapped in <code> tags by the markdown processor.
+ * Uses [\s\S] instead of . to match newlines and all characters including HTML entities.
  */
-const PLACEHOLDER_REGEX = /<code>MARKDOWN_CHECKBOX_PLACEHOLDER_(\d+)_(.*?)<\/code>/g;
+const PLACEHOLDER_REGEX = /<code>MARKDOWN_CHECKBOX_PLACEHOLDER_(\d+)_([\s\S]*?)<\/code>/g;
 
 /**
  * Pre-processes markdown content to replace [ ] patterns with placeholders.
@@ -81,22 +82,80 @@ export function preprocessCheckboxes(markdownContent: string): {
 }
 
 /**
+ * Decodes HTML entities in a string.
+ * This is needed because backticks are escaped as &#96; during preprocessing.
+ * Handles nested entities (e.g., &amp;#96; -> &#96; -> `)
+ * Handles both named entities (&amp;) and numeric entities (&#96;, &#x26;)
+ */
+function decodeHtmlEntities(text: string): string {
+  const entityMap: Record<string, string> = {
+    '&#96;': '`',
+    '&amp;': '&',
+    '&lt;': '<',
+    '&gt;': '>',
+    '&quot;': '"',
+    '&#39;': "'",
+    '&nbsp;': ' ',
+  };
+  
+  // Decode multiple times to handle nested entities (e.g., &amp;#96; -> &#96; -> `)
+  let decoded = text;
+  let previousDecoded = '';
+  let iterations = 0;
+  const maxIterations = 10; // Safety limit to prevent infinite loops
+  
+  while (decoded !== previousDecoded && iterations < maxIterations) {
+    previousDecoded = decoded;
+    
+    // Match named entities (&amp;), decimal numeric entities (&#96;), and hex numeric entities (&#x26;)
+    decoded = decoded.replace(/&(?:#x?[0-9a-fA-F]+|[a-zA-Z]+);/g, (entity) => {
+      // Check entity map first
+      if (entityMap[entity]) {
+        return entityMap[entity];
+      }
+      
+      // Handle decimal numeric entities (&#96;)
+      const decimalMatch = entity.match(/^&#(\d+);$/);
+      if (decimalMatch) {
+        return String.fromCharCode(parseInt(decimalMatch[1], 10));
+      }
+      
+      // Handle hex numeric entities (&#x26; or &#X26;)
+      const hexMatch = entity.match(/^&#x([0-9a-fA-F]+);$/i);
+      if (hexMatch) {
+        return String.fromCharCode(parseInt(hexMatch[1], 16));
+      }
+      
+      // If we can't decode it, return as-is
+      return entity;
+    });
+    
+    iterations++;
+  }
+  
+  return decoded;
+}
+
+/**
  * Creates HTML for a single checkbox with its content.
  * The content is processed through markdown to handle formatting like bold, links, etc.
  * 
- * @param rawContent - The text content after the [ ] checkbox
+ * @param rawContent - The text content after the [ ] checkbox (may contain HTML entities)
  * @param checkboxId - Unique ID for the checkbox
  * @returns HTML string with checkbox and formatted content
  */
 async function createCheckboxHtml(rawContent: string, checkboxId: string): Promise<string> {
   const checkboxHtml = `<input type="checkbox" class="markdown-checkbox" id="${checkboxId}" data-checkbox-id="${checkboxId}" style="cursor: pointer;" />`;
   
-  // Process the content through markdown to handle bold, italic, links, etc.
+  // Decode any HTML entities (like &#96; for backticks) before processing as markdown
+  const decodedContent = decodeHtmlEntities(rawContent.trim());
+  
+  // Process the content through markdown to handle bold, italic, links, code, etc.
   // This ensures markdown formatting in the content is properly converted
   const processedContent = await remark()
     .use(gfm)
     .use(html, { sanitize: false })
-    .process(rawContent.trim());
+    .process(decodedContent);
   
   const processedContentHtml = processedContent.toString().trim();
   
@@ -125,7 +184,7 @@ export async function postprocessCheckboxes(
     placeholders.push({
       match: placeholderMatch[0],
       index: placeholderMatch[1],
-      content: placeholderMatch[2].replace(/&#96;/g, '`') // Decode backticks
+      content: decodeHtmlEntities(placeholderMatch[2]) // Decode HTML entities
     });
   }
   

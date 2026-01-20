@@ -1,4 +1,6 @@
 {
+    "quizName": "Testing API Endpoints",
+    "start_date": "2026-01-22",
   "questions": [
     {
       "id": "q1",

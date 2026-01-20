@@ -143,6 +143,9 @@ export default function ContentLayout({
       }
       
       scrollTimeoutRef.current = setTimeout(() => {
+        // Double-check we're not restoring (in case flag changed during timeout)
+        if (isRestoringRef.current) return;
+        
         const container = scrollContainerRef.current || document.getElementById('main-content-scroll');
         if (!container) return;
         
