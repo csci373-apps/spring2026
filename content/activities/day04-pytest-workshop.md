@@ -2,34 +2,26 @@
 title: "Pytest Workshop"
 start_date: "2026-01-22"
 type: "activity"
-draft: 1
+draft: 0
+heading_max_level: 3
 ---
 
-## Learning Objectives
+> ## Learning Objectives
+>
+> By the end of this session, you will:
+> - Understand what pytest is and how it works
+> - Know how to read and understand existing tests
+> - Understand the test infrastructure (fixtures, test database)
+> - Be ready to write tests for homework
 
-By the end of this session, you will:
-- Understand the basics of pytest
-- Be able to write contract-level API tests
-- Understand what makes a good test
-- Be comfortable with pair programming for testing
-- Have practiced writing tests for existing endpoints
 
+## 1. Understanding Behavior Contracts (10 minutes)
 
-## Part 1: Behavior Contract Activity (30 minutes)
+### 1.1. What is a Behavior Contract?
 
-### What is a Behavior Contract?
+A **behavior contract** describes what an endpoint does in plain language. It's documentation that helps you understand what an endpoint should do before you test it.
 
-A **behavior contract** describes what an endpoint does in plain language. It's not code—it's documentation that helps you understand what an endpoint should do before you implement or test it.
-
-**Key points:**
-- A behavior contract describes what an endpoint does in plain language
-- It's not code - it's documentation
-- It helps you understand before you implement
-- It's useful for testing (tests verify the contract)
-
-### Example Behavior Contract
-
-Here's an example for the login endpoint:
+**Example for POST /api/auth/login:**
 
 ```markdown
 ## POST /api/auth/login
@@ -39,12 +31,12 @@ Here's an example for the login endpoint:
 - password: string (required, minimum 8 characters)
 
 **Behavior:**
-1. Validate input (username and password format)
-2. Look up user by username in database
-3. If user doesn't exist, return 401 error
-4. Verify password matches stored hash
-5. If password incorrect, return 401 error
-6. Generate JWT token with username
+1. Validate input format
+2. Look up user by username
+3. If user doesn't exist, return 401
+4. Verify password matches hash
+5. If password incorrect, return 401
+6. Generate JWT token
 7. Return token and token_type
 
 **Output:**
@@ -52,126 +44,53 @@ Here's an example for the login endpoint:
 - token_type: string (always "bearer")
 
 **Errors:**
-- 401: Invalid credentials (user not found or wrong password)
-- 422: Validation error (invalid input format)
+- 401: Invalid credentials
+- 422: Validation error
 ```
 
-### Practice: Write Your Own Contract (20 minutes)
+### 1.2. How is This Different from other kinds of testing?
 
-**Instructions:**
-1. **Work with your team**
-2. **Pick an endpoint** (not login - choose a different one)
-   - `GET /api/users/me` - Get current user
-   - `GET /api/groups` - List groups
-   - `POST /api/groups` - Create group
-   - `GET /api/courses` - List courses
-   - (or any other endpoint)
-3. **Read the code** carefully
-   - Look at the route file
-   - Check the schemas (input and output)
-   - Understand what the endpoint does
-4. **Write a behavior contract** using the template below
-5. **Be specific** - what exactly happens at each step?
+**Contract-level testing** (what we're doing):
+- Tests the API from the **client's perspective** - what happens when you call it?
+- Verifies **what** the endpoint does, not **how** it does it internally
+- More resilient to refactoring (change internal code, keep the contract, tests still pass)
 
-**Template:**
-
-```markdown
-## [METHOD] [ENDPOINT]
-
-**Input:**
-- [field]: [type] ([constraints])
-
-**Behavior:**
-1. [Step 1]
-2. [Step 2]
-3. [Step 3]
-...
-
-**Output:**
-- [field]: [type] ([description])
-
-**Errors:**
-- [status code]: [when this happens]
-```
-
-**Tips:**
-- Ask questions if the code is confusing
-- Be specific about what happens at each step
-- Include all error cases you can find
-- Check the schemas to understand input/output formats
-
-### Share Contracts (5 minutes)
-
-**2-3 teams will share:**
-- Their endpoint
-- Their behavior contract
-- What was hard about writing it?
-
-**As you listen, think about:**
-- Is the contract accurate?
-- Is it specific enough?
-- What makes a good contract?
-
-**Key Point:** Writing contracts helps you understand code. You'll use these contracts to write tests next.
+**Why it matters:**
+- Your API is a **contract** between frontend and backend. If the contract changes, your frontend breaks
+- Tests verify the contract stays stable
+- You can refactor internal code without breaking tests
 
 
-## Part 2: Review & Warm-up (10 minutes)
+## 2. Understanding Pytest (15 minutes)
 
-### Check-in
+### 2.1. What is pytest?
 
-Before we start, make sure you:
-- Have your behavior contract ready (from Part 1)
-- Have questions ready about models/schemas/routes
+**pytest** is a testing framework for Python. Tests are functions that assert things are true.
 
-### Review Behavior Contracts
-
-**Think about:** What did you learn from writing a behavior contract?
-
-**Common insights students discover:**
-- "I didn't realize how much validation happens"
-- "I see why we need schemas now"
-- "The flow makes more sense"
-
-**Ask questions** about behavior contracts if anything is unclear.
-
-### Today's Goal
-
-Now that you've written behavior contracts, you'll learn to write tests that verify your code does what the contract says. Tests are your way of checking that the API works correctly. We'll practice together, then you'll write tests for homework.
-
-
-## Part 3: Pytest Workshop (20 minutes)
-
-### What is pytest?
-
-**pytest** is a testing framework for Python that makes writing tests easy. It's the standard tool for Python testing and provides helpful output when tests fail.
-
-**A simple test looks like this:**
-
+**Simple example:**
 ```python
 def test_addition():
     assert 2 + 2 == 4
 ```
 
-**Run it:**
+**Run tests:**
 ```bash
-pytest test_example.py
+docker exec -it tma_backend poetry run pytest
 ```
 
-**Key Point:** Tests are just functions that assert things are true. If the assertion passes, the test passes. If it fails, the test fails.
+### 2.2 Test Structure: Arrange-Act-Assert
 
-### Test Structure: Arrange-Act-Assert
-
-Here's a real API test:
+The **Arrange-Act-Assert** pattern is a simple way to structure tests that makes them clear and easy to understand. First, you set up what you need (Arrange), then you do the thing you're testing (Act), and finally you check that it worked (Assert). This pattern helps you write tests that are easy to read and maintain.
 
 ```python
-def test_login_success(client):
-    # Arrange: Set up test data
+def test_login_success(client, test_user):
+    # Arrange: Set up test data (already done via fixtures)
+    
+    # Act: Make the request
     response = client.post(
         "/api/auth/login",
         json={"username": "testuser", "password": "testpass"}
     )
-    
-    # Act: Already done (the request)
     
     # Assert: Check the results
     assert response.status_code == 200
@@ -179,357 +98,108 @@ def test_login_success(client):
     assert response.json()["token_type"] == "bearer"
 ```
 
-**The Arrange-Act-Assert pattern:**
-- **Arrange:** Set up what you need (test data, fixtures)
-- **Act:** Do the thing you're testing (make the request)
-- **Assert:** Check that it worked (verify the response)
+### 2.3 Understanding Fixtures
 
-This pattern makes tests clear and easy to understand.
+**Fixtures** are reusable test setup functions that provide test data or resources. They're functions decorated with `@pytest.fixture` that pytest can automatically call and inject into your test functions. The starter code provides these in `tests/conftest.py`:
 
-### Fixtures
+- `client`: HTTP client for making requests
+- `test_db`: Test database (fresh for each test)
+- `admin_user`: Admin user for testing
+- `auth_headers`: Authentication headers
 
-**Fixtures** are reusable test data that are set up before tests run and cleaned up after.
-
-**Example:**
-
+**How to use:**
 ```python
-@pytest.fixture
-def client():
-    # Set up test client
-    from fastapi.testclient import TestClient
-    from backend.server import app
-    return TestClient(app)
-
-@pytest.fixture
-def test_user(db):
-    # Create a test user in database
-    user = User(username="testuser", email="test@example.com", ...)
-    db.add(user)
-    db.commit()
-    return user
+def test_something(client, auth_headers, admin_user):
+    # Fixtures are automatically available as parameters
+    # pytest calls the fixture functions and passes the results to your test
+    response = client.get("/api/users", headers=auth_headers)
+    assert response.status_code == 200
 ```
 
-**How fixtures work:**
-- `@pytest.fixture` decorator marks a fixture
-- Fixtures can depend on other fixtures (like `test_user` depends on `db`)
-- They're automatically injected into test functions as parameters
+### 2.4 Reading Existing Tests
 
-**Key Point:** Fixtures help you set up test data without repeating code.
+**Look at `tests/test_users.py`** - it shows the pattern:
+- How to structure tests
+- How to use fixtures
+- How to test success and failure cases
+- How to verify response structure
 
-### Writing Good Tests
+**Key Point:** Use `test_users.py` as your reference when writing tests for homework.
 
-Here's what makes a good test:
 
-1. **Tests behavior, not implementation:**
-   - ✅ Good: "Login returns a token when credentials are valid"
-   - ❌ Bad: "Login calls verify_password function"
+## 3. Getting Started on Homework (20 minutes)
 
-2. **One thing per test:**
-   - ✅ Good: Separate tests for success and failure cases
-   - ❌ Bad: One test that checks everything
+### 3.1 Review Homework Requirements
 
-3. **Clear names:**
-   - ✅ Good: `test_login_with_valid_credentials_returns_token`
-   - ❌ Bad: `test_login`
+**HW1: Backend Tests**
+- Each student tests one resource (Groups, Courses, Users, or Auth)
+- Write behavior contracts for your endpoints
+- Write tests for all endpoints in your resource
+- Create a PR with your tests
 
-4. **Independent:**
-   - Each test should work on its own
-   - Tests shouldn't depend on each other
+### 3.2 What Makes a Good Test?
 
-5. **Fast:**
-   - Tests should run quickly
-   - Use test database, not production
+1. **Clear test names:** `test_[endpoint]_[scenario]_[expected_result]`
+2. **Test behavior, not implementation:** Test what it does, not how
+3. **One thing per test:** Separate tests for success and failure
+4. **Use fixtures:** `client`, `auth_headers`, `test_db`, `admin_user`
+5. **Assert specific things:** Check status code AND response structure
 
-**Examples:**
+### 3.3 Example: Good Test Structure
 
 ```python
-# Good test
-def test_login_with_valid_credentials_returns_token(client, test_user):
-    response = client.post(
-        "/api/auth/login",
-        json={"username": "testuser", "password": "testpass"}
-    )
-    assert response.status_code == 200
-    assert "access_token" in response.json()
-
-# Bad test (tests implementation, not behavior)
-def test_login_calls_verify_password(client):
-    # This is testing HOW it works, not WHAT it does
-    pass
-```
-
-**Key Point:** Good tests verify the contract, not the implementation.
-
-
-## Part 4: Team Testing Practice (30 minutes)
-
-### Setup
-
-**You'll need:**
-
-1. **Test file template:**
-   ```python
-   import pytest
-   from fastapi.testclient import TestClient
-   from backend.server import app
-   
-   client = TestClient(app)
-   
-   # Your tests go here
-   ```
-
-2. **Endpoints to test:**
-   - `GET /api/users/me` - Get current user
-   - `POST /api/auth/login` - Login
-   - `GET /api/groups` - List groups
-   - (or others your instructor suggests)
-
-3. **Behavior contracts** (from Part 1)
-
-### Team Activity: Write Tests (20 minutes)
-
-**Instructions:**
-
-1. **Pick an endpoint** (one per team, or teams can do different ones)
-2. **Review the behavior contract** for that endpoint
-3. **Write tests** that verify the contract:
-   - Test success case
-   - Test failure cases (invalid input, missing data, etc.)
-   - Test edge cases (empty strings, very long strings, etc.)
-
-4. **Use pair programming:**
-   - One person writes test
-   - Other person reviews
-   - Switch roles
-
-**Template for tests:**
-
-```python
-def test_[endpoint]_[scenario](client, [fixtures]):
-    # Arrange
-    # (set up test data if needed)
-    
-    # Act
-    response = client.[method](
-        "/api/[endpoint]",
-        json={...}  # if POST/PUT/PATCH
-    )
-    
-    # Assert
-    assert response.status_code == [expected_status]
-    assert [condition]  # check response data
-```
-
-**Tips:**
-- Ask for help if you're stuck
-- Make sure you're testing behavior, not implementation
-- Use fixtures for test data
-
-### Run Tests (5 minutes)
-
-**Instructions:**
-
-1. **Run your tests:**
-   ```bash
-   cd backend
-   poetry run pytest tests/ -v
-   ```
-
-2. **Fix any errors:**
-   - Syntax errors
-   - Import errors
-   - Logic errors
-
-3. **Verify tests pass:**
-   - Green = good!
-   - Red = fix it!
-
-**Get help** if your tests aren't passing.
-
-
-## Part 5: Test Review (15 minutes)
-
-### Share Tests (10 minutes)
-
-**2-3 teams will share:**
-1. Their endpoint
-2. Their tests (show code on screen)
-3. What they tested (success? failure? edge cases?)
-
-**As we review, think about:**
-- **What's good?**
-  - Clear test names?
-  - Testing behavior?
-  - Good assertions?
-  
-- **What could be better?**
-  - Missing test cases?
-  - Testing implementation?
-  - Unclear assertions?
-
-**Example review:**
-
-```python
-# Team's test
-def test_login(client):
-    response = client.post("/api/auth/login", json={"username": "test", "password": "test"})
-    assert response.status_code == 200
-
-# Review feedback:
-# ✅ Good: Tests the endpoint
-# ❌ Could improve: 
-#   - Name is vague (what scenario?)
-#   - Only tests success case
-#   - Doesn't verify the response structure
-#   - Missing failure cases
-
-# Better version:
-def test_login_with_valid_credentials_returns_token(client, test_user):
-    response = client.post(
-        "/api/auth/login",
-        json={"username": "testuser", "password": "testpass"}
-    )
-    assert response.status_code == 200
-    assert "access_token" in response.json()
-    assert response.json()["token_type"] == "bearer"
-
-def test_login_with_invalid_credentials_returns_401(client):
-    response = client.post(
-        "/api/auth/login",
-        json={"username": "wrong", "password": "wrong"}
-    )
+@pytest.mark.asyncio
+async def test_get_all_users_requires_auth(client: AsyncClient):
+    """Test that GET /api/users requires authentication"""
+    response = await client.get("/api/users")
     assert response.status_code == 401
+
+@pytest.mark.asyncio
+async def test_get_all_users_with_auth(client: AsyncClient, auth_headers, admin_user):
+    """Test that GET /api/users returns list of users when authenticated"""
+    response = await client.get("/api/users", headers=auth_headers)
+    assert response.status_code == 200
+    data = response.json()
+    assert isinstance(data, list)
+    for user in data:
+        assert "id" in user
+        assert "username" in user
+        assert "password" not in user  # Security check
 ```
 
-**Key Point:** Review helps us learn. You'll do this for homework too.
+### 3.4 Your Next Steps
 
-### Best Practices Summary
+1. **Read `tests/test_users.py`** - This is your reference
+2. **Pick your resource** (Groups, Courses, Users, or Auth)
+3. **Write behavior contracts** for your endpoints
+4. **Create your test file** (`test_groups.py`, `test_courses.py`, etc.)
+5. **Write tests** following the pattern in `test_users.py`
+6. **Run tests:** `docker exec -it tma_backend poetry run pytest tests/ -v`
 
-**Remember these principles:**
+### 3.5 Questions & Getting Help
 
-1. **Test the contract:**
-   - What should happen when input is valid?
-   - What should happen when input is invalid?
-   - What should the output look like?
+- **Reference:** `tests/test_users.py` shows the exact pattern
+- **Fixtures:** All set up in `tests/conftest.py` - just use them
+- **Ask your team** if you're stuck
+- **Ask the instructor** if you need clarification
 
-2. **Write clear test names:**
-   - `test_[endpoint]_[scenario]_[expected_result]`
-   - Example: `test_login_with_valid_credentials_returns_token`
-
-3. **Test one thing per test:**
-   - Separate tests for success and failure
-   - Separate tests for different scenarios
-
-4. **Use fixtures:**
-   - Set up test data once
-   - Reuse across tests
-
-5. **Assert specific things:**
-   - Don't just check status code
-   - Check the response structure
-   - Check the response data
-
-
-## Part 6: Reflection & Wrap-up (15 minutes)
-
-### Reflection Activity (10 minutes)
-
-**Discuss with your team:**
-
-1. **What did we do today?**
-   - Learned pytest
-   - Wrote tests
-   - Reviewed tests
-
-2. **What did we learn?**
-   - How to write tests
-   - What makes a good test
-   - How to use fixtures
-
-3. **What was hard?**
-   - What was confusing?
-   - What took longer than expected?
-
-4. **What makes a good test?**
-   - Clear name?
-   - Tests behavior?
-   - Good assertions?
-   - Independent?
-
-5. **What questions do we have?**
-   - About pytest?
-   - About testing in general?
-   - About the homework?
-
-**Share insights** with the class.
-
-### Preview Homework
-
-**HW1: Backend Tests (Team PR) + Peer Review + Reflection**
-- **Due:** Next Tuesday (Jan 27)
-- **Requirements:**
-  1. Write tests for 3 existing endpoints
-  2. Each endpoint should have:
-     - Success case test
-     - At least 2 failure/edge case tests
-  3. Create PR with tests
-  4. Review one other team's test PR
-  5. Individual reflection
-
-- **Process:**
-  1. Pick 3 endpoints (can be different from today)
-  2. Write behavior contracts (if not done)
-  3. Write tests
-  4. Create PR
-  5. Review another team's PR
-  6. Reflect
-
-### Wrap-up
-
-**Remember:**
-- Tests verify the contract
-- Good tests are clear and specific
-- Review helps us learn
-
-
-## Materials Needed
-
-- pytest documentation (reference)
-- Test file template
-- List of endpoints to test
-- Behavior contracts (from Part 1)
-- Computer for each student/pair
 
 ## Tips & Common Issues
 
-### Common Issues
+**Don't know how to start?**  
+→ Look at `tests/test_users.py` - copy the structure and adapt it
 
-**Tests fail because database isn't set up**  
-→ Use test database, use fixtures for test data
+**Tests fail?**  
+→ Check that you're using the correct fixtures (`client`, `auth_headers`, etc.)
 
-**Testing implementation, not behavior**  
-→ Remind yourself: test "what it does" not "how it does it"
+**Don't know what to test?**  
+→ Write a behavior contract first, then test what the contract says
 
-**Tests are too complex**  
-→ Keep it simple, one thing per test
-
-**Don't know what to test**  
-→ Use behavior contracts as guide, look at examples
-
-### Getting Help
-
-- Ask your teammates
-- Ask the instructor
-- Check pytest documentation
-- Review the examples from today
-
-## Student Deliverables
-
-- Tests written (can be part of HW1)
-- Reflection on testing (can be part of HW1)
+**Authentication issues?**  
+→ Use the `auth_headers` fixture - it's already set up
 
 ## Next Steps
 
-- **Before Tuesday:** Complete HW1
-- **Tuesday:** Data modeling and API design
-- **Reading:** SQLAlchemy Relationships documentation (due Tuesday)
+- **Start HW1:** Write tests for your assigned resource
+- **Reference:** Use `tests/test_users.py` as your guide
+- **Questions?** Ask your team or instructor

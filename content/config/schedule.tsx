@@ -114,24 +114,18 @@ export const baseTopics = [
             {
               citation: (
                 <>
-                  <a href="/resources/backend-01-fastapi-intro/" target="_blank">Intro to FastAPI</a>
+                  <a href="/spring2026/resources/backend-01-fastapi-intro/">Intro to FastAPI</a>
                 </>
               ),
             },
             {
               citation: (
                 <>
-                  <a href="/resources/backend-05-testing/" target="_blank">Testing API Endpoints</a>
+                  <a href="/spring2026/resources/backend-05-testing/">Testing API Endpoints</a>
                 </>
               ),
             },
           ],
-          assigned: {
-            titleShort: "HW1",
-            title: "Backend Contract Tests for Existing Endpoints + 1 Peer Review",
-            url: "/assignments/hw01-backend-tests/",
-            draft: 1,
-          },
         },
       ],
     },

@@ -108,7 +108,11 @@ li {
 }
 
 blockquote {
-  @apply bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-800 p-4 mb-4;
+  @apply bg-yellow-50 dark:bg-yellow-800 border border-yellow-200 dark:border-yellow-800 p-4 !mb-10;
+}
+
+blockquote h2 {
+  @apply !mt-0;
 }
 
 .dark blockquote {
@@ -159,12 +163,21 @@ li:has(input[type="checkbox"]) {
   li {
     @apply mb-1;
   }
+  ul li {
+    @apply !mb-2;
+  }
+  .prose ul li {
+    @apply !mb-2;
+  }
   table li {
     @apply mb-0;
   }
   ul,
   ol {
     @apply mb-2;
+  }
+  table {
+    @apply !mb-10;
   }
 }
 
@@ -197,7 +210,7 @@ li:has(input[type="checkbox"]) {
     @apply !my-0;
   }
   blockquote {
-    @apply bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 p-4 mb-4;
+    @apply bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 p-4 !mb-10;
     border-width: 1px;
   }
 }
@@ -279,10 +292,10 @@ li:has(input[type="checkbox"]) {
 
   /* Inline code with better styling */
   code:not(pre code) {
-    @apply px-2 py-1 rounded;
+    @apply px-2 py-1 rounded text-sm;
     background: var(--card);
     border: 1px solid var(--border);
-    font-size: 0.9em;
+    font-size: 0.875em;
     color: var(--foreground);
   }
 
@@ -360,6 +373,7 @@ li:has(input[type="checkbox"]) {
 }
 
 .markdown-checkbox-line {
+  @apply !ml-6;
   pointer-events: auto !important;
 }
 
@@ -551,8 +565,9 @@ img.large {
 
 
 code {
-  @apply bg-gray-100 dark:bg-gray-800 p-1 rounded-md;
+  @apply bg-gray-100 dark:bg-gray-800 p-1 rounded-md text-sm;
   color: inherit;
+  font-size: 0.875em;
 }
 
 .dark code {
@@ -791,4 +806,19 @@ code {
 .societal-implications-content.prose ol li {
   margin-top: 1rem;
   margin-bottom: 1rem;
+}
+
+/* Badge style for optional items */
+.badge {
+  @apply inline-block px-2 py-0.5 text-xs font-medium rounded uppercase bg-amber-50 border border-amber-200 text-gray-700;
+}
+
+.badge.success {
+    @apply inline-block px-2 py-0.5 text-xs font-medium rounded uppercase bg-green-50 border border-green-200 text-gray-700;
+  }
+
+.dark .badge {
+  background-color: #374151; /* gray-700 */
+  color: #9ca3af; /* gray-400 */
+  border-color: #4b5563; /* gray-600 */
 }

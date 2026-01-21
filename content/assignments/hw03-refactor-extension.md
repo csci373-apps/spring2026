@@ -45,11 +45,23 @@ Both options require tests as guardrails.
    - What design principle does it violate?
    - How does it impact maintainability?
 
-**Examples:**
-- Extract validation logic from route functions
-- Reduce duplication between similar routes
-- Split long functions into smaller ones
-- Improve function/class names for clarity
+**Examples from the backend:**
+
+1. **Extract validation logic:**
+   - `backend/routes/groups.py`: Extract group name validation (lines 259-264, 323-328)
+   - `backend/routes/courses.py`: Extract course validation logic
+
+2. **Reduce duplication:**
+   - `backend/routes/groups.py`: Member count calculation is repeated (lines 118-121, 184-187, 292-299, 341-344)
+   - `backend/routes/courses.py`: Module count calculation (currently hardcoded to 0)
+
+3. **Extract helper functions:**
+   - `backend/routes/groups.py`: `can_manage_group()` and `get_group_or_404()` are good examples
+   - Consider extracting similar patterns for courses
+
+4. **Improve function organization:**
+   - `backend/routes/groups.py`: Long functions like `get_all_groups()` (lines 89-133) could be split
+   - Extract member formatting logic into helper functions
 
 **Submission:**
 Include description of the code smell in your PR description.
@@ -183,11 +195,38 @@ async def create_group(group_data: GroupCreate, db: Session, current_user: User)
    - What models/schemas need changes?
    - What tests are needed?
 
-**Examples:**
-- Add filtering/sorting to list endpoints
-- Add pagination to list endpoints
-- Add new fields to existing models
-- Add new endpoints to existing resources
+**Recommended extensions (aligned with backend):**
+
+1. **Add Modules to Courses** (Recommended)
+   - Implement the Module model and endpoints
+   - Update `GET /api/courses/{id}` to return actual modules (currently returns empty array at line 108)
+   - Update `GET /api/courses` to return actual module_count (currently hardcoded to 0 at lines 74, 144, 195)
+   - See `backend/routes/courses.py` for where modules are expected
+
+2. **Implement File Upload for Courses** (Advanced)
+   - Add file upload endpoints to courses
+   - Store files in `backend/uploads/` directory
+   - Add file metadata to Course model or create File model
+   - Update course endpoints to handle file uploads
+   - See `backend/routes/courses.py` lines 21, 65, 125, 184, 221 for where file upload is expected
+
+3. **Add Progress Tracking to Groups** (Recommended)
+   - Implement progress tracking endpoints for groups
+   - Track user progress through courses/modules
+   - See `backend/routes/groups.py` line 571 for where progress tracking is expected
+
+4. **Add Filtering/Sorting:**
+   - Add query parameters to `GET /api/groups` (filter by name, sort by date)
+   - Add query parameters to `GET /api/courses` (filter by group, sort by title)
+
+5. **Add Pagination:**
+   - Add pagination to `GET /api/groups` and `GET /api/courses`
+   - Use query parameters: `page`, `per_page`, return pagination metadata
+
+**Other options:**
+- Add new fields to existing models (e.g., add tags to courses)
+- Add search endpoints (e.g., search groups by name, search courses by title)
+- Add bulk operations (e.g., add multiple users to a group at once)
 
 **Submission:**
 Include description of the extension in your PR description.

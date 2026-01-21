@@ -1,9 +1,9 @@
 ---
 title: "New Model + API"
-date: "2026-01-29"
-type: "assignment"
+type: "homework"
 num: "2"
 draft: 1
+assigned_date: "2026-01-29"
 due_date: "2026-02-03"
 ---
 
@@ -43,12 +43,30 @@ Your team will design and implement a **new model with API endpoints and tests**
 **Submission:**
 Include your design (whiteboard photo, diagram, or written description) in your PR description or as a file in the PR.
 
-**Examples of features you could implement:**
+**Recommended features (aligned with backend):**
+
+1. **Module System** (Recommended - builds on Course model)
+   - Create a `Module` model that belongs to a `Course` (one-to-many)
+   - Modules have: title, description, content, ordering/sequence
+   - Endpoints: CRUD for modules within a course
+   - This extends the existing Course functionality (see `backend/routes/courses.py` line 74, 108)
+
+2. **Progress Tracking System** (Recommended - builds on Group/Course)
+   - Create a `Progress` or `UserProgress` model
+   - Track user progress through courses/modules
+   - Endpoints: Record progress, get progress for a user/course
+   - This extends group functionality (see `backend/routes/groups.py` line 571)
+
+3. **File Upload System** (Advanced - extends Course)
+   - Add file upload capability to courses
+   - Store file metadata in database, files on disk
+   - Endpoints: Upload file, download file, delete file
+   - This extends course functionality (see `backend/routes/courses.py` lines 21, 65, 125, 184, 221)
+
+**Other options:**
 - **Notification System:** Users receive notifications (e.g., "You were added to a group")
-- **Comment System:** Users can comment on posts
-- **Tag System:** Posts can have tags (many-to-many relationship)
-- **Bookmark System:** Users can bookmark posts/courses
-- **Activity Feed:** Users see activity from their groups/courses
+- **Comment System:** Users can comment on courses/modules
+- **Tag System:** Courses can have tags (many-to-many relationship)
 - **Or propose your own!** (Check with instructor first)
 
 #### 2. Implement the Model (15 points)
@@ -134,8 +152,13 @@ Include your design (whiteboard photo, diagram, or written description) in your 
    - **Edge cases:** Empty strings, very long strings, etc.
 
 3. **Use fixtures:**
-   - Create test data fixtures
-   - Use authentication fixtures
+   - Use existing fixtures from `tests/conftest.py`:
+     - `client`: Test client
+     - `test_db`: Test database with tables
+     - `admin_user`: Admin user for testing
+     - `auth_headers`: Authentication headers
+   - Create additional fixtures for your model's test data
+   - Follow patterns from `tests/test_users.py`
    - Clean up after tests
 
 **Requirements:**
@@ -143,6 +166,7 @@ Include your design (whiteboard photo, diagram, or written description) in your 
 - Tests are clear and well-named
 - Tests are independent (can run in any order)
 - All tests pass
+- Use existing test infrastructure (see `tests/conftest.py`)
 
 ### PR Requirements
 
