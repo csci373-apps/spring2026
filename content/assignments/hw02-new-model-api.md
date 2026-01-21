@@ -1,457 +1,202 @@
 ---
-title: "New Model + API"
+title: "New Models + Module CRUD"
 type: "homework"
 num: "2"
 draft: 1
 assigned_date: "2026-01-29"
-due_date: "2026-02-03"
+due_date: "2026-02-05"
+heading_max_level: 3
 ---
 
-## Overview
+> ## Overview
+>
+> This assignment has three parts:
+> 1. **Domain modeling + schema design** - draw and explain your proposed backend data model
+> 2. **Implement Module CRUD endpoints** - implement and test contract-level behavior for the Module resource
+> 3. **Peer review + individual reflection** - review a teammate’s PR and reflect on design + implementation
+>
+> This assignment builds on HW1's contract-level testing approach and introduces domain modeling and relationship design.
 
-This assignment has three parts:
-1. **Design and Implement New Model + API** - Your team designs and implements a new feature
-2. **Peer Review** - You review another team's PR (focus on design and testing)
-3. **Individual Reflection** - Reflect on design decisions and what you learned
+## Before You Begin: Team Task Assignment Tips
 
-This assignment builds on domain modeling and implementation practice from class. You'll make design decisions, implement them, and learn from code review.
+1. Start by co-designing the data model together
+2. Consider assigning roles by responsibility, not files (adjust this approach to fit your team's needs):
+    - **Schema lead** (models & relationships)
+    - **API lead** (endpoint behavior & contracts)
+    - **Test lead** (edge cases & failure modes)
+    - **Integrator** (keeps work aligned, ensures pieces fit together)
+3. Split implementation by layer (models / schemas / routes / tests), not by feature
+4. Pair on complex parts (e.g., thinking about relationships and authentication)
+5. Set a mid-point check: "Does our code still match the diagram?"
+6. No merges without tests passing and one teammate review
 
+## 1. Domain Model Design (25 points)
 
-## Part 1: Design and Implement New Model + API + Tests (60 points)
+Before writing code, you will design the core learning-content data model for the app.
 
-### Instructions
+> ### Application Requirements
+> 
+> You are building a health-focused learning app that helps parents learn skills through structured content:
+> 
+> - Parents register and are assigned to one or more **Courses** they must complete.
+> - Each **Course** consists of roughly 10 **Modules**.
+> - A **Module** may belong to **more than one course**.
+> - A **Module** is composed of an ordered sequence of **Posts**.
+> - **Posts** can have multiple types: `video`, `attachment`, `quiz`, `default`.
+> - User progress is tracked across the **Course** to which they are assigned.
 
-Your team will design and implement a **new model with API endpoints and tests**. This is your chance to make design decisions and see them through to implementation.
+### 1.1 Deliverable: Model drawing + notes
+Create a diagram of your proposed models and relationships.
 
-### Requirements
+**Your diagram must include:**
+- Entities (tables/models) you propose
+- Relationships (one-to-many, many-to-many, etc.)
+- Key attributes (fields) for each entity, including data types and which attributes are mandatory vs optional
+- Primary keys and foreign keys (at a conceptual level)
 
-#### 1. Design the Model (10 points)
-
-**Before coding, design your model:**
-
-1. **Whiteboard/design the domain model:**
-   - What entities do you need?
-   - What are the relationships? (One-to-Many, Many-to-Many, One-to-One)
-   - What fields does each entity need?
-   - What are the tradeoffs?
-
-2. **Document your design decisions:**
-   - Why did you choose this design?
-   - What alternatives did you consider?
-   - What are the tradeoffs?
+**Format:**
+- Hand-drawn (photo) OR digital (draw.io / Excalidraw / Figma / etc.)
+- Save it as `hw02_model_design.pdf` or `hw02_model_design.png`
 
 **Submission:**
-Include your design (whiteboard photo, diagram, or written description) in your PR description or as a file in the PR.
+- Add the file to your PR (in a `/docs` folder) OR include it in your PR description (linked image).
+- Include ~200–400 words explaining key design decisions:
+  - How you represented **module reuse across courses**
+  - Any parts that were more tricky than others and why you ultimately made the decisions you did.
 
-**Recommended features (aligned with backend):**
+There is more than one valid solution. The goal is to make tradeoffs explicit.
 
-1. **Module System** (Recommended - builds on Course model)
-   - Create a `Module` model that belongs to a `Course` (one-to-many)
-   - Modules have: title, description, content, ordering/sequence
-   - Endpoints: CRUD for modules within a course
-   - This extends the existing Course functionality (see `backend/routes/courses.py` line 74, 108)
 
-2. **Progress Tracking System** (Recommended - builds on Group/Course)
-   - Create a `Progress` or `UserProgress` model
-   - Track user progress through courses/modules
-   - Endpoints: Record progress, get progress for a user/course
-   - This extends group functionality (see `backend/routes/groups.py` line 571)
+## 2. Implement Module CRUD (50 points)
 
-3. **File Upload System** (Advanced - extends Course)
-   - Add file upload capability to courses
-   - Store file metadata in database, files on disk
-   - Endpoints: Upload file, download file, delete file
-   - This extends course functionality (see `backend/routes/courses.py` lines 21, 65, 125, 184, 221)
+In this part, you will implement **only the Module resource** end-to-end:
+- SQLAlchemy model(s) as needed
+- Pydantic schemas
+- Routes (CRUD endpoints)
+- Contract-level API tests
 
-**Other options:**
-- **Notification System:** Users receive notifications (e.g., "You were added to a group")
-- **Comment System:** Users can comment on courses/modules
-- **Tag System:** Courses can have tags (many-to-many relationship)
-- **Or propose your own!** (Check with instructor first)
+You are **not** implementing full course assignment logic, post creation, or progress tracking yet — but your design should anticipate them.
 
-#### 2. Implement the Model (15 points)
+### 2.1. Required endpoints (Module resource)
+Implement the following endpoints in `backend/routes/modules.py`:
 
-**Create the SQLAlchemy model:**
-
-1. **Create model file:** `backend/models/[your_model].py`
-   - Use proper SQLAlchemy syntax
-   - Include relationships if needed
-   - Add appropriate indexes
-   - Include timestamps (created_at, updated_at)
-
-2. **Add to `backend/models/__init__.py`:**
-   ```python
-   from .[your_model] import [YourModel]
-   ```
-
-3. **Create database migration:**
-   ```bash
-   cd backend
-   poetry run alembic revision --autogenerate -m "Add [your_model] table"
-   poetry run alembic upgrade head
-   ```
-
-**Requirements:**
-- Model follows existing patterns in codebase
-- Relationships are correctly defined
-- Fields have appropriate types and constraints
-- Migration runs successfully
-
-#### 3. Create Schemas (10 points)
-
-**Create Pydantic schemas:**
-
-1. **Create schema file:** `backend/schemas/[your_model].py`
-
-2. **Include schemas:**
-   - **Create schema:** For creating new records (input validation)
-   - **Update schema:** For updating records (optional fields)
-   - **Response schema:** For returning records (output formatting)
-
-3. **Add validation:**
-   - Field constraints (min_length, max_length, etc.)
-   - Required vs optional fields
-   - Type validation
-
-**Requirements:**
-- Schemas validate input correctly
-- Response schemas match model structure
-- Validation errors are clear
-
-#### 4. Create API Routes (15 points)
-
-**Create FastAPI routes:**
-
-1. **Create route file:** `backend/routes/[your_model].py`
-
-2. **Implement CRUD endpoints:**
-   - At minimum: Create (POST) and Read (GET one or list)
-   - Optional: Update (PATCH) and Delete (DELETE)
-
-3. **Register route in `backend/server.py`:**
-   ```python
-   from backend.routes import [your_model]
-   app.include_router([your_model].router)
-   ```
-
-**Requirements:**
-- Endpoints follow REST conventions
-- Authentication/authorization is handled (use `get_current_user`)
-- Error handling is appropriate (404, 422, etc.)
-- Response models are specified
-
-#### 5. Write Tests (10 points)
-
-**Write comprehensive tests:**
-
-1. **Create test file:** `tests/test_[your_model].py`
-
-2. **Test each endpoint:**
-   - **Success cases:** Valid input, correct response
-   - **Failure cases:** Invalid input, missing data, unauthorized access
-   - **Edge cases:** Empty strings, very long strings, etc.
-
-3. **Use fixtures:**
-   - Use existing fixtures from `tests/conftest.py`:
-     - `client`: Test client
-     - `test_db`: Test database with tables
-     - `admin_user`: Admin user for testing
-     - `auth_headers`: Authentication headers
-   - Create additional fixtures for your model's test data
-   - Follow patterns from `tests/test_users.py`
-   - Clean up after tests
-
-**Requirements:**
-- Tests cover success and failure cases
-- Tests are clear and well-named
-- Tests are independent (can run in any order)
-- All tests pass
-- Use existing test infrastructure (see `tests/conftest.py`)
-
-### PR Requirements
-
-#### Create Pull Request
-
-1. **Create feature branch:**
-   ```bash
-   git checkout -b feature/[your-feature-name]
-   ```
-
-2. **Commit your work:**
-   ```bash
-   git add backend/models/[your_model].py
-   git add backend/schemas/[your_model].py
-   git add backend/routes/[your_model].py
-   git add tests/test_[your_model].py
-   git commit -m "Add [your feature]: model, API, and tests"
-   ```
-
-3. **Push and create PR:**
-   ```bash
-   git push origin feature/[your-feature-name]
-   ```
-
-4. **PR Description Template:**
-   ```markdown
-   ## Feature: [Your Feature Name]
-
-   ### Design Decisions
-   - What model did you create?
-   - What relationships did you choose?
-   - Why did you choose this design?
-   - What alternatives did you consider?
-
-   ### Implementation
-   - Model: `backend/models/[your_model].py`
-   - Schemas: `backend/schemas/[your_model].py`
-   - Routes: `backend/routes/[your_model].py`
-   - Tests: `tests/test_[your_model].py`
-
-   ### Endpoints
-   - `POST /api/[your-model]` - Create
-   - `GET /api/[your-model]` - List
-   - `GET /api/[your-model]/{id}` - Get one
-   - (Add others if implemented)
-
-   ### Testing
-   - What did you test?
-   - What test cases did you cover?
-   - Do all tests pass?
-
-   ### Questions
-   - What questions do you have?
-   - What would you like feedback on?
-   ```
-
-
-## Part 2: Peer Review (25 points)
-
-### Instructions
-
-Review **one PR from another team** (focus on design and testing). Provide substantive, constructive feedback.
-
-### Requirements
-
-#### 1. Find a PR to Review (5 points)
-
-**Choose ONE PR from another team:**
-- Not your own team's PR
-- PR that implements a new model + API
-- PR that needs review (not already reviewed by 2+ people)
-
-**How to find PRs:**
-- Check team repositories (each team has their own fork)
-- Look for PRs with "HW2" in the title
-- Ask in class or Slack if you can't find any
-
-#### 2. Review the Design (10 points)
-
-**Focus on design decisions:**
-
-1. **Model Design:**
-   - Is the model well-designed?
-   - Are relationships appropriate?
-   - Are fields necessary and well-typed?
-   - What are the tradeoffs?
-
-2. **API Design:**
-   - Are endpoints RESTful?
-   - Are response models clear?
-   - Is error handling appropriate?
-
-**Provide feedback:**
-- What's good about the design?
-- What could be improved?
-- What alternatives might work?
-- What questions do you have?
-
-#### 3. Review the Tests (10 points)
-
-**Focus on test coverage and quality:**
-
-1. **Test Coverage:**
-   - Do tests cover success cases?
-   - Do tests cover failure cases?
-   - Are edge cases tested?
-
-2. **Test Quality:**
-   - Are test names clear?
-   - Are tests independent?
-   - Are fixtures used appropriately?
-   - Are assertions specific?
-
-**Provide feedback:**
-- What's good about the tests?
-- What test cases are missing?
-- How could tests be improved?
-
-### Review Guidelines
-
-**Be constructive:**
-- ✅ "This relationship design makes sense because..."
-- ✅ "Consider adding a test for the 404 case when..."
-- ❌ "This is wrong" (be specific about what and why)
-- ❌ "Needs more tests" (specify what to test)
-
-**Be specific:**
-- Point to specific lines or functions
-- Explain why something is good or could be improved
-- Suggest alternatives when appropriate
-
-**Be kind:**
-- Remember: everyone is learning
-- Focus on the code, not the person
-- Ask questions to understand decisions
-
-### Submission
-
-- **Format:** Comments on GitHub PR
-- **Location:** Another team's PR
-- **Individual submission:** Each team member reviews one PR
-- **Team coordination:** Try to ensure all PRs get reviewed (distribute reviews among team members)
-
-
-## Part 3: Individual Reflection (15 points)
-
-### Instructions
-
-Reflect on your design decisions, implementation experience, and what you learned from code review.
-
-### Reflection Questions
-
-**Answer these questions (2-3 paragraphs each):**
-
-1. **Design Decisions:**
-   - What design decisions did you make? (model structure, relationships, API design)
-   - Why did you make those decisions?
-   - What alternatives did you consider?
-   - What tradeoffs did you face?
-   - If you could redesign, what would you change? Why?
-
-2. **Implementation Experience:**
-   - What was easy about implementing the model + API?
-   - What was hard?
-   - What took longer than expected?
-   - What questions do you still have?
-
-3. **Code Review Learning:**
-   - What feedback did you receive on your PR?
-   - Was the feedback helpful? Why or why not?
-   - What did you learn from reviewing another team's PR?
-   - How has your understanding of design improved?
-
-4. **Testing Reflection:**
-   - How did writing tests help you think about the design?
-   - What was hard about writing tests?
-   - What would you do differently next time?
-
-### Submission
-
-- **Format:** Written reflection (500-750 words total)
-- **Location:** Submit via course platform
-- **Individual submission:** Each team member submits their own reflection
-
-
-## Grading Rubric
-
-| Criteria | Points | Description |
+| Endpoint | Method | Description |
 |----------|--------|-------------|
-| Model Design | 10 | Well-designed model with appropriate relationships |
-| Model Implementation | 15 | Correct SQLAlchemy model, migration works |
-| Schema Implementation | 10 | Proper Pydantic schemas with validation |
-| API Implementation | 15 | Working endpoints with proper error handling |
-| Tests | 10 | Comprehensive tests covering success and failure cases |
-| PR Quality | 5 | Clear PR description, well-documented |
-| Review Selection | 5 | Appropriate PR chosen for review |
-| Design Review | 10 | Substantive feedback on design decisions |
-| Test Review | 10 | Substantive feedback on test coverage and quality |
-| Reflection Quality | 15 | Thoughtful reflection on design, implementation, and learning |
-| **Total** | **100** | |
+| `/api/modules` | GET | List modules accessible to the user |
+| `/api/modules/{id}` | GET | Get a single module |
+| `/api/modules` | POST | Create a new module |
+| `/api/modules/{id}` | PATCH | Update a module |
+| `/api/modules/{id}` | DELETE | Delete a module |
+
+**Assumptions (unless your starter code dictates otherwise):**
+- You must require authentication for all module endpoints.
+- You should enforce role-based behavior if the existing app uses roles (e.g., only admins/managers can create/delete).
+- Modules should have at minimum:
+  - `id`
+  - `title`
+  - `description` (optional)
+  - any fields already implied by the starter code
+
+### 2.2. Write behavior contracts (required)
+For **each endpoint**, write a behavior contract (as in HW1). Include:
+
+- **Input:** params + request body
+- **Behavior:** step-by-step what happens
+- **Output:** status code + response shape
+- **Errors:** common failure cases (401/403/404/422/400)
+
+**Submission:**
+Include behavior contracts **in your PR description** OR in a file: `docs/hw02_contracts.md`.
+
+### 2.3. Implement data model changes (as needed)
+You will likely need new/updated models to support future work. At minimum, implement what your Module endpoints needs right now.
+
+**Design requirements you should plan for (but may implement partially):**
+- A module can belong to multiple courses (many-to-many)
+- A module contains ordered posts (ordering must be representable)
+
+You are not required to build all endpoints for those relationships yet, but your schema should not block future work.
+
+### 2.4. Write tests (contract-level)
+Create `tests/test_modules.py` and write contract-level tests for each endpoint.
+
+Minimum coverage per endpoint:
+1. **Success case** (200/201/204 etc.)
+2. **At least 2 failure cases**, such as:
+   - missing/invalid input → 422
+   - unauthorized → 401
+   - forbidden (wrong role) → 403
+   - not found → 404
+   - business rule violation (if applicable) → 400
+
+**Testing constraints:**
+- Prefer verifying behavior through the API (not direct DB queries)
+- Use existing fixtures (`client`, `test_db`, `auth_headers`, etc.)
+- Tests should be clear, independent, and fast
+- Use `@pytest.mark.asyncio` if your test suite is async (match the existing pattern)
+
+## 3. Pull Requests, Review, and Reflection (25 points)
+
+Teams may organize their work using one or more pull requests. This is expected and encouraged.
+
+### 3.1 Pull Requests and Review
+
+All work for HW2 must be submitted via pull requests and **merged into `main` by the deadline**.
+
+By the deadline:
+- All relevant PRs should be **reviewed and approved**
+- All changes should be **merged into `main`**
+- The repository should reflect the team’s final, integrated solution
+
+We will review:
+- **All PRs** created for HW2
+- The quality and substance of code reviews
+- Evidence of collaboration and iteration
+
+There is no required number of PRs. Teams should choose a workflow that supports clear design, clean implementation, and shared ownership.
+
+
+### 3.2 Model Diagram + Team Design Reflection
+
+The team must submit:
+- A shared **ER/model diagram** representing the proposed backend design
+- A short **team reflection** (200–400 words) explaining:
+  - Key modeling decisions
+  - How relationships and ordering were handled
+  - Tradeoffs made and alternatives considered
+
+This may be included in a PR description or in a file in the repository (e.g., `docs/hw02_design.md`).
+
+
+### 3.3 Individual Reflection
+
+Each student must complete an individual reflection in their shared Google document (`LastName_FirstName_373`).
+
+Under today’s date, respond (200–350 words total):
+
+1. What design decision felt most important in this assignment, and why?
+2. What was hardest about implementing Module CRUD cleanly?
+3. What did you learn from reviewing teammates’ work?
+
+Paste your reflection into the Weekly Reflection Form as usual.
 
 
 ## Submission Checklist
 
-### Team Submission:
-- [ ] GitHub PR created with new model + API + tests
-  - [ ] Model designed and documented
-  - [ ] Model implemented with migration
-  - [ ] Schemas created with validation
-  - [ ] Routes implemented with proper error handling
-  - [ ] Tests written and passing
-  - [ ] PR description includes design decisions
-  - [ ] All tests pass
+**Design**
+- [ ] Team ER/model diagram included in the repository or PRs
+- [ ] Team design reflection (200–400 words)
 
-### Individual Submission:
-- [ ] Peer review completed
-  - [ ] Reviewed another team's PR (not your own work)
-  - [ ] Provided substantive feedback on design
-  - [ ] Provided substantive feedback on tests
-  - [ ] Approved or requested changes
-- [ ] Individual reflection submitted
-  - [ ] Answered all reflection questions
-  - [ ] 500-750 words total
-  - [ ] Thoughtful and specific
+**Implementation**
+- [ ] Module CRUD endpoints implemented (`GET list`, `GET one`, `POST`, `PATCH`, `DELETE`)
+- [ ] Module schemas created and used correctly
+- [ ] Authentication and role-based behavior enforced (per starter code expectations)
+- [ ] Contract-level tests written for all Module endpoints
+- [ ] Each endpoint includes at least one success test and at least two failure tests
 
-
-## Tips for Success
-
-### Design Phase
-- **Whiteboard first:** Don't code until you've designed
-- **Consider alternatives:** Think about different approaches
-- **Document decisions:** Write down why you chose this design
-- **Ask questions:** If unsure, ask instructor or teammates
-
-### Implementation Phase
-- **Start simple:** Get basic functionality working first
-- **Test as you go:** Write tests alongside implementation
-- **Run tests frequently:** Catch issues early
-- **Use existing patterns:** Follow codebase conventions
-
-### Review Phase
-- **Be constructive:** Focus on helping, not criticizing
-- **Be specific:** Point to specific code, explain why
-- **Ask questions:** Understand decisions before suggesting changes
-- **Learn from feedback:** Consider suggestions, ask for clarification
-
-### Reflection Phase
-- **Be honest:** What was hard? What did you learn?
-- **Be specific:** Give examples from your experience
-- **Think critically:** What would you do differently? Why?
-
-
-## Common Issues and Solutions
-
-### Issue: Migration fails
-**Solution:** Check model syntax, ensure all imports are correct, verify database connection
-
-### Issue: Tests fail
-**Solution:** Check fixtures, verify test data setup, ensure authentication is handled
-
-### Issue: Don't know what to implement
-**Solution:** Choose a simple feature first (e.g., notifications), ask instructor for suggestions
-
-### Issue: Design is unclear
-**Solution:** Whiteboard with team, discuss alternatives, ask instructor for feedback
-
-### Issue: Review feedback is vague
-**Solution:** Be specific, point to code, explain why, suggest alternatives
-
-
-## Resources
-
-- **SQLAlchemy Relationships:** https://docs.sqlalchemy.org/en/20/orm/basic_relationships.html
-- **FastAPI Dependencies:** https://fastapi.tiangolo.com/tutorial/dependencies/
-- **Pytest Documentation:** https://docs.pytest.org/en/stable/
-- **Clean Code Ch. 2-3:** (from course readings)
-
-
-## Next Steps
-
-After completing this assignment, you'll:
-- Understand how to design and implement new features
-- Be comfortable making design decisions
-- Have practice with code review
-- Be ready for refactoring (Week 4)
-
-Good luck!
+**Process**
+- [ ] All HW2-related work submitted via PRs
+- [ ] All PRs reviewed and approved
+- [ ] All HW2 changes merged into `main` by the deadline
+- [ ] Individual reflection completed and submitted
 

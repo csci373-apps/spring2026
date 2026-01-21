@@ -15,7 +15,7 @@ heading_max_level: 3
 > 2. **Reviewing a Pull Request** - Reviewing PRs created by your teammates
 > 3. **Completing an individual reflection** - Reflecting on what you learned about testing
 > 
-> This assignment builds on the pytest workshop and gives you practice writing contract-level API tests. Please ensure that you've read the <a href="/spring2026/resources/backend-05-testing/">Testing API Endpoints</a> doc.
+> This assignment builds on the pytest workshop and gives you practice writing contract-level API tests. Please ensure that you've read the <a href="/spring2026/resources/backend-05-testing">Testing API Endpoints</a> doc.
 
 ## 1. Write Backend Tests (70 points)
 

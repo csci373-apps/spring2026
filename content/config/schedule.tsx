@@ -19,7 +19,7 @@ export const baseTopics = [
             { title: "Slides", url: "https://docs.google.com/presentation/d/1OZNO79sDQ3uI1sypTpXfwVLs0MCQUp-x/edit?usp=sharing&ouid=113376576186080604800&rtpof=true&sd=true", draft: 0 },
             { 
               title: "Syllabus", 
-              url: "/syllabus/", 
+              url: "/syllabus", 
               draft: 0,
               notes: "Please take the syllabus quiz (scroll to the bottom) before the start of class on Thursday."
            },
@@ -114,14 +114,14 @@ export const baseTopics = [
             {
               citation: (
                 <>
-                  <a href="/spring2026/resources/backend-01-fastapi-intro/">Intro to FastAPI</a>
+                  <a href="/spring2026/resources/backend-01-fastapi-intro">Intro to FastAPI</a>
                 </>
               ),
             },
             {
               citation: (
                 <>
-                  <a href="/spring2026/resources/backend-05-testing/">Testing API Endpoints</a>
+                  <a href="/spring2026/resources/backend-05-testing">Testing API Endpoints</a>
                 </>
               ),
             },
@@ -185,7 +185,7 @@ export const baseTopics = [
           assigned: {
             titleShort: "HW2",
             title: "New Model + API + Tests (PR) + 1 Substantive Peer Review",
-            url: "/assignments/hw02-new-model-api/",
+            url: "/assignments/hw02-new-model-api",
             draft: 1,
           },
         },
@@ -227,7 +227,7 @@ export const baseTopics = [
                   Short handout: <em>Designing for Change</em> (technical debt / changeability)
                 </>
               ),
-              url: "/readings/design-for-change/",
+              url: "/readings/design-for-change",
             },
           ],
         },
@@ -247,7 +247,7 @@ export const baseTopics = [
           assigned: {
             titleShort: "HW3",
             title: "Refactor/Extension PR + Tests + 1 Peer Review (Design Focus)",
-            url: "/assignments/hw03-refactor-extension/",
+            url: "/assignments/hw03-refactor-extension",
             draft: 1,
           },
         },
@@ -289,7 +289,7 @@ export const baseTopics = [
                   Short handout: <em>Mapping User Goals to UI State</em>
                 </>
               ),
-              url: "/readings/user-goals-to-ui-state/",
+              url: "/readings/user-goals-to-ui-state",
             },
           ],
         },
@@ -308,7 +308,7 @@ export const baseTopics = [
           assigned: {
             titleShort: "HW4",
             title: "Frontend Integration PR + 1 Peer Review (Frontend Focus)",
-            url: "/assignments/hw04-frontend-integration/",
+            url: "/assignments/hw04-frontend-integration",
             draft: 1,
           },
         },
@@ -365,7 +365,7 @@ export const baseTopics = [
           assigned: {
             titleShort: "HW5",
             title: "Mobile Integration PR + Peer Review + Reflection",
-            url: "/assignments/hw05-mobile-integration/",
+            url: "/assignments/hw05-mobile-integration",
             draft: 1,
           },
         },
@@ -426,7 +426,7 @@ export const baseTopics = [
           assigned: {
             titleShort: "HW6",
             title: "Low-Fi + Hi-Fi Prototypes + UX Implementation",
-            url: "/assignments/hw06-lowfi-prototype/",
+            url: "/assignments/hw06-lowfi-prototype",
             draft: 1,
           },
         },
@@ -457,7 +457,7 @@ export const baseTopics = [
                   Short reading: <em>Agile Overview</em> (forward-looking; prepares for Phase 2)
                 </>
               ),
-              url: "/readings/agile-overview/",
+              url: "/readings/agile-overview",
             },
           ],
         },
@@ -475,7 +475,7 @@ export const baseTopics = [
           assigned: {
             titleShort: "HW7",
             title: "Phase 1 Reflection + Phase 2 Preparation",
-            url: "/assignments/hw07-phase1-reflection/",
+            url: "/assignments/hw07-phase1-reflection",
             draft: 1,
           },
         },

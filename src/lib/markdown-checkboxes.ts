@@ -34,23 +34,23 @@ export function preprocessCheckboxes(markdownContent: string): {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     
-    // Match lines that start with [ ] (with optional leading whitespace) OR list items with [ ]
-    // This handles both: "[ ] content" and "- [ ] content" or "* [ ] content"
-    const checkboxMatch = line.match(/^(\s*)([-*+]|\d+\.)?\s*\[ \](.*)$/);
-    
-    if (checkboxMatch) {
-      const leadingWhitespace = checkboxMatch[1];
-      const content = checkboxMatch[3].trim();
+      // Match lines that start with [ ] (with optional leading whitespace) OR list items with [ ]
+      // This handles both: "[ ] content" and "- [ ] content" or "* [ ] content"
+      const checkboxMatch = line.match(/^(\s*)([-*+]|\d+\.)?\s*\[ \](.*)$/);
       
-      // Replace with a text-based placeholder that won't be processed by markdown
-      // Use inline code format to prevent markdown processing, then we'll extract it after HTML conversion
-      // The placeholder will become <code>MARKDOWN_CHECKBOX_PLACEHOLDER_index_content</code>
-      const escapedContent = content.replace(/`/g, '&#96;');
-      processedLines.push(
-        `${leadingWhitespace}\`${CHECKBOX_PLACEHOLDER_PREFIX}${placeholderIndex++}_${escapedContent}\``
-      );
-    } else {
-      processedLines.push(line);
+      if (checkboxMatch) {
+        const leadingWhitespace = checkboxMatch[1];
+        const content = checkboxMatch[3].trim();
+        
+        // Replace with a text-based placeholder that won't be processed by markdown
+        // Use inline code format to prevent markdown processing, then we'll extract it after HTML conversion
+        // The placeholder will become <code>MARKDOWN_CHECKBOX_PLACEHOLDER_index_content</code>
+        const escapedContent = content.replace(/`/g, '&#96;');
+        processedLines.push(
+          `${leadingWhitespace}\`${CHECKBOX_PLACEHOLDER_PREFIX}${placeholderIndex++}_${escapedContent}\``
+        );
+      } else {
+        processedLines.push(line);
     }
   }
 
@@ -162,7 +162,7 @@ async function createCheckboxHtml(rawContent: string, checkboxId: string): Promi
   // Remove wrapping <p> tags if present (they're often added by remark)
   const contentWithoutPTags = processedContentHtml.replace(/^<p>([\s\S]*?)<\/p>$/, '$1');
   
-  return `<div class="markdown-checkbox-line" style="display: flex; align-items: flex-start; gap: 0.5rem; margin: 0.5em 0;">${checkboxHtml}<span class="markdown-checkbox-content">${contentWithoutPTags || ''}</span></div>`;
+    return `<div class="markdown-checkbox-line" style="display: flex; align-items: flex-start; gap: 0.5rem; margin: 0.5em 0;">${checkboxHtml}<span class="markdown-checkbox-content">${contentWithoutPTags || ''}</span></div>`;
 }
 
 /**
@@ -195,7 +195,7 @@ export async function postprocessCheckboxes(
   for (const placeholder of placeholders) {
     const checkboxId = `checkbox-${postId}-${checkboxIndex++}`;
     const checkboxHtml = await createCheckboxHtml(placeholder.content, checkboxId);
-    processedHtml = processedHtml.replace(placeholder.match, checkboxHtml);
+      processedHtml = processedHtml.replace(placeholder.match, checkboxHtml);
   }
   
   return processedHtml;

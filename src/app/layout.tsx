@@ -57,6 +57,19 @@ export default function RootLayout({
                   }
                 } catch (e) {}
               })();
+              
+              // Handle trailing slash redirects for static export
+              (function() {
+                const path = window.location.pathname;
+                const basePath = '/spring2026';
+                // Remove basePath from path for checking
+                const pathWithoutBase = path.startsWith(basePath) ? path.slice(basePath.length) : path;
+                // If path ends with / and is not just / or /basePath/, redirect to version without trailing slash
+                if (pathWithoutBase.endsWith('/') && pathWithoutBase !== '/') {
+                  const newPath = path.slice(0, -1);
+                  window.location.replace(newPath);
+                }
+              })();
             `,
           }}
         />
