@@ -1,4 +1,5 @@
 {
+  "quizName": "JWT Authentication",
   "questions": [
     {
       "id": "q1",

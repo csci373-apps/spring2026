@@ -1,4 +1,5 @@
 {
+  "quizName": "TypeScript & JS Patterns",
   "questions": [
     {
       "id": "q1",
@@ -158,4 +159,3 @@
     }
   ]
 }
-

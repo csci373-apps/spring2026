@@ -1,4 +1,5 @@
 {
+  "quizName": "React Native Configuration",
   "questions": [
     {
       "id": "q1",
@@ -182,4 +183,3 @@
     }
   ]
 }
-

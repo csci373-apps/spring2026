@@ -1,4 +1,5 @@
 {
+  "quizName": "Intro to React",
   "questions": [
     {
       "id": "q1",
@@ -326,5 +327,3 @@
     }
   ]
 }
-
-

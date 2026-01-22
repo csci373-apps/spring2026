@@ -1,4 +1,5 @@
 {
+  "quizName": "Mantine & Tailwind",
   "questions": [
     {
       "id": "q1",
@@ -242,4 +243,3 @@
     }
   ]
 }
-

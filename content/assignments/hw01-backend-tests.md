@@ -83,12 +83,19 @@ Each student on your team will select a resource You do not need to write tests 
 
 ### 1.2. Write Behavior Contracts
 
-**For each endpoint in your assigned resource, write a behavior contract** (like you did in class). This should include:
+For each endpoint in your assigned resource, **create a GitHub issue** with a behavior contract. This should include:
 
 - **Input:** What the endpoint accepts (parameters, request body)
 - **Behavior:** Step-by-step what happens (validation, database queries, business logic)
 - **Output:** What the endpoint returns (status code, response body)
 - **Errors:** What errors can occur and when
+
+**How to create the issue:**
+1. Go to your repository → **Issues** tab → **New issue**
+2. Title format: `[Resource] Endpoint: [Method] [Path]` (e.g., "Auth: POST /api/auth/login")
+3. Add the behavior contract in the description (see format below)
+4. Assign the issue to yourself
+5. Add labels (e.g., "backend", "testing", "hw1")
 
 **Format:**
 ```markdown
@@ -116,8 +123,7 @@ Each student on your team will select a resource You do not need to write tests 
 - 422: Validation error (invalid input format)
 ```
 
-**Submission:**
-Include behavior contracts in your PR description or in a separate file in the PR.
+**Note:** Create one issue per endpoint. Individual issues make it easier to track progress and link to PRs.
 
 ### 1.3. Write Tests
 
@@ -153,16 +159,18 @@ Include behavior contracts in your PR description or in a separate file in the P
 
 #### Before you create your PR:
 1. Run the linter and formatter (see [cheatsheet](/spring2026/resources/howto-02-cheatsheet#3-backend-commands-python) - scroll down to "Backened Commands")
-1. Ensure that all tests pass
-1. Note your commit history - every commit should be intentional
+2. Ensure that all tests pass
+3. Note your commit history - every commit should be intentional
 
 #### Requirements for the PR
 1. Create PR on GitHub with a reasonable title
-1. The description must include:
+2. The description must include:
     - Which endpoint(s) you're testing (from the assigned list above)
-    - The behavior contract for each endpoint (see section 1.2)
-    - Links to any issues (if you're using the GitHub issue tracker)
-1. Don't forget to assign someone from your team to review the PR
+    - **Links to the related GitHub issues** (e.g., "Closes #45, #46, #47")
+    - Brief summary of what was implemented
+3. Don't forget to assign someone from your team to review the PR
+
+**Note:** When you reference issues in your PR (e.g., "Closes #45"), GitHub will automatically link them and close the issues when the PR is merged. The behavior contracts are already documented in the issues, so you don't need to repeat them in the PR description.
 
 ## Part 2: Peer Review (20 points)
 
@@ -188,8 +196,8 @@ When you're done, copy your reflection and paste it into the <a href="https://fo
 ## Submission Checklist
 
 **Team Requirements:**
-- [ ] All 4 resources have tests (Groups, Courses, Users, Auth) - team grade
-- [ ] Clear contracts for all tested endpoints (in PR descriptions)
+- [ ] All 4 resources have tests (Groups, Courses, Users, Auth)
+- [ ] Clear contracts for all tested endpoints (in GitHub issues)
 - [ ] All tested endpoints have working success case tests
 - [ ] All tested endpoints have at least 2 failure case tests
 - [ ] Clear names, good fixtures, independent, fast, proper async usage

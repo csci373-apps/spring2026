@@ -107,9 +107,6 @@ export const baseTopics = [
               </ul>
             </>
           ),
-          activities: [
-            { title: "Slides", url: "#", draft: 1 },
-          ],
           readings: [
             {
               citation: (

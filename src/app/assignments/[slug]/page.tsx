@@ -55,6 +55,7 @@ export default async function AssignmentPage({ params }: AssignmentPageProps) {
             title={postData.title} 
             excerpt={postData.excerpt}
             type={postData.type}
+            num={postData.num}
           />
           { postData.due_date && <p className="mt-2 text-lg font-bold">Due {formatDate(postData.due_date)} at 11:59pm</p> }
           {isStyleGuideDemo && <StyleGuideStyles />}

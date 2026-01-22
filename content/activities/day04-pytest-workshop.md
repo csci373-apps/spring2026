@@ -60,6 +60,11 @@ A **behavior contract** describes what an endpoint does in plain language. It's 
 - Tests verify the contract stays stable
 - You can refactor internal code without breaking tests
 
+**Other kinds of testing:**
+- **Unit tests**: Test individual functions or classes in isolation (e.g., "Does this function calculate the total correctly?")
+- **Integration tests**: Test how multiple components work together (e.g., "Does the database save data when the service layer calls it?")
+- **Contract-level tests** (what we're doing): Test the API interface from the outside, like a client would (e.g., "When I POST to `/users`, do I get a 201 response with the user data?")
+
 
 ## 2. Understanding Pytest (15 minutes)
 
@@ -80,7 +85,13 @@ docker exec -it tma_backend poetry run pytest
 
 ### 2.2 Test Structure: Arrange-Act-Assert
 
-The **Arrange-Act-Assert** pattern is a simple way to structure tests that makes them clear and easy to understand. First, you set up what you need (Arrange), then you do the thing you're testing (Act), and finally you check that it worked (Assert). This pattern helps you write tests that are easy to read and maintain.
+The **Arrange-Act-Assert** pattern is a simple way to structure tests that makes them clear and easy to understand:
+
+- **Arrange**: Set up what you need (test data, fixtures, etc.)
+- **Act**: Do the thing you're testing (make the API call)
+- **Assert**: Check that it worked (verify the response, status code, etc.)
+
+This pattern helps you write tests that are easy to read and maintain.
 
 ```python
 def test_login_success(client, test_user):
@@ -100,7 +111,7 @@ def test_login_success(client, test_user):
 
 ### 2.3 Understanding Fixtures
 
-**Fixtures** are reusable test setup functions that provide test data or resources. They're functions decorated with `@pytest.fixture` that pytest can automatically call and inject into your test functions. The starter code provides these in `tests/conftest.py`:
+**Fixtures** are reusable test setup functions that provide test data or resources. They're functions decorated with `@pytest.fixture` that pytest can automatically call and inject into your test functions. The starter code provides these in <a href="https://github.com/csci373-apps/tma-starter-app/blob/main/backend/tests/conftest.py" target="_blank">tests/conftest.py</a>:
 
 - `client`: HTTP client for making requests
 - `test_db`: Test database (fresh for each test)
@@ -118,7 +129,7 @@ def test_something(client, auth_headers, admin_user):
 
 ### 2.4 Reading Existing Tests
 
-**Look at `tests/test_users.py`** - it shows the pattern:
+**Look at <a href="https://github.com/csci373-apps/tma-starter-app/blob/main/backend/tests/test_users.py" target="_blank">tests/test_users.py</a>** - it shows the pattern:
 - How to structure tests
 - How to use fixtures
 - How to test success and failure cases
@@ -128,6 +139,7 @@ def test_something(client, auth_headers, admin_user):
 
 
 ## 3. Getting Started on Homework (20 minutes)
+Please open the <a href="/spring2026/assignments/hw01-backend-tests" target="_blank">HW1</a> instructions.
 
 ### 3.1 Review Homework Requirements
 
@@ -167,39 +179,14 @@ async def test_get_all_users_with_auth(client: AsyncClient, auth_headers, admin_
         assert "password" not in user  # Security check
 ```
 
-### 3.4 Your Next Steps
+### 3.4 Project Management Tips
+* <a href="/spring2026/resources/howto-04-github-branch-rules" target="_blank">GitHub Issues & Branch Protection</a>
 
-1. **Read `tests/test_users.py`** - This is your reference
-2. **Pick your resource** (Groups, Courses, Users, or Auth)
-3. **Write behavior contracts** for your endpoints
-4. **Create your test file** (`test_groups.py`, `test_courses.py`, etc.)
-5. **Write tests** following the pattern in `test_users.py`
-6. **Run tests:** `docker exec -it tma_backend poetry run pytest tests/ -v`
+### 4. Next Steps
 
-### 3.5 Questions & Getting Help
+Within your team:
 
-- **Reference:** `tests/test_users.py` shows the exact pattern
-- **Fixtures:** All set up in `tests/conftest.py` - just use them
-- **Ask your team** if you're stuck
-- **Ask the instructor** if you need clarification
-
-
-## Tips & Common Issues
-
-**Don't know how to start?**  
-→ Look at `tests/test_users.py` - copy the structure and adapt it
-
-**Tests fail?**  
-→ Check that you're using the correct fixtures (`client`, `auth_headers`, etc.)
-
-**Don't know what to test?**  
-→ Write a behavior contract first, then test what the contract says
-
-**Authentication issues?**  
-→ Use the `auth_headers` fixture - it's already set up
-
-## Next Steps
-
-- **Start HW1:** Write tests for your assigned resource
-- **Reference:** Use `tests/test_users.py` as your guide
-- **Questions?** Ask your team or instructor
+1. Setup the Branch rules (one person)
+1. Decide who will work on which endpoints
+1. Each team member should create an Issue for each of the endpoints they are responsible for completing.
+1. See if you can implement your first test. 
