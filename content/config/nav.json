@@ -1,0 +1,26 @@
+[
+  {
+    "href": "/",
+    "label": "Home"
+  },
+  {
+    "href": "/",
+    "label": "Schedule"
+  },
+  {
+    "href": "/syllabus",
+    "label": "Syllabus"
+  },
+  {
+    "href": "/assignments",
+    "label": "Assignments"
+  },
+  {
+    "href": "/resources",
+    "label": "Resources"
+  },
+  {
+    "href": "/quizzes",
+    "label": "Quizzes"
+  }
+]

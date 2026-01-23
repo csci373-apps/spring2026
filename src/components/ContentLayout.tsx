@@ -52,7 +52,7 @@ export default function ContentLayout({
   // All pages use full-height scrollable containers
   const hasToc = (isResourcesDetail || isDetailWithToc) && showToc;
   
-  // Restore scroll position - use useLayoutEffect to restore before paint to prevent blinking
+  // Restore scroll position - wait for meeting states to be restored first (sequencing matters)
   useLayoutEffect(() => {
     if (typeof window === 'undefined') return;
     
@@ -66,62 +66,96 @@ export default function ContentLayout({
     
     isRestoringRef.current = true;
     
-    // Try to restore immediately (before paint)
-    const scrollContainer = scrollContainerRef.current || document.getElementById('main-content-scroll');
-    if (scrollContainer) {
-      const scrollHeight = scrollContainer.scrollHeight;
-      const clientHeight = scrollContainer.clientHeight;
-      const maxScroll = scrollHeight - clientHeight;
-      
-      if (maxScroll > 0 && scrollHeight > 200) {
-        const targetPosition = (percentage / 100) * maxScroll;
-        scrollContainer.scrollTop = targetPosition;
-      }
-    }
-    
-    // Also restore after content loads (in case initial attempt was too early)
-    let lastScrollHeight = 0;
-    let stableCount = 0;
-    
-    const restoreScroll = () => {
-      const container = scrollContainerRef.current || document.getElementById('main-content-scroll');
-      if (!container) {
-        requestAnimationFrame(restoreScroll);
-        return;
-      }
-      
-      const scrollHeight = container.scrollHeight;
-      const clientHeight = container.clientHeight;
-      const maxScroll = scrollHeight - clientHeight;
-      
-      if (maxScroll <= 0 || scrollHeight < 200) {
-        requestAnimationFrame(restoreScroll);
-        return;
-      }
-      
-      // Check if scroll height has stabilized
-      if (scrollHeight === lastScrollHeight) {
-        stableCount++;
-        if (stableCount >= 2) {
-          // Content is stable, restore using percentage
+    // Function to restore scroll position
+    const startScrollRestoration = () => {
+      // Try to restore immediately (before paint)
+      const scrollContainer = scrollContainerRef.current || document.getElementById('main-content-scroll');
+      if (scrollContainer) {
+        const scrollHeight = scrollContainer.scrollHeight;
+        const clientHeight = scrollContainer.clientHeight;
+        const maxScroll = scrollHeight - clientHeight;
+        
+        if (maxScroll > 0 && scrollHeight > 200) {
           const targetPosition = (percentage / 100) * maxScroll;
-          container.scrollTop = targetPosition;
-          
-          setTimeout(() => {
-            isRestoringRef.current = false;
-          }, 200);
+          scrollContainer.scrollTop = targetPosition;
+        }
+      }
+      
+      // Also restore after content loads (in case initial attempt was too early)
+      let lastScrollHeight = 0;
+      let stableCount = 0;
+      
+      const restoreScroll = () => {
+        const container = scrollContainerRef.current || document.getElementById('main-content-scroll');
+        if (!container) {
+          requestAnimationFrame(restoreScroll);
           return;
         }
-      } else {
-        lastScrollHeight = scrollHeight;
-        stableCount = 0;
-      }
+        
+        const scrollHeight = container.scrollHeight;
+        const clientHeight = container.clientHeight;
+        const maxScroll = scrollHeight - clientHeight;
+        
+        if (maxScroll <= 0 || scrollHeight < 200) {
+          requestAnimationFrame(restoreScroll);
+          return;
+        }
+        
+        // Check if scroll height has stabilized
+        if (scrollHeight === lastScrollHeight) {
+          stableCount++;
+          if (stableCount >= 2) {
+            // Content is stable, restore using percentage
+            const targetPosition = (percentage / 100) * maxScroll;
+            container.scrollTop = targetPosition;
+            
+            setTimeout(() => {
+              isRestoringRef.current = false;
+            }, 200);
+            return;
+          }
+        } else {
+          lastScrollHeight = scrollHeight;
+          stableCount = 0;
+        }
+        
+        requestAnimationFrame(restoreScroll);
+      };
       
+      // Start checking after initial render
       requestAnimationFrame(restoreScroll);
     };
     
-    // Start checking after initial render
-    requestAnimationFrame(restoreScroll);
+    // Check if we're on the schedule page - if so, wait for meeting states to be restored
+    // Normalize pathname by removing base path if present
+    const normalizedPath = pathname.replace(/^\/spring2026/, '') || '/';
+    const isSchedulePage = normalizedPath === '/';
+    
+    if (isSchedulePage) {
+      // Wait for meeting states to be restored before starting scroll restoration
+      // This ensures proper sequencing: meeting states first, then scroll position
+      const handleMeetingStatesRestored = () => {
+        // Small delay to ensure DOM has updated with new meeting states
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            startScrollRestoration();
+          });
+        });
+      };
+      
+      // Set up listener immediately (useLayoutEffect runs synchronously)
+      window.addEventListener('meeting-states-restored', handleMeetingStatesRestored, { once: true });
+      
+      // Fallback: if event doesn't fire within 200ms, start restoration anyway
+      // This handles cases where ScheduleContent hasn't mounted yet or event fails
+      setTimeout(() => {
+        window.removeEventListener('meeting-states-restored', handleMeetingStatesRestored);
+        startScrollRestoration();
+      }, 200);
+    } else {
+      // Not schedule page, start restoration immediately
+      startScrollRestoration();
+    }
   }, [pathname]);
   
   // Save scroll position on scroll

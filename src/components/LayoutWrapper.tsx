@@ -19,7 +19,8 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
       const isListPage = pathname === '/' || 
                         pathname === '/assignments' || 
                         pathname === '/activities' || 
-                        pathname === '/resources';
+                        pathname === '/resources' ||
+                        pathname === '/quizzes';
       
       // Apply appropriate data attributes and classes
       // All pages using ContentLayout need html overflow hidden for scrollable containers

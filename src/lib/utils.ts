@@ -147,7 +147,7 @@ function findElementById(targetId: string, container: HTMLElement): HTMLElement 
     const escapedId = CSS.escape(targetId);
     const element = container.querySelector(`#${escapedId}`) as HTMLElement;
     if (element) return element;
-  } catch (e) {
+  } catch {
     // If CSS.escape fails or selector is invalid, fall back to getElementById
   }
   

@@ -87,7 +87,8 @@ export default function AssignmentRow({ assignment, showWeek }: AssignmentRowPro
         checklist.toggleChecked(assignment.id);
       }
     }
-  }, []); // Only run on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run on mount to sync localStorage
 
   useEffect(() => {
     setIsDark(document.documentElement.classList.contains('dark'));

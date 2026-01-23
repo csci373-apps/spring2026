@@ -31,9 +31,9 @@ export default async function QuickLinksNav() {
   // Get all resource files from content/resources directory
   const allResources = getAllPosts('resources');
   
-  // Filter resources that have quicklink: 1
+  // Filter resources that have quicklink: 1 and are not drafts
   const quickLinkResources: ResourceData[] = allResources
-    .filter(resource => resource.quicklink === 1)
+    .filter(resource => resource.quicklink === 1 && resource.draft !== 1)
     .map(resource => ({
       id: resource.id,
       title: resource.title,

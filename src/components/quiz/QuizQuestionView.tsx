@@ -24,6 +24,8 @@ export default function QuizQuestionView({
   hasAnswered,
   isDark,
 }: QuizQuestionViewProps) {
+  // selectedAnswers is kept for interface compatibility but currently unused
+  void selectedAnswers;
   const answered = hasAnswered(question.id);
 
   return (

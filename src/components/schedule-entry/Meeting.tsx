@@ -2,7 +2,7 @@
 
 import clsx from 'clsx';
 import Link from 'next/link';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useMeetingChecklist } from './useMeetingChecklist';
 import ResourceQuiz from '@/components/ResourceQuiz';
 import { QuizData } from '@/components/quiz/types';
@@ -39,11 +39,12 @@ export interface MeetingData {
   description?: string | React.ReactElement;
   activities?: Activity[];
   quizzes?: Quiz[];
+  scheduleQuizzes?: Reading[]; // Quizzes from schedule.tsx with citation structure
   readings?: Reading[];
   optionalReadings?: Reading[];
   holiday?: boolean;
   discussionQuestions?: string;
-  assigned?: Assignment | string;
+  assigned?: Assignment | string | (Assignment | string)[];
   due?: Assignment | string | (Assignment | string)[];
 }
 
@@ -71,9 +72,52 @@ export default function Meeting({
   const filteredActivities = meeting.activities?.filter(activity => !(activity.excluded === 1)) || [];
   const hasActivities = filteredActivities.length > 0;
   const hasQuizzes = meeting.quizzes && meeting.quizzes.length > 0;
+  const hasScheduleQuizzes = meeting.scheduleQuizzes && meeting.scheduleQuizzes.length > 0;
+  const hasAnyQuizzes = hasQuizzes || hasScheduleQuizzes;
   const hasReadings = 'readings' in meeting && meeting.readings && meeting.readings.length > 0;
   const hasOptionalReadings = 'optionalReadings' in meeting && meeting.optionalReadings && meeting.optionalReadings.length > 0;
-  const hasMoreDetails = hasActivities || hasQuizzes || hasReadings;
+  const hasAssigned = 'assigned' in meeting && meeting.assigned;
+  const hasDue = 'due' in meeting && meeting.due;
+  // Check if this is a tutorial-only meeting (topic is "Tutorial" and only has assigned, no other details)
+  const isTutorialOnlyMeeting = meeting.topic === 'Tutorial' && 
+    !hasActivities && !hasAnyQuizzes && !hasReadings && !hasOptionalReadings && !hasDue && hasAssigned;
+  const hasMoreDetails = hasActivities || hasAnyQuizzes || hasReadings || hasOptionalReadings || hasAssigned || hasDue;
+  
+  // Extract tutorial info for tutorial-only meetings
+  const getTutorialInfo = () => {
+    if (!isTutorialOnlyMeeting || !meeting.assigned) return null;
+    
+    // Handle array case - take first assignment
+    let assignment: Assignment | null = null;
+    if (Array.isArray(meeting.assigned)) {
+      const firstAssigned = meeting.assigned[0];
+      if (typeof firstAssigned === 'object') {
+        assignment = firstAssigned;
+      } else {
+        return null;
+      }
+    } else if (typeof meeting.assigned === 'string') {
+      return null;
+    } else {
+      assignment = meeting.assigned;
+    }
+    
+    if (!assignment) return null;
+    
+    const isDraft = assignment.draft && assignment.draft === 1;
+    const tutorialMatch = assignment.titleShort?.match(/Tutorial\s+(\d+)/i);
+    const tutorialNum = tutorialMatch ? tutorialMatch[1] : '';
+    const tutorialLabel = tutorialNum ? `Tutorial ${tutorialNum}` : assignment.titleShort || 'Tutorial';
+    const tutorialText = `${tutorialLabel}: ${assignment.title}`;
+    
+    return {
+      text: tutorialText,
+      url: assignment.url,
+      isDraft
+    };
+  };
+  
+  const tutorialInfo = getTutorialInfo();
   const hasDiscussionQuestions = 'discussionQuestions' in meeting && meeting.discussionQuestions;
   const isHoliday = 'holiday' in meeting && meeting.holiday;
 
@@ -271,17 +315,50 @@ export default function Meeting({
     return <QuizItem key={index} quiz={quiz} index={index} onOpen={setOpenQuizSlug} />;
   }
 
+  function renderScheduleQuiz(quiz: Reading, index: number) {
+    const itemKey = `${meetingKey}-schedule-quiz-${index}`;
+    const isChecked = enableChecklist ? checklist.isChecked(itemKey) : false;
+    
+    return (
+      <li key={index} className="mb-0 text-gray-700 dark:text-gray-300">
+        <div className="flex items-start gap-2">
+          <input
+            type="checkbox"
+            aria-label={`Mark quiz as ${isChecked ? 'uncompleted' : 'completed'}`}
+            checked={isChecked}
+            onChange={() => enableChecklist && checklist.toggleChecked(itemKey)}
+            disabled={!enableChecklist}
+            onClick={(e) => e.stopPropagation()}
+            className="mt-1 w-4 h-4 rounded border-2 border-gray-300 dark:border-gray-600 accent-blue-600 dark:accent-blue-400 cursor-pointer flex-shrink-0"
+            style={isDark ? { 
+              backgroundColor: isChecked ? '#3b82f6' : '#1f2937',
+              borderColor: isChecked ? '#3b82f6' : '#4b5563'
+            } : undefined}
+          />
+          <div className={`flex-1 ${isChecked ? '!line-through opacity-60' : ''}`}>
+            {quiz.citation}
+          </div>
+        </div>
+      </li>
+    );
+  }
+
   function renderQuizzes() {
-    if (hasQuizzes) {
+    if (hasAnyQuizzes) {
       return (
         <div className="mb-6">
             <strong className="text-gray-700 dark:text-gray-300" style={isDark ? { color: '#d1d5db' } : undefined}>Quizzes</strong>
             <ul className="!list-none !pl-4">
-                {meeting.quizzes!.map((quiz: Quiz, index: number) => (
+                {/* Render regular quizzes (with quizData) */}
+                {hasQuizzes && meeting.quizzes!.map((quiz: Quiz, index: number) => (
                     <li key={index} className="text-gray-700 dark:text-gray-300">
                         {renderQuiz(quiz, index)}
                     </li>
                 ))}
+                {/* Render schedule quizzes (with citation) */}
+                {hasScheduleQuizzes && meeting.scheduleQuizzes!.map((quiz: Reading, index: number) => 
+                    renderScheduleQuiz(quiz, index)
+                )}
             </ul>
         </div>
       )
@@ -352,7 +429,9 @@ export default function Meeting({
     }
     
     const isDraft = assignment.draft && assignment.draft === 1;
-    const showCheckbox = type === 'due' && !isDraft; // Show checkbox for non-draft "due" items only
+    const isTutorial = assignment.titleShort?.startsWith('Tutorial') || false;
+    const showCheckbox = type === 'due' && !isDraft && !isTutorial; // Show checkbox for non-draft "due" items only, but not for tutorials
+    
     // Extract assignment ID from URL (e.g., "/assignments/hw01/" -> "hw01")
     const assignmentId = assignment.url?.match(/\/assignments\/([^\/]+)\/?/)?.[1];
     // Use assignment ID for syncing with assignments page, fallback to meeting key for manual entries
@@ -388,6 +467,46 @@ export default function Meeting({
       }
     };
     
+    // Format tutorial display: "Tutorial X: Name of Tutorial"
+    let displayText: React.ReactNode;
+    if (isTutorial) {
+      // Extract tutorial number from titleShort (e.g., "Tutorial 1" -> "1")
+      const tutorialMatch = assignment.titleShort?.match(/Tutorial\s+(\d+)/i);
+      const tutorialNum = tutorialMatch ? tutorialMatch[1] : '';
+      const tutorialLabel = tutorialNum ? `Tutorial ${tutorialNum}` : assignment.titleShort || 'Tutorial';
+      
+      if (isDraft) {
+        displayText = <>{tutorialLabel}: {assignment.title}</>;
+      } else {
+        displayText = (
+          <Link 
+            href={assignment.url || '#'} 
+            className="text-blue-600 dark:text-blue-400 hover:underline" 
+            onClick={(e) => e.stopPropagation()}
+          >
+            {tutorialLabel}: {assignment.title}
+          </Link>
+        );
+      }
+    } else {
+      // Regular assignment formatting
+      if (isDraft) {
+        displayText = <>{assignment.titleShort}: {assignment.title}</>;
+      } else {
+        displayText = (
+          <>
+            <Link 
+              href={assignment.url || '#'} 
+              className="text-blue-600 dark:text-blue-400 hover:underline" 
+              onClick={(e) => e.stopPropagation()}
+            >
+              {assignment.titleShort}
+            </Link>: {assignment.title}
+          </>
+        );
+      }
+    }
+    
     return (
       <div className="flex items-start gap-2">
         {showCheckbox && (
@@ -406,11 +525,7 @@ export default function Meeting({
           />
         )}
         <div className={`flex-1 ${isChecked ? '!line-through opacity-60' : ''}`}>
-          {isDraft ? (
-            <>{assignment.titleShort}: {assignment.title}</>
-          ) : (
-            <><Link href={assignment.url || '#'} className="text-blue-600 dark:text-blue-400 hover:underline" onClick={(e) => e.stopPropagation()}>{assignment.titleShort}</Link>: {assignment.title}</>
-          )}
+          {displayText}
         </div>
       </div>
     );
@@ -430,7 +545,7 @@ export default function Meeting({
             </svg>
           </div>
         )}
-        {hasMoreDetails && (
+        {hasMoreDetails && !isTutorialOnlyMeeting && (
           <button 
             onClick={handleToggleButtonClick}
             aria-label="Toggle details"
@@ -494,31 +609,52 @@ export default function Meeting({
             'flex-col': showDetails,
             'md:flex-row': showDetails
         })}>
-            <span className={clsx("w-[100px] flex-shrink-0 transition-all duration-300 ease-in-out cursor-pointer", {
-                'font-bold': true
-            })} onClick={toggleDetails}>{meeting.date}</span>
+            <span className={clsx("w-[100px] flex-shrink-0 transition-all duration-300 ease-in-out", {
+                'font-bold': true,
+                'cursor-pointer': !isTutorialOnlyMeeting
+            })} onClick={isTutorialOnlyMeeting ? undefined : toggleDetails}>{meeting.date}</span>
             <div className="w-full">
                 <p className={clsx({
-                    '!mb-3': !showDetails,
-                    '!mb-0': showDetails,
-                    'cursor-pointer': 'pointer',
-                  })} onClick={toggleDetails}><span className={clsx("transition-all duration-300 ease-in-out", {
-                    'font-bold': showDetails,
-                    'text-black dark:text-white': showDetails,
-                    // 'uppercase': showDetails
-                })}>{meeting.topic}</span></p>
+                    '!mb-3': !showDetails && !isTutorialOnlyMeeting,
+                    '!mb-0': showDetails || isTutorialOnlyMeeting,
+                    'cursor-pointer': !isTutorialOnlyMeeting && 'pointer',
+                  })} onClick={isTutorialOnlyMeeting ? undefined : toggleDetails}>
+                  {isTutorialOnlyMeeting && tutorialInfo ? (
+                    tutorialInfo.isDraft ? (
+                      <span className="transition-all duration-300 ease-in-out text-black dark:text-white">
+                        {tutorialInfo.text}
+                      </span>
+                    ) : (
+                      <Link 
+                        href={tutorialInfo.url || '#'} 
+                        className="transition-all duration-300 ease-in-out text-blue-600 dark:text-blue-400 hover:underline"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {tutorialInfo.text}
+                      </Link>
+                    )
+                  ) : (
+                    <span className={clsx("transition-all duration-300 ease-in-out", {
+                      'font-bold': showDetails || isTutorialOnlyMeeting,
+                      'text-black dark:text-white': showDetails || isTutorialOnlyMeeting,
+                      // 'uppercase': showDetails
+                    })}>{meeting.topic}</span>
+                  )}
+                </p>
                 <div 
                   className={clsx("overflow-hidden transition-all duration-300 ease-in-out", {
                       'text-gray-100 dark:text-gray-300': isHoliday,
-                      'max-h-0 opacity-0': !showDetails,
-                      'max-h-[1000px] opacity-100': showDetails
+                      'max-h-0 opacity-0': !showDetails && !isTutorialOnlyMeeting,
+                      'max-h-[1000px] opacity-100': showDetails || isTutorialOnlyMeeting
                   })}
                   style={isDark && isHoliday ? { color: '#d1d5db' } : undefined}
                 >
                     { meeting.description && (
-                        typeof meeting.description === 'string' 
-                          ? <p>{meeting.description}</p>
-                          : meeting.description
+                        <div className="mb-4">
+                          {typeof meeting.description === 'string' 
+                            ? <p>{meeting.description}</p>
+                            : meeting.description}
+                        </div>
                     )}
                     {renderActivities()}
                     {hasReadings ? renderReadings({title: 'Required Readings', readings: meeting.readings || [], isOptional: false}) : ``}
@@ -526,10 +662,20 @@ export default function Meeting({
                     {renderQuizzes()}
                     {renderDiscussionQuestions()}
                     {
-                      meeting.assigned ? ( 
+                      meeting.assigned && !isTutorialOnlyMeeting ? ( 
                         <div className="mb-4">
                           <strong className="text-gray-700 dark:text-gray-300">Assigned: </strong>
-                          {renderAssignment(meeting.assigned, 'assigned')}
+                          {Array.isArray(meeting.assigned) ? (
+                            <ul className="!list-none !pl-4">
+                              {meeting.assigned.map((assignedItem, index) => (
+                                <li key={index} className="text-gray-700 dark:text-gray-300">
+                                  {renderAssignment(assignedItem, 'assigned', index)}
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            renderAssignment(meeting.assigned, 'assigned')
+                          )}
                         </div>
                         ) : ''
                     }

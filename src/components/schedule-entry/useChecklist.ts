@@ -47,7 +47,8 @@ export function useChecklist(
     });
     
     setCheckedItems(savedCheckedItems);
-  }, [itemIdsKey, enableLocalStorage, storagePrefix]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [itemIdsKey, enableLocalStorage, storagePrefix]); // itemIds is tracked via itemIdsKey
 
   function toggleChecked(itemId: string) {
     const newChecked = !checkedItems[itemId];

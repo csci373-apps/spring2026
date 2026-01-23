@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import AssignmentRow from './AssignmentRow';
-import { formatDate, getWeek, triggerConfetti } from '@/lib/utils';
+import { getWeek, triggerConfetti } from '@/lib/utils';
 
 interface AssignmentData {
   id: string;
@@ -25,7 +25,6 @@ interface AssignmentsTableProps {
 }
 
 export default function AssignmentsTable({ assignments }: AssignmentsTableProps) {
-  const [allChecked, setAllChecked] = useState(false);
   const previousAllCheckedRef = useRef(false);
   const isInitialLoad = useRef(true);
 
@@ -55,7 +54,6 @@ export default function AssignmentsTable({ assignments }: AssignmentsTableProps)
       }
 
       previousAllCheckedRef.current = allCheckedStatus;
-      setAllChecked(allCheckedStatus);
     };
 
     // Check on mount (but don't trigger confetti on initial load)
@@ -79,7 +77,7 @@ export default function AssignmentsTable({ assignments }: AssignmentsTableProps)
       window.removeEventListener('storage', handleStorageChange);
       clearInterval(interval);
     };
-  }, [nonDraftIds.join(',')]);
+  }, [nonDraftIds]);
 
   return (
     <table className="table-fixed w-full">

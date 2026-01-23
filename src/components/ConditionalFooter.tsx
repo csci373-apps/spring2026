@@ -8,14 +8,19 @@ export default function ConditionalFooter() {
   
   // Hide footer on pages that use ContentLayout (footer is included in ContentLayout)
   // These pages use the 'content-layout-page' class
-  const usesContentLayout = pathname === '/' || 
-                            pathname === '/syllabus' ||
-                            pathname === '/assignments' ||
-                            pathname.startsWith('/assignments/') ||
-                            pathname === '/activities' ||
-                            pathname.startsWith('/activities/') ||
-                            pathname === '/resources' ||
-                            pathname.startsWith('/resources/');
+  // Normalize pathname by removing base path if present
+  const normalizedPath = pathname.replace(/^\/spring2026/, '') || '/';
+  
+  const usesContentLayout = normalizedPath === '/' || 
+                            normalizedPath === '/syllabus' ||
+                            normalizedPath === '/assignments' ||
+                            normalizedPath.startsWith('/assignments/') ||
+                            normalizedPath === '/activities' ||
+                            normalizedPath.startsWith('/activities/') ||
+                            normalizedPath === '/resources' ||
+                            normalizedPath.startsWith('/resources/') ||
+                            normalizedPath === '/quizzes' ||
+                            normalizedPath.startsWith('/quizzes/');
   
   if (usesContentLayout) {
     return null;

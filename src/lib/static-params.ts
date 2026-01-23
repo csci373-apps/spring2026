@@ -22,15 +22,17 @@ export function isPlaceholderSlug(slug: string, contentType: 'activities' | 'ass
 }
 
 /**
- * Validates if a post should be rendered (not draft, not excluded).
+ * Validates if a post should be rendered (not excluded).
+ * Note: Drafts are allowed to be rendered (accessible via direct URL),
+ * but should be filtered out from index pages.
  */
 export function shouldRenderPost(postData: PostData): boolean {
-  return postData.draft !== 1 && !postData.excluded;
+  return !postData.excluded;
 }
 
 /**
  * Generates static params for a content type.
- * Includes ALL posts (including drafts) so they can be pre-generated and return 404 gracefully.
+ * Includes ALL posts (including drafts) so they can be pre-generated.
  * Returns a placeholder slug if no posts exist to satisfy Next.js requirements.
  */
 export async function generateStaticParamsForContentType(
@@ -72,7 +74,9 @@ export async function generateStaticParamsForContentType(
 
 /**
  * Validates a slug and post data, returning true if the post should be rendered.
- * Handles placeholder slugs and draft/excluded posts.
+ * Handles placeholder slugs and excluded posts.
+ * Note: Drafts are allowed to be rendered (accessible via direct URL),
+ * but should be filtered out from index pages.
  */
 export function validatePostForRender(
   slug: string,
@@ -84,6 +88,6 @@ export function validatePostForRender(
     return false;
   }
   
-  // Don't render draft or excluded posts
+  // Only exclude excluded posts (drafts are allowed)
   return shouldRenderPost(postData);
 }

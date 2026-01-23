@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useLayoutEffect } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { useDarkMode } from '@/hooks/useDarkMode';
 import { triggerConfetti } from '@/lib/utils';
 import { ResourceQuizProps } from './quiz/types';
@@ -12,6 +12,8 @@ import QuizSummary from './quiz/QuizSummary';
 import QuizNavigation from './quiz/QuizNavigation';
 
 export default function ResourceQuiz({ quizData, resourceSlug, variant = 'desktop', autoOpen = false, onClose: externalOnClose }: ResourceQuizProps & { autoOpen?: boolean; onClose?: () => void }) {
+  // variant is kept for potential future use but currently unused
+  void variant;
   const [isQuizDrawerOpen, setIsQuizDrawerOpen] = useState<boolean>(autoOpen);
   const [isDrawerAnimating, setIsDrawerAnimating] = useState<boolean>(false);
   const [isDrawerClosing, setIsDrawerClosing] = useState<boolean>(false);
@@ -58,6 +60,14 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
     getIncorrectQuestions,
   } = useQuizState(quizData, resourceSlug);
 
+  // Use a ref to track the current circleWindowStart value to avoid infinite loops
+  const circleWindowStartRef = useRef(circleWindowStart);
+  
+  // Update ref when circleWindowStart changes (from external updates)
+  useEffect(() => {
+    circleWindowStartRef.current = circleWindowStart;
+  }, [circleWindowStart]);
+
   // Use circle window hook - it manages its own state internally
   // We'll use the hook's return value directly instead of managing separate state
   // For now, keep using the state from useQuizState but update it
@@ -68,26 +78,34 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
     const totalQuestions = shuffledQuestions.length;
     
     if (totalQuestions <= maxVisible) {
-      setCircleWindowStart(0);
+      if (circleWindowStartRef.current !== 0) {
+        setCircleWindowStart(0);
+      }
       return;
     }
     
-    const windowEnd = circleWindowStart + maxVisible;
-    const relativePosition = currentQuestionIndex - circleWindowStart;
+    // Use ref value to avoid dependency on circleWindowStart
+    const currentWindowStart = circleWindowStartRef.current;
+    const windowEnd = currentWindowStart + maxVisible;
+    const relativePosition = currentQuestionIndex - currentWindowStart;
     
-    if (currentQuestionIndex < circleWindowStart) {
-      setCircleWindowStart(Math.max(0, currentQuestionIndex));
+    let newStart: number | null = null;
+    
+    if (currentQuestionIndex < currentWindowStart) {
+      newStart = Math.max(0, currentQuestionIndex);
     } else if (currentQuestionIndex >= windowEnd) {
-      const newStart = Math.min(totalQuestions - maxVisible, currentQuestionIndex - maxVisible + 1);
-      setCircleWindowStart(newStart);
-    } else if (relativePosition === 0 && circleWindowStart > 0 && currentQuestionIndex > 0) {
-      const newStart = Math.max(0, currentQuestionIndex - maxVisible + 1);
-      setCircleWindowStart(newStart);
+      newStart = Math.min(totalQuestions - maxVisible, currentQuestionIndex - maxVisible + 1);
+    } else if (relativePosition === 0 && currentWindowStart > 0 && currentQuestionIndex > 0) {
+      newStart = Math.max(0, currentQuestionIndex - maxVisible + 1);
     } else if (relativePosition === maxVisible - 1 && windowEnd < totalQuestions && currentQuestionIndex < totalQuestions - 1) {
-      const newStart = Math.min(totalQuestions - maxVisible, currentQuestionIndex);
+      newStart = Math.min(totalQuestions - maxVisible, currentQuestionIndex);
+    }
+    
+    // Only update if we calculated a new value and it's different from current
+    if (newStart !== null && newStart !== currentWindowStart) {
       setCircleWindowStart(newStart);
     }
-  }, [currentQuestionIndex, shuffledQuestions.length, isMobile, circleWindowStart, setCircleWindowStart]);
+  }, [currentQuestionIndex, shuffledQuestions.length, isMobile, setCircleWindowStart]);
 
   // Sync with localStorage when resourceSlug changes (in case user navigates to different quiz)
   useLayoutEffect(() => {

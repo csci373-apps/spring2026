@@ -39,7 +39,7 @@ interface MeetingData {
   optionalReadings?: Reading[];
   holiday?: boolean;
   discussionQuestions?: string;
-  assigned?: Assignment | string;
+  assigned?: Assignment | string | (Assignment | string)[];
   due?: Assignment | string | (Assignment | string)[];
 }
 
@@ -326,7 +326,8 @@ export function useMeetingChecklist(
     }
     
     prevAllCheckedRef.current = isAllChecked;
-  }, [checkedItems, isHydrated, enableConfetti]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [checkedItems, isHydrated, enableConfetti]); // areAllItemsCheckedWithState is a stable function
 
 
   function areAllItemsCheckedWithState(items: Record<string, boolean>): boolean {

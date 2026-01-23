@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useLayoutEffect } from 'react';
 import PageHeader from '@/components/PageHeaderExpandable';
 import Meeting from '@/components/schedule-entry/Meeting';
 
@@ -11,27 +11,36 @@ interface ScheduleContentProps {
 }
 
 export default function ScheduleContent({ topics }: ScheduleContentProps) {
+  // Start with empty state to match server render (prevents hydration mismatch)
   const [meetingStates, setMeetingStates] = useState<Record<string, boolean>>({});
-  const [isDark, setIsDark] = useState(false);
-
-  // Load saved states from localStorage on mount
-  function loadSavedStates() {
+  
+  // Load saved states from localStorage synchronously before paint
+  // This ensures meeting states are restored BEFORE scroll position restoration
+  // We use useLayoutEffect to run before paint, but only on client
+  useLayoutEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const savedStates: Record<string, boolean> = {};
     topics.forEach(topic => {
       topic.meetings.forEach((meeting) => {
         const meetingKey = `meeting-${meeting.date}-${meeting.topic.replace(/\s+/g, '-').toLowerCase()}`;
-        if (typeof window !== 'undefined') {
-          const savedState = localStorage.getItem(meetingKey);
-          if (savedState !== null) {
-            savedStates[meetingKey] = JSON.parse(savedState);
-          }
+        const savedState = localStorage.getItem(meetingKey);
+        if (savedState !== null) {
+          savedStates[meetingKey] = JSON.parse(savedState);
         }
       });
     });
     setMeetingStates(savedStates);
-  }
-
-  useEffect(loadSavedStates, [topics]);
+    
+    // Signal that meeting states are ready for scroll restoration
+    // Dispatch a custom event that ContentLayout can listen for
+    // Use a small delay to ensure state update has been processed
+    requestAnimationFrame(() => {
+      window.dispatchEvent(new CustomEvent('meeting-states-restored'));
+    });
+  }, [topics]);
+  
+  const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
     // Check if dark mode is active
@@ -57,7 +66,7 @@ export default function ScheduleContent({ topics }: ScheduleContentProps) {
   };
 
   return (
-    <div className="space-y-6 schedule-content">
+    <div className="space-y-6 schedule-content" suppressHydrationWarning>
       <PageHeader title="Course Schedule" 
         excerpt="This schedule will definitely change over the course of the semester. Please continue to check back for updates." setMeetingStates={setMeetingStates} topics={topics} />
       {topics.map((topic) => (

@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useDarkMode } from "@/hooks/useDarkMode";
-import { getCourseConfig } from "@/lib/config";
+import { getCourseConfig, getNavConfig } from "@/lib/config";
 
 export default function Navigation() {
   const pathname = usePathname();
@@ -14,18 +14,9 @@ export default function Navigation() {
   const isDark = useDarkMode();
   const [isToggleHovered, setIsToggleHovered] = useState(false);
   const courseConfig = getCourseConfig();
+  const navItems = getNavConfig();
   
   const normalizePath = (path: string) => path.replace(/\/$/, "");
-
-  const navItems = [
-    { href: "/", label: "Home" },
-    { href: "/", label: "Schedule" },
-    { href: "/syllabus", label: "Syllabus" },
-    { href: "/assignments", label: "Assignments" },
-    // { href: "/activities", label: "Activities" },
-    { href: "/resources", label: "Resources" },
-    { href: "/quizzes", label: "Quizzes" },
-  ];
 
   // Only run on client side to prevent hydration mismatch
   useEffect(() => {
@@ -87,17 +78,36 @@ export default function Navigation() {
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-6">
           {navItems.slice(1).map((item) => {
-            const isActive = mounted && normalizePath(pathname) === normalizePath(item.href);
+            const isActive = mounted && !item.external && normalizePath(pathname) === normalizePath(item.href);
+            const linkClassName = `text-sm transition-colors !no-underline !border-0 ${
+              isActive
+                ? "text-gray-500 dark:!text-gray-300 font-bold"
+                : "text-gray-500 dark:!text-gray-100 hover:!text-gray-400 dark:hover:!text-white"
+            }`;
+            const linkStyle = isDark ? (isActive ? { color: '#d1d5db' } : { color: '#f3f4f6' }) : (isActive ? { color: '#6b7280' } : { color: '#6b7280' });
+            
+            if (item.external) {
+              return (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={linkClassName}
+                  style={linkStyle}
+                  suppressHydrationWarning
+                >
+                  {item.label}
+                </a>
+              );
+            }
+            
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`text-sm transition-colors !no-underline !border-0 ${
-                  isActive
-                    ? "text-gray-500 dark:!text-gray-300 font-bold"
-                    : "text-gray-500 dark:!text-gray-100 hover:!text-gray-400 dark:hover:!text-white"
-                }`}
-                style={isDark ? (isActive ? { color: '#d1d5db' } : { color: '#f3f4f6' }) : (isActive ? { color: '#6b7280' } : { color: '#6b7280' })}
+                className={linkClassName}
+                style={linkStyle}
                 suppressHydrationWarning
               >
                 {item.label}
@@ -236,18 +246,38 @@ export default function Navigation() {
           } border-gray-200 dark:border-gray-800`}
         >
           {navItems.slice(1).map((item) => {
-            const isActive = mounted && normalizePath(pathname) === normalizePath(item.href);
+            const isActive = mounted && !item.external && normalizePath(pathname) === normalizePath(item.href);
+            const linkClassName = `block px-6 py-4 text-sm hover:bg-gray-200 dark:hover:bg-gray-900 transition-colors !no-underline !border-0 ${
+              isActive
+                ? "text-gray-500 dark:!text-gray-300 font-bold bg-gray-50 dark:bg-gray-900"
+                : "text-gray-500 dark:!text-gray-100 hover:!text-gray-400 dark:hover:!text-white"
+            }`;
+            const linkStyle = isDark ? (isActive ? { color: '#d1d5db', backgroundColor: '#111827' } : { color: '#f3f4f6' }) : (isActive ? { color: '#6b7280' } : { color: '#6b7280' });
+            
+            if (item.external) {
+              return (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={closeMenu}
+                  className={linkClassName}
+                  style={linkStyle}
+                  suppressHydrationWarning
+                >
+                  {item.label}
+                </a>
+              );
+            }
+            
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 onClick={closeMenu}
-                className={`block px-6 py-4 text-sm hover:bg-gray-200 dark:hover:bg-gray-900 transition-colors !no-underline !border-0 ${
-                  isActive
-                    ? "text-gray-500 dark:!text-gray-300 font-bold bg-gray-50 dark:bg-gray-900"
-                    : "text-gray-500 dark:!text-gray-100 hover:!text-gray-400 dark:hover:!text-white"
-                }`}
-                style={isDark ? (isActive ? { color: '#d1d5db', backgroundColor: '#111827' } : { color: '#f3f4f6' }) : (isActive ? { color: '#6b7280' } : { color: '#6b7280' })}
+                className={linkClassName}
+                style={linkStyle}
                 suppressHydrationWarning
               >
                 {item.label}

@@ -45,6 +45,7 @@ export default async function AssignmentsPage() {
 
   // Combine markdown assignments with external assignments
   let assignments: AssignmentData[] = [...markdownAssignments, ...externalAssignments];
+  // Filter out excluded assignments (drafts are shown but not linkable)
   assignments = assignments.filter(assignment => !assignment.excluded);
 
   // Sort assignments

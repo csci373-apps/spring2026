@@ -16,7 +16,7 @@ export default function PageHeader({ title, excerpt, type, group, num }: PageHea
       <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
         {type && type === 'activity' ? (<><Link href="/" className={className}>Schedule</Link> &gt; </>) : ''}
         {type && ['homework', 'lab', 'assignment'].includes(type) ? (<><Link href="/assignments" className={className}>Assignments</Link> &gt; </>) : ''}
-        {num ? `HW${num}: ` : ''}
+        {num ? (type === 'tutorial' ? `Tutorial ${num}: ` : `HW${num}: `) : ''}
         {group ? `${group}: ` : ''} {title}
       </h1>
       {excerpt && (

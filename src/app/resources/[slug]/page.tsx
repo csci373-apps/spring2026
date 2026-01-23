@@ -16,7 +16,7 @@ interface PageProps {
 }
 
 // Tell Next.js to only generate routes that are in generateStaticParams()
-// We include ALL posts (including drafts) in generateStaticParams() so they can return 404 gracefully
+// We include ALL posts (including drafts) in generateStaticParams() so they can be pre-generated
 export const dynamicParams = false;
 
 export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
@@ -29,7 +29,8 @@ export default async function ResourcePage({ params }: PageProps) {
   try {
     const postData = await getPostData(slug, 'resources');
     
-    // Validate post (handles placeholder slugs and draft/excluded posts)
+    // Validate post (handles placeholder slugs and excluded posts)
+    // Note: Drafts are allowed to be rendered (accessible via direct URL)
     if (!validatePostForRender(slug, postData, 'resources')) {
       notFound();
     }

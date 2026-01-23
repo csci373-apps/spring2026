@@ -28,7 +28,8 @@ export default async function AssignmentPage({ params }: AssignmentPageProps) {
     const { slug } = await params;
     const postData = await getPostData(slug, 'assignments');
     
-    // Validate post (handles placeholder slugs and draft/excluded posts)
+    // Validate post (handles placeholder slugs and excluded posts)
+    // Note: Drafts are allowed to be rendered (accessible via direct URL)
     if (!validatePostForRender(slug, postData, 'assignments')) {
       notFound();
     }
@@ -69,7 +70,7 @@ export default async function AssignmentPage({ params }: AssignmentPageProps) {
 }
 
 // Tell Next.js to only generate routes that are in generateStaticParams()
-// We include ALL posts (including drafts) in generateStaticParams() so they can return 404 gracefully
+// We include ALL posts (including drafts) in generateStaticParams() so they can be pre-generated
 export const dynamicParams = false;
 
 // Generate static params for all assignments
