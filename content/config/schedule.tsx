@@ -150,21 +150,26 @@ export const baseTopics = [
           ],
           readings: [
             {
-              citation: (
-                <>
-                  Martin, R. C. (2009). <em>Clean Code</em>. (Ch. 2–3 -- selected)
-                </>
-              ),
-              url: "https://www.oreilly.com/library/view/clean-code/9780136083238/",
-            },
-            {
-              citation: (
-                <>
-                  SQLAlchemy Documentation. <em>Relationships</em> (selected)
-                </>
-              ),
-              url: "https://docs.sqlalchemy.org/en/20/orm/basic_relationships.html",
-            },
+                citation: (
+                  <>
+                    <a href="/spring2026/resources//backend-02-sqlalchemy">SQLAlchemy Models and Queries</a>
+                  </>
+                ),
+              },
+              {
+                citation: (
+                  <>
+                    <a href="/spring2026/resources/backend-03-dependencies">Decorators and Dependency Injection</a>
+                  </>
+                ),
+              },
+              {
+                citation: (
+                  <>
+                    <a href="/spring2026/resources/backend-04-jwt-auth">JWTs and Authentication</a>
+                  </>
+                ),
+              },
           ],
         },
         {

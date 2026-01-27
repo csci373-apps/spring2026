@@ -94,7 +94,7 @@ ol {
 }
 
 ul {
-  @apply list-disc pl-12 mb-4;
+  @apply list-disc pl-6 mb-4;
   color: var(--foreground);
 }
 

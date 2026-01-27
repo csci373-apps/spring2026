@@ -142,6 +142,7 @@ export default function QuizzesListClient({ quizzes }: QuizzesListClientProps) {
           <tr>
             <th className="w-[50px]"></th>
             <th className="md:w-[300px]">Quiz</th>
+            <th className="hidden md:table-cell md:w-[120px]">Assigned</th>
             <th className="hidden md:table-cell md:w-[100px]">Questions</th>
             <th className="hidden md:table-cell md:w-[150px]">Score</th>
             <th className="md:w-[120px]">Action</th>
@@ -181,6 +182,20 @@ export default function QuizzesListClient({ quizzes }: QuizzesListClientProps) {
                   <div className="font-medium text-gray-900 dark:text-gray-100">
                     {quiz.quizName}
                   </div>
+                </td>
+                <td className="py-3 px-4 hidden md:table-cell text-sm text-gray-600 dark:text-gray-400">
+                  {quiz.start_date ? (() => {
+                    // Parse date string (YYYY-MM-DD) to avoid timezone issues
+                    const [year, month, day] = quiz.start_date.split('-').map(Number);
+                    const date = new Date(year, month - 1, day); // month is 0-indexed
+                    return date.toLocaleDateString('en-US', { 
+                      weekday: 'short', 
+                      month: 'short', 
+                      day: 'numeric' 
+                    });
+                  })() : (
+                    <span className="text-gray-400 dark:text-gray-500">—</span>
+                  )}
                 </td>
                 <td className="py-3 px-4 hidden md:table-cell text-sm text-gray-600 dark:text-gray-400">
                   {quiz.quizData ? (

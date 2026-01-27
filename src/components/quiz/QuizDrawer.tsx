@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 
 interface QuizDrawerProps {
   isOpen: boolean;
@@ -19,20 +19,39 @@ export default function QuizDrawer({
   isDark,
   children,
 }: QuizDrawerProps) {
+  // Disable scrolling when drawer is open (on both html and body)
+  useEffect(() => {
+    if (isOpen || isAnimating || isClosing) {
+      // Save the current overflow values
+      const originalBodyOverflow = document.body.style.overflow;
+      const originalHtmlOverflow = document.documentElement.style.overflow;
+      // Disable scrolling on both html and body
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+      
+      return () => {
+        // Restore original overflow when drawer closes
+        document.body.style.overflow = originalBodyOverflow;
+        document.documentElement.style.overflow = originalHtmlOverflow;
+      };
+    }
+  }, [isOpen, isAnimating, isClosing]);
+
   if (!isOpen) return null;
 
   return (
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black opacity-70 z-400"
+        className="fixed inset-0 bg-black opacity-70"
+        style={{ zIndex: 9998 }}
         onClick={onClose}
       />
       
       {/* Quiz Drawer */}
       <div
-        className="fixed inset-0 z-410"
-        style={{ pointerEvents: 'none' }}
+        className="fixed inset-0"
+        style={{ zIndex: 9999, pointerEvents: 'none' }}
       >
         <div
           className={`fixed bottom-0 left-0 right-0 w-full h-[80%] bg-white dark:bg-gray-900 shadow-2xl flex flex-col transition-transform duration-300 ease-out ${

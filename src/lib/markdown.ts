@@ -215,6 +215,7 @@ export interface QuizQuestion {
 export interface QuizData {
   quizName?: string;
   start_date?: string;
+  draft?: number;
   questions: QuizQuestion[];
 }
 
@@ -222,6 +223,23 @@ export interface QuizMetadata {
   slug: string;
   quizName: string;
   start_date?: string;
+  draft?: number;
+}
+
+/**
+ * Load a template file for a question if it exists
+ */
+function loadQuestionTemplate(quizSlug: string, questionId: string, templateFileName: string): string | undefined {
+  const templatePath = path.join(quizzesDirectory, quizSlug, questionId, templateFileName);
+  if (fs.existsSync(templatePath)) {
+    try {
+      return fs.readFileSync(templatePath, 'utf8');
+    } catch (error) {
+      console.error(`Error reading template file ${templatePath}:`, error);
+      return undefined;
+    }
+  }
+  return undefined;
 }
 
 export function getQuizData(slug: string): QuizData | null {
@@ -234,6 +252,51 @@ export function getQuizData(slug: string): QuizData | null {
   try {
     const fileContents = fs.readFileSync(quizPath, 'utf8');
     const quizData: QuizData = JSON.parse(fileContents);
+    
+    // Load template files from question directories if they exist
+    if (quizData.questions && Array.isArray(quizData.questions)) {
+      quizData.questions = quizData.questions.map((question: QuizQuestion) => {
+        if (question.id && 'type' in question && question.type === 'javascript-dom') {
+          const questionDir = path.join(quizzesDirectory, slug, question.id);
+          
+          // Only load from files if the directory exists
+          if (fs.existsSync(questionDir)) {
+            // Load template files (override JSON values if files exist)
+            const htmlTemplate = loadQuestionTemplate(slug, question.id, 'html.html');
+            const cssTemplate = loadQuestionTemplate(slug, question.id, 'css.css');
+            const jsTemplate = loadQuestionTemplate(slug, question.id, 'js.js');
+            // Load target files from answers directory
+            const targetHtml = loadQuestionTemplate(slug, question.id, 'answers/html.html');
+            const targetCss = loadQuestionTemplate(slug, question.id, 'answers/css.css');
+            const targetJs = loadQuestionTemplate(slug, question.id, 'answers/js.js');
+            
+            // Override with file contents if they exist
+            // Type assertion needed because we know this is a javascript-dom question
+            const jsQuestion = question as QuizQuestion & { 
+              htmlTemplate?: string; 
+              cssTemplate?: string; 
+              codeTemplate?: string; 
+              targetHtml?: string; 
+              targetCss?: string; 
+              targetJs?: string; 
+              testCode?: string;
+            };
+            if (htmlTemplate !== undefined) jsQuestion.htmlTemplate = htmlTemplate;
+            if (cssTemplate !== undefined) jsQuestion.cssTemplate = cssTemplate;
+            if (jsTemplate !== undefined) jsQuestion.codeTemplate = jsTemplate;
+            if (targetHtml !== undefined) jsQuestion.targetHtml = targetHtml;
+            if (targetCss !== undefined) jsQuestion.targetCss = targetCss;
+            if (targetJs !== undefined) jsQuestion.targetJs = targetJs;
+            
+            // Load JavaScript test file
+            const testCode = loadQuestionTemplate(slug, question.id, 'tests.js');
+            if (testCode !== undefined) jsQuestion.testCode = testCode;
+          }
+        }
+        return question;
+      });
+    }
+    
     return quizData;
   } catch (error) {
     console.error(`Error reading quiz data for ${slug}:`, error);
@@ -265,6 +328,7 @@ export function getAllQuizMetadata(): QuizMetadata[] {
           slug,
           quizName: quizData.quizName || slug,
           start_date: quizData.start_date,
+          draft: quizData.draft,
         });
       } catch (error) {
         console.error(`Error reading quiz metadata for ${fileName}:`, error);

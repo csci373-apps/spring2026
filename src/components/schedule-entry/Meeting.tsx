@@ -5,48 +5,15 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useMeetingChecklist } from './useMeetingChecklist';
 import ResourceQuiz from '@/components/ResourceQuiz';
-import { QuizData } from '@/components/quiz/types';
+import { MeetingData, Assignment } from './types';
+import ActivitiesList from './ActivitiesList';
+import QuizzesList from './QuizzesList';
+import ReadingsList from './ReadingsList';
+import AssignmentsList from './AssignmentsList';
+import DiscussionQuestions from './DiscussionQuestions';
 
-interface Reading {
-  citation: string | React.ReactElement;
-  url?: string;
-}
-
-interface Activity {
-  title: string;
-  url?: string;
-  draft?: number;
-  excluded?: number;
-}
-
-interface Quiz {
-  title: string;
-  slug: string;
-  quizData?: QuizData;
-  draft?: number;
-}
-
-interface Assignment {
-  titleShort: string;
-  title: string;
-  url?: string;
-  draft?: number;
-}
-
-export interface MeetingData {
-  date: string;
-  topic: string;
-  description?: string | React.ReactElement;
-  activities?: Activity[];
-  quizzes?: Quiz[];
-  scheduleQuizzes?: Reading[]; // Quizzes from schedule.tsx with citation structure
-  readings?: Reading[];
-  optionalReadings?: Reading[];
-  holiday?: boolean;
-  discussionQuestions?: string;
-  assigned?: Assignment | string | (Assignment | string)[];
-  due?: Assignment | string | (Assignment | string)[];
-}
+// Re-export MeetingData for backwards compatibility
+export type { MeetingData } from './types';
 
 interface MeetingProps {
   meeting: MeetingData;
@@ -118,7 +85,6 @@ export default function Meeting({
   };
   
   const tutorialInfo = getTutorialInfo();
-  const hasDiscussionQuestions = 'discussionQuestions' in meeting && meeting.discussionQuestions;
   const isHoliday = 'holiday' in meeting && meeting.holiday;
 
   // Use checklist hook only if enabled
@@ -168,368 +134,6 @@ export default function Meeting({
     }
   }
 
-  function renderActivity(activity: Activity, index: number) {
-    const isDraft = activity.draft && activity.draft === 1;
-    const itemKey = `${meetingKey}-activity-${index}`;
-    const isChecked = enableChecklist && !isDraft ? checklist.isChecked(itemKey) : false;
-    
-    return (
-      <div className="flex items-start gap-2">
-        {!isDraft && (
-          <input
-            type="checkbox"
-            aria-label={`Mark activity "${activity.title}" as ${isChecked ? 'uncompleted' : 'completed'}`}
-            checked={isChecked}
-            onChange={() => enableChecklist && checklist.toggleChecked(itemKey)}
-            disabled={!enableChecklist}
-            onClick={(e) => e.stopPropagation()}
-            className="mt-1 w-4 h-4 rounded border-2 border-gray-300 dark:border-gray-600 accent-blue-600 dark:accent-blue-400 cursor-pointer flex-shrink-0"
-            style={isDark ? { 
-              backgroundColor: isChecked ? '#3b82f6' : '#1f2937',
-              borderColor: isChecked ? '#3b82f6' : '#4b5563'
-            } : undefined}
-          />
-        )}
-        <div className="flex-1">
-          {isDraft ? (
-            <span>{activity.title}</span>
-          ) : (
-            <>
-              {(() => {
-                const isExternalLink = activity.url?.startsWith('https');
-                const url = activity.url || '#';
-                const linkClass = `text-blue-600 dark:text-blue-400 hover:underline ${isChecked ? '!line-through opacity-60' : ''}`;
-                
-                if (isExternalLink) {
-                  return <Link href={url} target="_blank" className={linkClass} onClick={(e) => e.stopPropagation()}>{activity.title}</Link>;
-                }
-                return <Link href={url} className={linkClass} onClick={(e) => e.stopPropagation()}>{activity.title}</Link>;
-              })()}
-            </>
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  function renderActivities() {
-    if (hasActivities) {
-      return (
-        <div className="mb-6">
-            {hasActivities ? <strong className="text-gray-700 dark:text-gray-300" style={isDark ? { color: '#d1d5db' } : undefined}>Slides / Activities</strong> : ``}
-            <ul className="!list-none !pl-4">
-                {filteredActivities.map((activity: Activity, filteredIndex: number) => {
-                  // Find the original index in the full activities array for the itemKey
-                  const originalIndex = meeting.activities?.findIndex(a => a === activity) ?? filteredIndex;
-                  return (
-                    <li key={filteredIndex} className="text-gray-700 dark:text-gray-300">
-                        {renderActivity(activity, originalIndex)}
-                    </li>
-                  );
-                })}
-            </ul>
-        </div>
-      )
-    }
-    return ``;
-  }
-
-  function QuizItem({ quiz, index, onOpen }: { quiz: Quiz; index: number; onOpen: (slug: string) => void }) {
-    const isDraft = quiz.draft && quiz.draft === 1;
-    const itemKey = `${meetingKey}-quiz-${index}`;
-    const isChecked = enableChecklist && !isDraft ? checklist.isChecked(itemKey) : false;
-    
-    // Get quiz completion status and score from localStorage (for display only, not auto-sync)
-    const [quizStatus, setQuizStatus] = useState<{ completed: boolean; score: number; total: number } | null>(null);
-    
-    // Load quiz status once on mount (for informational display only)
-    useEffect(() => {
-      if (typeof window === 'undefined' || isDraft) return;
-      
-      try {
-        const storageKey = `quiz-${quiz.slug}`;
-        const saved = localStorage.getItem(storageKey);
-        const totalQuestions = quiz.quizData?.questions?.length || 0;
-        
-        if (saved) {
-          const savedState = JSON.parse(saved);
-          setQuizStatus({
-            completed: savedState.completed || false,
-            score: savedState.score || 0,
-            total: totalQuestions
-          });
-        }
-      } catch (error) {
-        console.error('Error reading quiz status:', error);
-      }
-    }, [quiz.slug, quiz.quizData?.questions?.length, isDraft]);
-    
-    return (
-      <div className="flex items-start gap-2">
-        {!isDraft && (
-          <input
-            type="checkbox"
-            aria-label={`Quiz "${quiz.title}" ${isChecked ? 'completed' : 'not completed'}`}
-            checked={isChecked}
-            onChange={() => {
-              if (enableChecklist) {
-                checklist.toggleChecked(itemKey);
-              }
-            }}
-            disabled={!enableChecklist}
-            onClick={(e) => e.stopPropagation()}
-            className="mt-1 w-4 h-4 rounded border-2 border-gray-300 dark:border-gray-600 accent-blue-600 dark:accent-blue-400 cursor-default flex-shrink-0"
-            style={isDark ? { 
-              backgroundColor: isChecked ? '#3b82f6' : '#1f2937',
-              borderColor: isChecked ? '#3b82f6' : '#4b5563'
-            } : undefined}
-          />
-        )}
-        <div className="flex-1">
-          {isDraft ? (
-            <span>{quiz.title}</span>
-          ) : (
-            <div className="flex items-center gap-2 flex-wrap">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onOpen(quiz.slug);
-                }}
-                className={`text-left text-blue-600 dark:text-blue-400 hover:underline ${isChecked ? '!line-through opacity-60' : ''}`}
-              >
-                {quiz.title}
-              </button>
-              {quizStatus && quizStatus.completed && (
-                <span className="text-sm text-gray-600 dark:text-gray-400" style={isDark ? { color: '#9ca3af' } : undefined}>
-                  Previous score: {quizStatus.score} / {quizStatus.total} ({quizStatus.total > 0 ? Math.round((quizStatus.score / quizStatus.total) * 100) : 0}%)
-                </span>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  function renderQuiz(quiz: Quiz, index: number) {
-    return <QuizItem key={index} quiz={quiz} index={index} onOpen={setOpenQuizSlug} />;
-  }
-
-  function renderScheduleQuiz(quiz: Reading, index: number) {
-    const itemKey = `${meetingKey}-schedule-quiz-${index}`;
-    const isChecked = enableChecklist ? checklist.isChecked(itemKey) : false;
-    
-    return (
-      <li key={index} className="mb-0 text-gray-700 dark:text-gray-300">
-        <div className="flex items-start gap-2">
-          <input
-            type="checkbox"
-            aria-label={`Mark quiz as ${isChecked ? 'uncompleted' : 'completed'}`}
-            checked={isChecked}
-            onChange={() => enableChecklist && checklist.toggleChecked(itemKey)}
-            disabled={!enableChecklist}
-            onClick={(e) => e.stopPropagation()}
-            className="mt-1 w-4 h-4 rounded border-2 border-gray-300 dark:border-gray-600 accent-blue-600 dark:accent-blue-400 cursor-pointer flex-shrink-0"
-            style={isDark ? { 
-              backgroundColor: isChecked ? '#3b82f6' : '#1f2937',
-              borderColor: isChecked ? '#3b82f6' : '#4b5563'
-            } : undefined}
-          />
-          <div className={`flex-1 ${isChecked ? '!line-through opacity-60' : ''}`}>
-            {quiz.citation}
-          </div>
-        </div>
-      </li>
-    );
-  }
-
-  function renderQuizzes() {
-    if (hasAnyQuizzes) {
-      return (
-        <div className="mb-6">
-            <strong className="text-gray-700 dark:text-gray-300" style={isDark ? { color: '#d1d5db' } : undefined}>Quizzes</strong>
-            <ul className="!list-none !pl-4">
-                {/* Render regular quizzes (with quizData) */}
-                {hasQuizzes && meeting.quizzes!.map((quiz: Quiz, index: number) => (
-                    <li key={index} className="text-gray-700 dark:text-gray-300">
-                        {renderQuiz(quiz, index)}
-                    </li>
-                ))}
-                {/* Render schedule quizzes (with citation) */}
-                {hasScheduleQuizzes && meeting.scheduleQuizzes!.map((quiz: Reading, index: number) => 
-                    renderScheduleQuiz(quiz, index)
-                )}
-            </ul>
-        </div>
-      )
-    }
-    return ``;
-  } 
-
-  function renderReadings({title, readings, isOptional}: {title: string, readings:Reading[], isOptional?: boolean}) {
-    return (
-      <div className="mb-6">
-          {<strong className="text-gray-700 dark:text-gray-300" style={isDark ? { color: '#d1d5db' } : undefined}>{title}</strong>}
-          <ol className="!list-none !pl-4">
-              {
-              readings.map((reading: Reading, index: number) => {
-                  const itemKey = `${meetingKey}-${isOptional ? 'optional-reading' : 'reading'}-${index}`;
-                  const isChecked = enableChecklist ? checklist.isChecked(itemKey) : false;
-                  
-                  return (
-                  <li key={index} className="mb-0 text-gray-700 dark:text-gray-300">
-                      <div className="flex items-start gap-2">
-                        <input
-                          type="checkbox"
-                          aria-label={`Mark reading "${reading.citation}" as ${isChecked ? 'unread' : 'read'}`}
-                          checked={isChecked}
-                          onChange={() => enableChecklist && checklist.toggleChecked(itemKey)}
-                          disabled={!enableChecklist}
-                          onClick={(e) => e.stopPropagation()}
-                          className="mt-1 w-4 h-4 rounded border-2 border-gray-300 dark:border-gray-600 accent-blue-600 dark:accent-blue-400 cursor-pointer flex-shrink-0"
-                          style={isDark ? { 
-                            backgroundColor: isChecked ? '#3b82f6' : '#1f2937',
-                            borderColor: isChecked ? '#3b82f6' : '#4b5563'
-                          } : undefined}
-                        />
-                        <div className={`flex-1 ${isChecked ? '!line-through opacity-60' : ''}`}>
-                          {reading.citation} {" "}
-                          {reading.url && (
-                            <a href={reading.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline" onClick={(e) => e.stopPropagation()}>
-                                Link
-                            </a>
-                          )}
-                        </div>
-                      </div>
-                  </li>
-                  )
-              })
-              }
-          </ol>
-      </div>
-    )
-  }
-
-  function renderDiscussionQuestions() {
-    if (hasDiscussionQuestions) {
-      return (
-        <div className="mt-4">
-            {hasDiscussionQuestions ? <strong className="text-gray-700 dark:text-gray-300">Discussion Questions</strong> : ``}
-            <div className="text-gray-700 dark:text-gray-300">
-                {meeting.discussionQuestions}
-            </div>
-        </div>
-      )
-    }
-  } 
-
-  function renderAssignment(assignment: Assignment | string, type: 'assigned' | 'due', index?: number) {
-    if (typeof assignment === 'string') {
-      return assignment;
-    }
-    
-    const isDraft = assignment.draft && assignment.draft === 1;
-    const isTutorial = assignment.titleShort?.startsWith('Tutorial') || false;
-    const showCheckbox = type === 'due' && !isDraft && !isTutorial; // Show checkbox for non-draft "due" items only, but not for tutorials
-    
-    // Extract assignment ID from URL (e.g., "/assignments/hw01/" -> "hw01")
-    const assignmentId = assignment.url?.match(/\/assignments\/([^\/]+)\/?/)?.[1];
-    // Use assignment ID for syncing with assignments page, fallback to meeting key for manual entries
-    const assignmentKey = assignmentId ? `assignment-${assignmentId}` : (index !== undefined ? `${meetingKey}-due-${index}` : `${meetingKey}-${type}`);
-    // For assignments with IDs, check the assignment key (primary). For manual entries, check schedule key.
-    // The isChecked function already checks both state and localStorage
-    const assignmentPageChecked = assignmentId ? checklist.isChecked(`assignment-${assignmentId}`) : false;
-    const scheduleChecked = checklist.isChecked(assignmentKey);
-    const isChecked = enableChecklist && showCheckbox ? (assignmentId ? assignmentPageChecked : scheduleChecked) : false;
-    
-    const handleToggle = () => {
-      if (!enableChecklist) return;
-      
-      // Primary: Use assignment ID key for syncing with assignments page
-      if (assignmentId) {
-        const syncKey = `assignment-${assignmentId}`;
-        // Toggle the assignment key (this will update state and localStorage)
-        checklist.toggleChecked(syncKey);
-        
-        // Also update the schedule key to match (for backwards compatibility)
-        // Just set localStorage - the polling will update state
-        if (assignmentKey !== syncKey && typeof window !== 'undefined') {
-          // Read the new state from localStorage (which was just updated by toggleChecked)
-          // Use a small delay to ensure toggleChecked has finished updating localStorage
-          setTimeout(() => {
-            const newChecked = localStorage.getItem(syncKey) === 'true';
-            localStorage.setItem(assignmentKey, JSON.stringify(newChecked));
-          }, 0);
-        }
-      } else {
-        // For manual entries without assignment ID, just use schedule key
-        checklist.toggleChecked(assignmentKey);
-      }
-    };
-    
-    // Format tutorial display: "Tutorial X: Name of Tutorial"
-    let displayText: React.ReactNode;
-    if (isTutorial) {
-      // Extract tutorial number from titleShort (e.g., "Tutorial 1" -> "1")
-      const tutorialMatch = assignment.titleShort?.match(/Tutorial\s+(\d+)/i);
-      const tutorialNum = tutorialMatch ? tutorialMatch[1] : '';
-      const tutorialLabel = tutorialNum ? `Tutorial ${tutorialNum}` : assignment.titleShort || 'Tutorial';
-      
-      if (isDraft) {
-        displayText = <>{tutorialLabel}: {assignment.title}</>;
-      } else {
-        displayText = (
-          <Link 
-            href={assignment.url || '#'} 
-            className="text-blue-600 dark:text-blue-400 hover:underline" 
-            onClick={(e) => e.stopPropagation()}
-          >
-            {tutorialLabel}: {assignment.title}
-          </Link>
-        );
-      }
-    } else {
-      // Regular assignment formatting
-      if (isDraft) {
-        displayText = <>{assignment.titleShort}: {assignment.title}</>;
-      } else {
-        displayText = (
-          <>
-            <Link 
-              href={assignment.url || '#'} 
-              className="text-blue-600 dark:text-blue-400 hover:underline" 
-              onClick={(e) => e.stopPropagation()}
-            >
-              {assignment.titleShort}
-            </Link>: {assignment.title}
-          </>
-        );
-      }
-    }
-    
-    return (
-      <div className="flex items-start gap-2">
-        {showCheckbox && (
-          <input
-            type="checkbox"
-            aria-label={`Mark assignment "${assignment.titleShort}" as ${isChecked ? 'incomplete' : 'complete'}`}
-            checked={isChecked}
-            onChange={handleToggle}
-            disabled={!enableChecklist}
-            onClick={(e) => e.stopPropagation()}
-            className="mt-1 w-4 h-4 rounded border-2 border-gray-300 dark:border-gray-600 accent-blue-600 dark:accent-blue-400 cursor-pointer flex-shrink-0"
-            style={isDark ? { 
-              backgroundColor: isChecked ? '#3b82f6' : '#1f2937',
-              borderColor: isChecked ? '#3b82f6' : '#4b5563'
-            } : undefined}
-          />
-        )}
-        <div className={`flex-1 ${isChecked ? '!line-through opacity-60' : ''}`}>
-          {displayText}
-        </div>
-      </div>
-    );
-  }
 
   function renderDetailsButton(allChecked: boolean) {
     return (
@@ -656,47 +260,69 @@ export default function Meeting({
                             : meeting.description}
                         </div>
                     )}
-                    {renderActivities()}
-                    {hasReadings ? renderReadings({title: 'Required Readings', readings: meeting.readings || [], isOptional: false}) : ``}
-                    {hasOptionalReadings ? renderReadings({title: 'Optional Readings', readings: meeting.optionalReadings || [], isOptional: true}) : ``}
-                    {renderQuizzes()}
-                    {renderDiscussionQuestions()}
-                    {
-                      meeting.assigned && !isTutorialOnlyMeeting ? ( 
-                        <div className="mb-4">
-                          <strong className="text-gray-700 dark:text-gray-300">Assigned: </strong>
-                          {Array.isArray(meeting.assigned) ? (
-                            <ul className="!list-none !pl-4">
-                              {meeting.assigned.map((assignedItem, index) => (
-                                <li key={index} className="text-gray-700 dark:text-gray-300">
-                                  {renderAssignment(assignedItem, 'assigned', index)}
-                                </li>
-                              ))}
-                            </ul>
-                          ) : (
-                            renderAssignment(meeting.assigned, 'assigned')
-                          )}
-                        </div>
-                        ) : ''
-                    }
-                    {
-                      meeting.due ? ( 
-                        <div className="mb-4">
-                          <strong className="text-gray-700 dark:text-gray-300" style={isDark ? { color: '#d1d5db' } : undefined}>Due: </strong>
-                          {Array.isArray(meeting.due) ? (
-                            <ul className="!list-none !pl-4">
-                              {meeting.due.map((dueItem, index) => (
-                                <li key={index} className="text-gray-700 dark:text-gray-300">
-                                  {renderAssignment(dueItem, 'due', index)}
-                                </li>
-                              ))}
-                            </ul>
-                          ) : (
-                            renderAssignment(meeting.due, 'due')
-                          )}
-                        </div>
-                        ) : ''
-                    }
+                    {meeting.activities && (
+                      <ActivitiesList
+                        activities={meeting.activities}
+                        meetingKey={meetingKey}
+                        checklist={checklist}
+                        enableChecklist={enableChecklist}
+                        isDark={isDark}
+                      />
+                    )}
+                    {hasReadings && (
+                      <ReadingsList
+                        readings={meeting.readings || []}
+                        isOptional={false}
+                        title="Required Readings"
+                        meetingKey={meetingKey}
+                        checklist={checklist}
+                        enableChecklist={enableChecklist}
+                        isDark={isDark}
+                      />
+                    )}
+                    {hasOptionalReadings && (
+                      <ReadingsList
+                        readings={meeting.optionalReadings || []}
+                        isOptional={true}
+                        title="Optional Readings"
+                        meetingKey={meetingKey}
+                        checklist={checklist}
+                        enableChecklist={enableChecklist}
+                        isDark={isDark}
+                      />
+                    )}
+                    <QuizzesList
+                      quizzes={meeting.quizzes}
+                      scheduleQuizzes={meeting.scheduleQuizzes}
+                      meetingKey={meetingKey}
+                      checklist={checklist}
+                      enableChecklist={enableChecklist}
+                      isDark={isDark}
+                      onOpenQuiz={setOpenQuizSlug}
+                    />
+                    <DiscussionQuestions
+                      discussionQuestions={meeting.discussionQuestions}
+                    />
+                    {meeting.assigned && !isTutorialOnlyMeeting && (
+                      <AssignmentsList
+                        assignments={meeting.assigned}
+                        type="assigned"
+                        meetingKey={meetingKey}
+                        checklist={checklist}
+                        enableChecklist={enableChecklist}
+                        isDark={isDark}
+                      />
+                    )}
+                    {meeting.due && (
+                      <AssignmentsList
+                        assignments={meeting.due}
+                        type="due"
+                        meetingKey={meetingKey}
+                        checklist={checklist}
+                        enableChecklist={enableChecklist}
+                        isDark={isDark}
+                      />
+                    )}
                 </div>
             </div> 
         </div> 

@@ -30,13 +30,18 @@ export interface Quiz {
   draft?: number;
 }
 
+export interface ScheduleQuiz {
+  quizName: string;
+  url: string;
+}
+
 export interface Meeting {
   date: string;
   topic: string;
   description?: string | React.ReactElement;
   activities?: Activity[];
   quizzes?: Quiz[];
-  scheduleQuizzes?: Reading[]; // Quizzes from schedule.tsx with citation structure
+  scheduleQuizzes?: ScheduleQuiz[]; // Quizzes from schedule.tsx with quizName and url
   readings?: Reading[];
   optionalReadings?: Reading[];
   holiday?: boolean;
@@ -52,13 +57,18 @@ export interface Topic {
   meetings: Meeting[];
 }
 
-// Input type for baseTopics from schedule.tsx - allows quizzes to be either Quiz or Reading
+// Input type for baseTopics from schedule.tsx - allows quizzes to be either Quiz, Reading (citation), or ScheduleQuiz (quizName/url)
+interface ScheduleQuizInput {
+  quizName: string;
+  url: string;
+}
+
 interface BaseMeeting {
   date: string;
   topic: string;
   description?: string | React.ReactElement;
   activities?: Activity[];
-  quizzes?: (Quiz | Reading)[]; // Can contain both types from schedule.tsx
+  quizzes?: (Quiz | Reading | ScheduleQuizInput)[]; // Can contain Quiz, Reading (citation), or ScheduleQuiz (quizName/url) from schedule.tsx
   readings?: Reading[];
   optionalReadings?: Reading[];
   holiday?: boolean;
@@ -206,26 +216,66 @@ async function enrichTopicsWithMarkdown(baseTopics: BaseTopicsArray): Promise<To
       const meetingDateStr = parseMeetingDate(meeting.date);
       if (!meetingDateStr) return;
       
-      // Check if meeting has citation-based quizzes from schedule.tsx
-      // These have a 'citation' property instead of 'title'/'slug'
-      // Note: meeting.quizzes can contain both Quiz and Reading types from schedule.tsx
+      // Check if meeting has schedule quizzes from schedule.tsx
+      // These can be either Reading (citation) or ScheduleQuiz (quizName/url) format
+      // Note: meeting.quizzes can contain Quiz, Reading, or ScheduleQuizInput types from schedule.tsx
       if (meeting.quizzes && Array.isArray(meeting.quizzes)) {
-        // Type guard: check if item is a Reading (has citation, no title/slug)
-        const isCitationQuiz = (q: Quiz | Reading): q is Reading => {
-          return 'citation' in q && !('title' in q) && !('slug' in q);
+        // Type guard: check if item is a ScheduleQuiz (has quizName and url, no title/slug/citation)
+        const isScheduleQuiz = (q: Quiz | Reading | ScheduleQuizInput): q is ScheduleQuizInput => {
+          return 'quizName' in q && 'url' in q && !('title' in q) && !('slug' in q) && !('citation' in q);
         };
         
-        // Type guard: check if item is a Quiz (has title/slug, no citation)
-        const isQuiz = (q: Quiz | Reading): q is Quiz => {
-          return 'title' in q && 'slug' in q && !('citation' in q);
+        // Type guard: check if item is a Reading (has citation, no title/slug/quizName)
+        const isCitationQuiz = (q: Quiz | Reading | ScheduleQuizInput): q is Reading => {
+          return 'citation' in q && !('title' in q) && !('slug' in q) && !('quizName' in q);
         };
         
-        // Cast to union type to allow filtering for both Quiz and Reading
-        const quizzesArray = meeting.quizzes as (Quiz | Reading)[];
+        // Type guard: check if item is a Quiz (has title/slug, no citation/quizName)
+        const isQuiz = (q: Quiz | Reading | ScheduleQuizInput): q is Quiz => {
+          return 'title' in q && 'slug' in q && !('citation' in q) && !('quizName' in q);
+        };
+        
+        // Cast to union type to allow filtering
+        const quizzesArray = meeting.quizzes as (Quiz | Reading | ScheduleQuizInput)[];
+        const scheduleQuizzes = quizzesArray.filter(isScheduleQuiz);
         const citationQuizzes = quizzesArray.filter(isCitationQuiz);
-        if (citationQuizzes.length > 0) {
-          // Move citation-based quizzes to scheduleQuizzes
-          meeting.scheduleQuizzes = citationQuizzes;
+        
+        // Combine schedule quizzes (new format) and citation quizzes (old format) into scheduleQuizzes
+        if (scheduleQuizzes.length > 0 || citationQuizzes.length > 0) {
+          // Convert ScheduleQuizInput to ScheduleQuiz format
+          const convertedScheduleQuizzes: ScheduleQuiz[] = [
+            ...scheduleQuizzes.map(q => ({ quizName: q.quizName, url: q.url })),
+            // Convert old citation format to new format (extract text and url from citation)
+            ...citationQuizzes.map(q => {
+              // For citation format, try to extract text and url
+              // If citation is a string, use it as quizName
+              // If citation is React element, extract text from children
+              let quizName = '';
+              let url = q.url || '';
+              
+              if (typeof q.citation === 'string') {
+                quizName = q.citation;
+              } else if (React.isValidElement(q.citation)) {
+                // Try to extract text from React element (simple case)
+                const props = q.citation.props as { children?: React.ReactNode; href?: string };
+                const children = props?.children;
+                if (typeof children === 'string') {
+                  quizName = children;
+                } else if (Array.isArray(children)) {
+                  quizName = children.map((c: unknown) => typeof c === 'string' ? c : '').join('');
+                }
+                // Try to extract url from anchor tag if present
+                if (props?.href) {
+                  url = props.href;
+                }
+              }
+              
+              return { quizName: quizName || 'Quiz', url: url || '#' };
+            })
+          ];
+          
+          meeting.scheduleQuizzes = convertedScheduleQuizzes;
+          
           // Keep only Quiz objects (with title/slug) in quizzes array
           meeting.quizzes = quizzesArray.filter(isQuiz);
           // If no Quiz objects remain, set to undefined

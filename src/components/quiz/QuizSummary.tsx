@@ -3,6 +3,7 @@
 import { useRef } from 'react';
 import { QuizData, QuizQuestion } from './types';
 import QuizReport, { QuizReportHandle } from './QuizReport';
+import { TestResults } from './javascript-dom/types';
 
 interface QuizSummaryProps {
   quizData: QuizData;
@@ -12,7 +13,7 @@ interface QuizSummaryProps {
   studentName: string;
   onStudentNameChange: (name: string) => void;
   incorrectQuestions: QuizQuestion[];
-  selectedAnswers: { [questionId: string]: string };
+  selectedAnswers: { [questionId: string]: string | string[] | { html: string; css: string; js: string; testResults?: TestResults } };
   resourceSlug: string;
   onClearQuiz: () => void;
   onReview: () => void;

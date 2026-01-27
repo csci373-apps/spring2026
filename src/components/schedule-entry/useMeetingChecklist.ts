@@ -1,47 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { triggerConfetti } from '@/lib/utils';
-import { QuizData } from '@/components/quiz/types';
-
-// Import types from Meeting component
-interface Reading {
-  citation: string | React.ReactElement;
-  url?: string;
-}
-
-interface Activity {
-  title: string;
-  url?: string;
-  draft?: number;
-  excluded?: number;
-}
-
-interface Assignment {
-  titleShort: string;
-  title: string;
-  url?: string;
-  draft?: number;
-}
-
-interface Quiz {
-  title: string;
-  slug: string;
-  quizData?: QuizData;
-  draft?: number;
-}
-
-interface MeetingData {
-  date: string;
-  topic: string;
-  description?: string | React.ReactElement;
-  activities?: Activity[];
-  quizzes?: Quiz[];
-  readings?: Reading[];
-  optionalReadings?: Reading[];
-  holiday?: boolean;
-  discussionQuestions?: string;
-  assigned?: Assignment | string | (Assignment | string)[];
-  due?: Assignment | string | (Assignment | string)[];
-}
+import { MeetingData } from './types';
 
 interface UseMeetingChecklistOptions {
   enableLocalStorage?: boolean;
@@ -69,7 +28,10 @@ export function useMeetingChecklist(
     if (meeting.activities) {
       meeting.activities.forEach((activity, index) => {
         // Skip excluded activities and draft activities
-        if (!(activity.excluded === 1) && !(activity.draft === 1)) {
+        // Draft is true if draft === 1 (explicit check)
+        const isDraft = activity.draft === 1;
+        const isExcluded = activity.excluded === 1;
+        if (!isExcluded && !isDraft) {
           allItemKeys.push(`${meetingKey}-activity-${index}`);
         }
       });
@@ -78,9 +40,20 @@ export function useMeetingChecklist(
     // Collect all quiz keys (excluding draft quizzes)
     if (meeting.quizzes) {
       meeting.quizzes.forEach((quiz, index) => {
-        if (!(quiz.draft === 1)) {
+        // Draft is true if draft === 1 (explicit check)
+        const isDraft = quiz.draft === 1;
+        if (!isDraft) {
           allItemKeys.push(`${meetingKey}-quiz-${index}`);
         }
+      });
+    }
+    
+    // Collect schedule quiz keys (excluding draft schedule quizzes if they support draft)
+    // Note: scheduleQuizzes are Reading[] type, which doesn't have draft property,
+    // but we include them in completion check
+    if (meeting.scheduleQuizzes) {
+      meeting.scheduleQuizzes.forEach((_, index) => {
+        allItemKeys.push(`${meetingKey}-schedule-quiz-${index}`);
       });
     }
     
@@ -95,32 +68,43 @@ export function useMeetingChecklist(
     
     // Note: "Assigned" items are intentionally excluded from completion check (only "Due" items are tracked)
     
-    // Collect due keys (excluding draft assignments from completion check, but they're still checkable)
+    // Collect due keys (excluding draft assignments and tutorials from completion check)
+    // Tutorials don't show checkboxes for "due" items, so they shouldn't be in completion calculation
     // Prefer assignment ID key for syncing with assignments page, fallback to schedule key
     if (meeting.due) {
       if (Array.isArray(meeting.due)) {
         meeting.due.forEach((dueItem, index) => {
-          if (typeof dueItem === 'object' && !(dueItem.draft === 1)) {
-            // Try to extract assignment ID from URL
-            const assignmentId = dueItem.url?.match(/\/assignments\/([^\/]+)\/?/)?.[1];
-            if (assignmentId) {
-              // Use assignment ID key for syncing with assignments page
-              allItemKeys.push(`assignment-${assignmentId}`);
-            } else {
-              // Fallback to schedule key for manual entries
-              allItemKeys.push(`${meetingKey}-due-${index}`);
+          if (typeof dueItem === 'object') {
+            const isDraft = dueItem.draft === 1;
+            const isTutorial = dueItem.titleShort?.startsWith('Tutorial') || false;
+            // Exclude draft assignments and tutorials from completion check
+            if (!isDraft && !isTutorial) {
+              // Try to extract assignment ID from URL
+              const assignmentId = dueItem.url?.match(/\/assignments\/([^\/]+)\/?/)?.[1];
+              if (assignmentId) {
+                // Use assignment ID key for syncing with assignments page
+                allItemKeys.push(`assignment-${assignmentId}`);
+              } else {
+                // Fallback to schedule key for manual entries
+                allItemKeys.push(`${meetingKey}-due-${index}`);
+              }
             }
           }
         });
-      } else if (typeof meeting.due === 'object' && !(meeting.due.draft === 1)) {
-        // Try to extract assignment ID from URL
-        const assignmentId = meeting.due.url?.match(/\/assignments\/([^\/]+)\/?/)?.[1];
-        if (assignmentId) {
-          // Use assignment ID key for syncing with assignments page
-          allItemKeys.push(`assignment-${assignmentId}`);
-        } else {
-          // Fallback to schedule key for manual entries
-          allItemKeys.push(`${meetingKey}-due`);
+      } else if (typeof meeting.due === 'object') {
+        const isDraft = meeting.due.draft === 1;
+        const isTutorial = meeting.due.titleShort?.startsWith('Tutorial') || false;
+        // Exclude draft assignments and tutorials from completion check
+        if (!isDraft && !isTutorial) {
+          // Try to extract assignment ID from URL
+          const assignmentId = meeting.due.url?.match(/\/assignments\/([^\/]+)\/?/)?.[1];
+          if (assignmentId) {
+            // Use assignment ID key for syncing with assignments page
+            allItemKeys.push(`assignment-${assignmentId}`);
+          } else {
+            // Fallback to schedule key for manual entries
+            allItemKeys.push(`${meetingKey}-due`);
+          }
         }
       }
     }
@@ -152,6 +136,17 @@ export function useMeetingChecklist(
     if (meeting.quizzes) {
       meeting.quizzes.forEach((quiz, index) => {
         const key = `${meetingKey}-quiz-${index}`;
+        const saved = localStorage.getItem(key);
+        if (saved !== null) {
+          savedCheckedItems[key] = JSON.parse(saved);
+        }
+      });
+    }
+    
+    // Load schedule quizzes
+    if (meeting.scheduleQuizzes) {
+      meeting.scheduleQuizzes.forEach((_, index) => {
+        const key = `${meetingKey}-schedule-quiz-${index}`;
         const saved = localStorage.getItem(key);
         if (saved !== null) {
           savedCheckedItems[key] = JSON.parse(saved);
@@ -354,6 +349,9 @@ export function useMeetingChecklist(
         // Before hydration, if key is not in state, assume false (for SSR consistency)
         return false;
       }
+      
+      // If we get here, the key is not checked in state or localStorage
+      // Continue to check for assignment/schedule key fallbacks below
       
       // For assignment keys, also check if the corresponding schedule key is checked (fallback)
       if (key.startsWith('assignment-')) {

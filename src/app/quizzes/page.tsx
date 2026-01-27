@@ -7,8 +7,11 @@ import QuizzesListClient from '@/components/QuizzesListClient';
 export default async function QuizzesPage() {
   const allQuizzes = getAllQuizMetadata();
   
+  // Filter out draft quizzes
+  const publishedQuizzes = allQuizzes.filter(quiz => !quiz.draft || quiz.draft !== 1);
+  
   // Load quiz data for all quizzes
-  const quizzesWithData: Array<QuizMetadata & { quizData: QuizData | null }> = allQuizzes.map(quiz => ({
+  const quizzesWithData: Array<QuizMetadata & { quizData: QuizData | null }> = publishedQuizzes.map(quiz => ({
     ...quiz,
     quizData: getQuizData(quiz.slug)
   }));
