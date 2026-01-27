@@ -197,6 +197,6 @@ Answer the following questions in the Weekly Reflection form (aim for 200-400 wo
 
 ## Submission Checklist
 - [ ] Your have verified that all of the pieces of your local installation are working.
-- [ ] Your team has created a team working agreemend doc, which is now on the main branch of your team's repo.
+- [ ] Your team has created a team working agreement doc, which is now on the main branch of your team's repo.
 - [ ] You have created and included a reflection in your Google doc.
 - [ ] You have pasted your first response from the Google doc into the [Weekly Reflection Form](https://forms.gle/m6Myw4Lxc2We3WNCA).

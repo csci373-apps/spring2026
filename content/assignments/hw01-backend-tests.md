@@ -174,13 +174,13 @@ For each endpoint in your assigned resource, **create a GitHub issue** with a be
 
 ## Part 2: Peer Review (20 points)
 
-Review **one PR from your team** (not your own). Provide feedback on:
+Review **at least PR from your team** (not your own). Provide feedback on:
 
 1. **Test Coverage**: Success, failure, edge cases
 2. **Test Quality**: Clear names, organization, fixtures
 3. **Test Correctness**: Right assertions, would catch bugs
 
-Comment on the PR with specific, constructive feedback. Approve if the PR is good, request changes only if broken. Everyone should review at least one PR.
+Comment on the PR with specific, constructive feedback. Approve if the PR is good, request changes only if broken. Everyone should review at least one PR. If you and your team decide to submit different endpoint tests ad different PRs, then you will need to review more than one PR (please make sure that this is equitable).
 
 
 ## 3. Individual Reflection (10 points)
