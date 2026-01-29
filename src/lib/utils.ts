@@ -72,7 +72,7 @@ function formatDate(dateString: string): string {
  * 
  * To change the offset, update this constant and also update:
  * - src/app/globals.css: h2 { scroll-margin-top: <value>px; }
- * - src/components/TableOfContents.tsx: rootMargin: '-<value>px 0px -80% 0px'
+ * - src/components/TableOfContents.tsx: rootMargin: '-<value>px 0px -1000% 0px'
  */
 export const SCROLL_OFFSET_PX = 20;
 

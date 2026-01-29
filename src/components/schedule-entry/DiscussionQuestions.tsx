@@ -1,22 +1,30 @@
 'use client'
 
+import { DiscussionQuestion } from './types';
+
 interface DiscussionQuestionsProps {
-  discussionQuestions?: string;
+  discussionQuestions?: DiscussionQuestion[];
+  isDark?: boolean;
 }
 
 export default function DiscussionQuestions({
   discussionQuestions,
+  isDark,
 }: DiscussionQuestionsProps) {
-  if (!discussionQuestions) {
+  if (!discussionQuestions || discussionQuestions.length === 0) {
     return null;
   }
 
   return (
-    <div className="mt-4">
-      <strong className="text-gray-700 dark:text-gray-300">Discussion Questions</strong>
-      <div className="text-gray-700 dark:text-gray-300">
-        {discussionQuestions}
-      </div>
+    <div className="mb-4">
+      <strong className="text-gray-700 dark:text-gray-300" style={isDark ? { color: '#d1d5db' } : undefined}>Discussion Questions</strong>
+      <ul className="!list-none !pl-4">
+        {discussionQuestions.map((dq, index) => (
+          <li key={index} className="text-gray-700 dark:text-gray-300" style={isDark ? { color: '#d1d5db' } : undefined}>
+            {dq.question}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

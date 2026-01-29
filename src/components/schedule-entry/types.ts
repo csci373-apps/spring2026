@@ -18,6 +18,10 @@ export interface Activity {
   excluded?: number;
 }
 
+export interface DiscussionQuestion {
+  question: string | React.ReactElement;
+}
+
 export interface Quiz {
   title: string;
   slug: string;
@@ -42,7 +46,7 @@ export interface MeetingData {
   readings?: Reading[];
   optionalReadings?: Reading[];
   holiday?: boolean;
-  discussionQuestions?: string;
+  discussionQuestions?: DiscussionQuestion[];
   assigned?: Assignment | string | (Assignment | string)[];
   due?: Assignment | string | (Assignment | string)[];
 }

@@ -57,6 +57,13 @@ h4 {
   color: var(--foreground);
 }
 
+h5 {
+    @apply mb-4 mt-4 italic font-medium;
+    font-family: var(--font-outfit), serif;
+    color: var(--foreground);
+}
+
+
 table {
   @apply w-full border-collapse mb-20;
   border-color: var(--border);
@@ -168,10 +175,10 @@ li:has(input[type="checkbox"]) {
     @apply mb-1;
   }
   ul li {
-    @apply !mb-2;
+    @apply mb-2;
   }
   .prose ul li {
-    @apply !mb-2;
+    @apply mb-2;
   }
   table li {
     @apply mb-0;
@@ -183,6 +190,10 @@ li:has(input[type="checkbox"]) {
   table {
     @apply !mb-10;
   }
+}
+
+.list-tight li {
+  @apply !mb-0;
 }
 
 .syllabus-page {
@@ -266,7 +277,7 @@ li:has(input[type="checkbox"]) {
       to right,
       transparent,
       var(--border) 20%,
-      var(--border) 80%,
+      var(--border) 100%,
       transparent
     );
   }
@@ -335,7 +346,7 @@ li:has(input[type="checkbox"]) {
     @apply mt-6 pt-6 mb-3;
   }
 
-  /* Horizontal rule - 2px line, 80% width, centered */
+  /* Horizontal rule - 2px line, 100% width, centered */
   /* h2::after {
     content: "";
     position: absolute;

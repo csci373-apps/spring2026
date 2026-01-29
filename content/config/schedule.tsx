@@ -134,11 +134,19 @@ export const baseTopics = [
         "Design and implement a new backend model (including relationship design) with tests. SDLC concept: articulating tradeoffs and constraints in PRs and reviews.",
       meetings: [
         {
-          date: "Tu, Jan 27",
+            date: "Tu, Jan 27",
+            topic: "Class cancelled",
+            holiday: true
+        },
+        {
+          date: "Th, Jan 29",
           topic: "Domain modeling + relationship tradeoffs (whiteboard first)",
           description: (
             <>
+              Today's Agenda:
               <ul>
+                <li>Team agreements</li>
+                <li>How is testing going? Any questions?</li>
                 <li>Mini-lecture on relationship design and tradeoffs</li>
                 <li>Activity: whiteboard the domain model before coding</li>
                 <li>Begin implementation plan and test plan (what behavior must be true)</li>
@@ -146,7 +154,7 @@ export const baseTopics = [
             </>
           ),
           activities: [
-            { title: "Slides", url: "#", draft: 1 },
+            { title: "Schedule a meeting with Prof. Sanft", url: "https://calendar.app.google/QjwW9pwqQ3e8sHmWA" },
           ],
           readings: [
             {
@@ -172,25 +180,6 @@ export const baseTopics = [
               },
           ],
         },
-        {
-          date: "Th, Jan 29",
-          topic: "Implement model + API + tests + guided live code review",
-          description: (
-            <>
-              <ul>
-                <li>Studio implementation day</li>
-                <li>Open PRs using the required template</li>
-                <li>Guided live code review: reviewers practice substantive feedback (behavior, design, testing)</li>
-              </ul>
-            </>
-          ),
-          assigned: {
-            titleShort: "HW2",
-            title: "New Model + API + Tests (PR) + 1 Substantive Peer Review",
-            url: "/assignments/hw02-new-model-api",
-            draft: 1,
-          },
-        },
       ],
     },
   
@@ -211,6 +200,17 @@ export const baseTopics = [
               </ul>
             </>
           ),
+          discussionQuestions: [
+            {
+              question: "When is a function 'too long'? How do you decide when to extract a function?",
+            },
+            {
+              question: "What's the difference between refactoring and extending? When should you do one vs. the other?",
+            },
+            {
+              question: "How do tests help you refactor safely? What happens if you don't have tests?",
+            },
+          ],
           activities: [
             { title: "Slides", url: "#", draft: 1 },
           ],
@@ -218,7 +218,7 @@ export const baseTopics = [
             {
               citation: (
                 <>
-                  Martin, R. C. (2009). <em>Clean Code</em>. (selected sections on readability and structure)
+                  Martin, R. C. (2009). <em>Clean Code</em>. Chapters 2 (Meaningful Names), 3 (Functions), and 17 (Smells and Heuristics)
                 </>
               ),
               url: "https://www.oreilly.com/library/view/clean-code/9780136083238/",
@@ -226,10 +226,9 @@ export const baseTopics = [
             {
               citation: (
                 <>
-                  Short handout: <em>Designing for Change</em> (technical debt / changeability)
+                  <a href="/spring2026/resources/howto-05-clean-code">Clean Code Best Practices</a>
                 </>
               ),
-              url: "/readings/design-for-change",
             },
           ],
         },

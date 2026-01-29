@@ -54,7 +54,7 @@ export default function QuizDrawer({
         style={{ zIndex: 9999, pointerEvents: 'none' }}
       >
         <div
-          className={`fixed bottom-0 left-0 right-0 w-full h-[80%] bg-white dark:bg-gray-900 shadow-2xl flex flex-col transition-transform duration-300 ease-out ${
+          className={`fixed bottom-0 left-0 right-0 w-full h-[100%] bg-white dark:bg-gray-900 shadow-2xl flex flex-col transition-transform duration-300 ease-out ${
             isClosing ? 'translate-y-full' : isAnimating ? 'translate-y-0' : 'translate-y-full'
           }`}
           style={isDark ? { backgroundColor: '#111827', pointerEvents: 'auto' } : { pointerEvents: 'auto' }}

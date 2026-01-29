@@ -302,6 +302,7 @@ export default function Meeting({
                     />
                     <DiscussionQuestions
                       discussionQuestions={meeting.discussionQuestions}
+                      isDark={isDark}
                     />
                     {meeting.assigned && !isTutorialOnlyMeeting && (
                       <AssignmentsList

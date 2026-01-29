@@ -1,8 +1,8 @@
 ---
 title: "Domain Modeling"
-start_date: "2026-01-27"
+start_date: "2026-01-29"
 type: "activity"
-draft: 1
+draft: 0
 heading_max_level: 3
 ---
 
@@ -206,10 +206,284 @@ Ask yourself two questions:
 - Test the API endpoints that use the model
 - Test that relationships work (e.g., can you query `course.modules`?)
 
-### Next Steps
+
+## 6. SQLAlchemy Query Practice
+If you want some practice with querying, create a file called `sqa_practice.py` inside of your `backend` directory and paste in the code shown below. To run this code:
+
+```bash
+docker exec -it tma_backend poetry run python sqa_practice.py
+```
+
+### Sample SQLAlchemy Code
+```py
+"""
+SQLAlchemy Practice Script
+
+This script provides examples and practice exercises for writing SQLAlchemy queries
+for Courses, Users, and Groups.
+
+To run this script:
+    poetry run python tester.py
+
+Or if you're in Docker:
+    docker exec -it tma_backend python tester.py
+"""
+
+import asyncio
+from sqlalchemy import select, func, and_, or_
+from sqlalchemy.orm import joinedload
+
+from database import AsyncSessionLocal
+from models import User, Course, Group, Role, UserGroup
+
+
+async def practice_queries():
+    """
+    Main function to practice SQLAlchemy queries.
+    Add your practice queries in the sections below.
+    """
+    async with AsyncSessionLocal() as session:
+        print("=" * 60)
+        print("SQLAlchemy Practice Script")
+        print("=" * 60)
+        print()
+
+        # ============================================================
+        # EXAMPLE QUERIES - Study these first!
+        # ============================================================
+
+        print("📚 EXAMPLE QUERIES")
+        print("-" * 60)
+
+        # Example 1: Get all users
+        print("\n1. Get all users:")
+        result = await session.execute(select(User))
+        users = result.scalars().all()
+        print(f"   Found {len(users)} users")
+        for user in users[:3]:  # Show first 3
+            print(f"   - {user.username} ({user.email})")
+
+        # Example 2: Get a user by ID
+        print("\n2. Get user by ID:")
+        result = await session.execute(select(User).where(User.id == 1))
+        user = result.scalar_one_or_none()
+        if user:
+            print(f"   Found: {user.username}")
+
+        # Example 3: Get users with their role (using joinedload)
+        print("\n3. Get users with role relationship loaded:")
+        result = await session.execute(
+            select(User).options(joinedload(User.role)).limit(3)
+        )
+        users = result.unique().scalars().all()
+        for user in users:
+            print(f"   - {user.username} (Role: {user.role.name})")
+
+        # Example 4: Filter users by role
+        print("\n4. Get all admin users:")
+        result = await session.execute(
+            select(User)
+            .join(Role)
+            .where(Role.name == "admin")
+            .options(joinedload(User.role))
+        )
+        admins = result.unique().scalars().all()
+        print(f"   Found {len(admins)} admin users")
+        for admin in admins:
+            print(f"   - {admin.username}")
+
+        # Example 5: Get all courses
+        print("\n5. Get all courses:")
+        result = await session.execute(select(Course).order_by(Course.created_at))
+        courses = result.scalars().all()
+        print(f"   Found {len(courses)} courses")
+        for course in courses[:3]:  # Show first 3
+            print(f"   - {course.title}")
+
+        # Example 6: Get all groups
+        print("\n6. Get all groups:")
+        result = await session.execute(select(Group))
+        groups = result.scalars().all()
+        print(f"   Found {len(groups)} groups")
+        for group in groups[:3]:  # Show first 3
+            print(f"   - {group.name}")
+
+        # Example 7: Get groups with creator information
+        print("\n7. Get groups with creator (using joinedload):")
+        result = await session.execute(
+            select(Group).options(joinedload(Group.creator)).limit(3)
+        )
+        groups = result.unique().scalars().all()
+        for group in groups:
+            creator = group.creator
+            print(f"   - {group.name} (Created by: {creator.username if creator else 'Unknown'})")
+
+        # Example 8: Count users by role
+        print("\n8. Count users by role:")
+        result = await session.execute(
+            select(Role.name, func.count(User.id).label("user_count"))
+            .join(User, Role.id == User.role_id)
+            .group_by(Role.name)
+        )
+        role_counts = result.all()
+        for role_name, count in role_counts:
+            print(f"   - {role_name}: {count} users")
+
+        # ============================================================
+        # PRACTICE EXERCISES - Write your queries here!
+        # ============================================================
+
+        print("\n" + "=" * 60)
+        print("🎯 PRACTICE EXERCISES")
+        print("=" * 60)
+        print("\nUncomment and complete the exercises below:\n")
+
+        # Exercise 1: Get all active users
+        # TODO: Write a query to get all users where is_active == True
+        # Hint: Use select(User).where(User.is_active == True)
+        print("Exercise 1: Get all active users")
+        # result = await session.execute(select(User).where(...))
+        # active_users = result.scalars().all()
+        # print(f"   Found {len(active_users)} active users")
+
+        # Exercise 2: Get a user by username
+        # TODO: Write a query to get a user by username (e.g., "admin")
+        # Hint: Use select(User).where(User.username == "admin")
+        print("\nExercise 2: Get user by username")
+        # result = await session.execute(select(User).where(...))
+        # user = result.scalar_one_or_none()
+        # if user:
+        #     print(f"   Found: {user.username} ({user.email})")
+
+        # Exercise 3: Get users with email containing "@test"
+        # TODO: Write a query to find users whose email contains "@test"
+        # Hint: Use User.email.contains("@test")
+        print("\nExercise 3: Get users with email containing '@test'")
+        # result = await session.execute(select(User).where(...))
+        # test_users = result.scalars().all()
+        # print(f"   Found {len(test_users)} users with '@test' in email")
+
+        # Exercise 4: Get courses ordered by title
+        # TODO: Write a query to get all courses ordered by title (alphabetically)
+        # Hint: Use .order_by(Course.title)
+        print("\nExercise 4: Get courses ordered by title")
+        # result = await session.execute(select(Course).order_by(...))
+        # courses = result.scalars().all()
+        # for course in courses[:5]:
+        #     print(f"   - {course.title}")
+
+        # Exercise 5: Get groups created by a specific user
+        # TODO: Write a query to get all groups created by user_id == 1
+        # Hint: Use select(Group).where(Group.created_by == 1)
+        print("\nExercise 5: Get groups created by user_id 1")
+        # result = await session.execute(select(Group).where(...))
+        # groups = result.scalars().all()
+        # print(f"   Found {len(groups)} groups created by user_id 1")
+
+        # Exercise 6: Get users who are in at least one group
+        # TODO: Write a query to get users who have at least one group membership
+        # Hint: Use join(UserGroup) and distinct()
+        print("\nExercise 6: Get users who are in at least one group")
+        # result = await session.execute(
+        #     select(User)
+        #     .join(UserGroup, User.id == UserGroup.user_id)
+        #     .distinct()
+        # )
+        # users_in_groups = result.scalars().all()
+        # print(f"   Found {len(users_in_groups)} users in groups")
+
+        # Exercise 7: Get a group with all its members
+        # TODO: Write a query to get a group (e.g., id=1) with all its members loaded
+        # Hint: Use joinedload(Group.members) and then access group.members
+        print("\nExercise 7: Get group with members")
+        # result = await session.execute(
+        #     select(Group)
+        #     .where(Group.id == 1)
+        #     .options(joinedload(Group.members))
+        # )
+        # group = result.scalar_one_or_none()
+        # if group:
+        #     print(f"   Group: {group.name}")
+        #     print(f"   Members: {len(group.members)}")
+        #     for member in group.members[:3]:
+        #         user_result = await session.execute(
+        #             select(User).where(User.id == member.user_id)
+        #         )
+        #         user = user_result.scalar_one()
+        #         print(f"     - {user.username} (role: {member.role})")
+
+        # Exercise 8: Get users with multiple conditions
+        # TODO: Write a query to get active users who are NOT admins
+        # Hint: Use and_(User.is_active == True, Role.name != "admin") with join
+        print("\nExercise 8: Get active non-admin users")
+        # result = await session.execute(
+        #     select(User)
+        #     .join(Role)
+        #     .where(and_(User.is_active == True, Role.name != "admin"))
+        #     .options(joinedload(User.role))
+        # )
+        # non_admin_users = result.unique().scalars().all()
+        # print(f"   Found {len(non_admin_users)} active non-admin users")
+
+        # Exercise 9: Count total number of groups
+        # TODO: Write a query to count the total number of groups
+        # Hint: Use func.count(Group.id)
+        print("\nExercise 9: Count total groups")
+        # result = await session.execute(select(func.count(Group.id)))
+        # total_groups = result.scalar()
+        # print(f"   Total groups: {total_groups}")
+
+        # Exercise 10: Get users with OR condition
+        # TODO: Write a query to get users who are either admins OR managers
+        # Hint: Use or_(Role.name == "admin", Role.name == "manager") with join
+        print("\nExercise 10: Get admin or manager users")
+        # result = await session.execute(
+        #     select(User)
+        #     .join(Role)
+        #     .where(or_(Role.name == "admin", Role.name == "manager"))
+        #     .options(joinedload(User.role))
+        # )
+        # privileged_users = result.unique().scalars().all()
+        # print(f"   Found {len(privileged_users)} admin or manager users")
+        # for user in privileged_users:
+        #     print(f"   - {user.username} ({user.role.name})")
+
+        print("\n" + "=" * 60)
+        print("✅ Practice complete! Keep practicing!")
+        print("=" * 60)
+
+
+# ============================================================
+# HELPER FUNCTIONS - Use these for more complex queries
+# ============================================================
+
+async def print_query_result(result, description: str):
+    """
+    Helper function to print query results in a formatted way.
+    
+    Usage:
+        result = await session.execute(select(User))
+        await print_query_result(result, "All users")
+    """
+    print(f"\n{description}:")
+    print("-" * 60)
+    # This is a placeholder - customize based on what you're querying
+    pass
+
+
+# ============================================================
+# MAIN ENTRY POINT
+# ============================================================
+
+if __name__ == "__main__":
+    # Run the async practice function
+    asyncio.run(practice_queries())
+```
+
+## 7. Next Steps
 
 - **Today:** Design your domain model for HW2
-- **Thursday:** Implementation studio - we'll build together
+- **Tuesday:** Implementation studio - we'll build together
 - **HW2:** Implement Module CRUD based on your design
 
 ## Resources

@@ -52,14 +52,6 @@ ${js ? `<script>${js || ''}</script>` : ''}
 
   return (
     <div className="border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden h-full flex flex-col">
-      <div className="bg-blue-50 dark:bg-blue-900 px-3 py-2 flex justify-between items-center flex-shrink-0 border-b border-blue-200 dark:border-blue-700">
-        <span className="text-sm font-semibold text-blue-900 dark:text-blue-100">
-          Target Output
-        </span>
-        <span className="text-xs text-blue-700 dark:text-blue-300 italic">
-          (Reference - what you should create)
-        </span>
-      </div>
       <div className="flex-1 min-h-0" style={{ overflow: 'auto' }}>
         <iframe
           ref={setIframeRef}

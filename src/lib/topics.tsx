@@ -35,6 +35,10 @@ export interface ScheduleQuiz {
   url: string;
 }
 
+export interface DiscussionQuestion {
+  question: string | React.ReactElement;
+}
+
 export interface Meeting {
   date: string;
   topic: string;
@@ -45,7 +49,7 @@ export interface Meeting {
   readings?: Reading[];
   optionalReadings?: Reading[];
   holiday?: boolean;
-  discussionQuestions?: string;
+  discussionQuestions?: DiscussionQuestion[];
   assigned?: Assignment | string | (Assignment | string)[];
   due?: Assignment | string | (Assignment | string)[];
 }
@@ -72,7 +76,7 @@ interface BaseMeeting {
   readings?: Reading[];
   optionalReadings?: Reading[];
   holiday?: boolean;
-  discussionQuestions?: string;
+  discussionQuestions?: DiscussionQuestion[];
   assigned?: Assignment | string | (Assignment | string)[];
   due?: Assignment | string | (Assignment | string)[];
 }

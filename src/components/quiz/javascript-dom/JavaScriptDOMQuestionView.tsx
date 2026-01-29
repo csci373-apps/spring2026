@@ -78,6 +78,7 @@ export default function JavaScriptDOMQuestionView({
   const [activeTab, setActiveTab] = useState<'html' | 'css' | 'javascript' | 'preview'>(getInitialTab());
 
   const testRunnerRef = useRef<TestRunner | null>(null);
+  const draftSaveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Track previous question ID to detect actual question changes
   const prevQuestionIdRef = useRef<string>(question.id);
@@ -98,6 +99,37 @@ export default function JavaScriptDOMQuestionView({
       prevQuestionIdRef.current = question.id;
     }
   }, [question.id, question.htmlTemplate, question.cssTemplate, question.codeTemplate, selectedAnswers]);
+
+  // Persist edits after a check so navigating away doesn't reset progress
+  useEffect(() => {
+    if (!codeAnswer) return;
+
+    const savedHtml = codeAnswer.html || '';
+    const savedCss = codeAnswer.css || '';
+    const savedJs = codeAnswer.js || '';
+    const isUnchanged = html === savedHtml && css === savedCss && js === savedJs;
+
+    if (isUnchanged) return;
+
+    if (draftSaveTimeoutRef.current) {
+      clearTimeout(draftSaveTimeoutRef.current);
+    }
+
+    draftSaveTimeoutRef.current = setTimeout(() => {
+      const currentResults = testResults || codeAnswer.testResults;
+      onAnswerSelect(
+        question.id,
+        { html, css, js, testResults: currentResults },
+        !!currentResults?.allPassed
+      );
+    }, 300);
+
+    return () => {
+      if (draftSaveTimeoutRef.current) {
+        clearTimeout(draftSaveTimeoutRef.current);
+      }
+    };
+  }, [html, css, js, codeAnswer, testResults, question.id, onAnswerSelect]);
 
   // Initialize TestRunner once using useEffect to avoid issues in strict mode
   useEffect(() => {
@@ -136,6 +168,40 @@ export default function JavaScriptDOMQuestionView({
       setIsRunning(false);
     }
   };
+
+  // Auto-check when question is revealed in review mode and hasn't been checked yet
+  useEffect(() => {
+    if (isRevealed && !testResults && !isRunning && testRunnerRef.current) {
+      // Only auto-check if there's actual code to test
+      if (html.trim() || css.trim() || js.trim()) {
+        const runCheck = async () => {
+          if (!testRunnerRef.current) return;
+          
+          setIsRunning(true);
+          try {
+            const results = await testRunnerRef.current.executeTests(
+              html,
+              css,
+              js,
+              question.testCases,  // Legacy JSON format
+              question.testCode     // New JavaScript format
+            );
+            setTestResults(results);
+            onAnswerSelect(question.id, { html, css, js, testResults: results }, results.allPassed);
+          } catch (error) {
+            setTestResults({
+              allPassed: false,
+              results: [],
+              executionError: error instanceof Error ? error.message : 'Unknown error'
+            });
+          } finally {
+            setIsRunning(false);
+          }
+        };
+        runCheck();
+      }
+    }
+  }, [isRevealed, testResults, isRunning, html, css, js, question.id, question.testCases, question.testCode, onAnswerSelect]);
 
   const handleDownload = async () => {
     const zip = new JSZip();
@@ -188,7 +254,7 @@ ${html || '<!-- Your HTML here -->'}
               {formatQuestionText(question.instructions, isDark)}
             </div>
           )}
-          <div style={{ height: '225px' }} className="mb-8">
+          <div style={{ height: '150px' }} className="mb-8">
             <TargetPreview
               html={question.targetHtml!}
               css={question.targetCss!}

@@ -102,6 +102,10 @@ export default function QuestionCircles({
             bgColor = 'bg-gray-600 dark:bg-gray-700';
             borderColor = 'border-gray-700 dark:border-gray-600';
           }
+        } else if (shouldShowGrade) {
+          // Unanswered questions are treated as incorrect during review
+          bgColor = 'bg-red-500 dark:bg-red-600';
+          borderColor = 'border-red-600 dark:border-red-500';
         }
         
         return (
