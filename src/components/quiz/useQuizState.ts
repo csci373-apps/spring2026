@@ -9,17 +9,11 @@ export function useQuizState(quizData: QuizData, resourceSlug: string) {
   }>({});
   const [score, setScore] = useState<number>(0);
   const [completed, setCompleted] = useState<boolean>(false);
-  const [quizCompleted, setQuizCompleted] = useState<boolean>(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(-1);
   const [shuffledQuestions, setShuffledQuestions] = useState<QuizQuestion[]>([]);
   const [randomMode, setRandomMode] = useState<boolean>(false);
   const [studentName, setStudentName] = useState<string>('');
   const [circleWindowStart, setCircleWindowStart] = useState<number>(0);
-
-  const selectedAnswersRef = useRef(selectedAnswers);
-  const scoreRef = useRef(score);
-  const quizCompletedRef = useRef(quizCompleted);
-  const randomModeRef = useRef(randomMode);
   
   const previousCompletedRef = useRef<boolean>(false);
   const previousShowSummaryRef = useRef<boolean>(false);
@@ -83,22 +77,6 @@ export function useQuizState(quizData: QuizData, resourceSlug: string) {
     setCircleWindowStart(0);
   }, [quizData.questions, randomMode]);
 
-  useEffect(() => {
-    selectedAnswersRef.current = selectedAnswers;
-  }, [selectedAnswers]);
-
-  useEffect(() => {
-    scoreRef.current = score;
-  }, [score]);
-
-  useEffect(() => {
-    quizCompletedRef.current = quizCompleted;
-  }, [quizCompleted]);
-
-  useEffect(() => {
-    randomModeRef.current = randomMode;
-  }, [randomMode]);
-
   // Load quiz state from localStorage on mount (after questions are shuffled)
   useEffect(() => {
     if (shuffledQuestions.length === 0) return;
@@ -159,13 +137,11 @@ export function useQuizState(quizData: QuizData, resourceSlug: string) {
         setSelectedAnswers(restoredAnswers);
         setScore(savedState.score || 0);
         const wasCompleted = savedState.completed || false;
-        const wasQuizCompleted = savedState.quizCompleted ?? wasCompleted;
-        setCompleted(wasQuizCompleted);
-        setQuizCompleted(wasQuizCompleted);
+        setCompleted(wasCompleted);
         // Store the restored completed state to preserve it
-        restoredCompletedRef.current = wasQuizCompleted;
+        restoredCompletedRef.current = wasCompleted;
         // Set the previous completed ref to prevent confetti on initial load
-        previousCompletedRef.current = wasQuizCompleted;
+        previousCompletedRef.current = wasCompleted;
         // Always start at instructions page when drawer opens
         // User can navigate to continue their quiz from there
         setCurrentQuestionIndex(-1);
@@ -238,9 +214,8 @@ export function useQuizState(quizData: QuizData, resourceSlug: string) {
     // Otherwise, use the calculated allAnswered value
     const shouldBeCompleted = restoredCompletedRef.current !== null 
       ? (restoredCompletedRef.current || allAnswered)
-      : (quizCompleted || allAnswered);
+      : allAnswered;
     setCompleted(shouldBeCompleted);
-    setQuizCompleted(shouldBeCompleted);
     // Clear the restored flag after first calculation
     if (restoredCompletedRef.current !== null) {
       restoredCompletedRef.current = null;
@@ -253,7 +228,6 @@ export function useQuizState(quizData: QuizData, resourceSlug: string) {
           selectedAnswers,
           score: newScore,
           completed: shouldBeCompleted,
-          quizCompleted: shouldBeCompleted,
           timestamp: Date.now(),
           randomMode,
         };
@@ -262,40 +236,18 @@ export function useQuizState(quizData: QuizData, resourceSlug: string) {
         console.error('Error saving quiz state:', error);
       }
     }
-  }, [selectedAnswers, shuffledQuestions, storageKey, randomMode, quizCompleted]);
-
-  const markQuizCompleted = () => {
-    setCompleted(true);
-    setQuizCompleted(true);
-  };
+  }, [selectedAnswers, shuffledQuestions, storageKey, randomMode]);
 
   const handleClearQuiz = () => {
     setSelectedAnswers({});
     setScore(0);
     setCompleted(false);
-    setQuizCompleted(false);
     setCurrentQuestionIndex(0);
     setStudentName('');
     try {
       localStorage.removeItem(storageKey);
     } catch (error) {
       console.error('Error clearing quiz state:', error);
-    }
-  };
-
-  const saveQuizStateNow = () => {
-    try {
-      const state: QuizState = {
-        selectedAnswers: selectedAnswersRef.current,
-        score: scoreRef.current,
-        completed: quizCompletedRef.current,
-        quizCompleted: quizCompletedRef.current,
-        timestamp: Date.now(),
-        randomMode: randomModeRef.current,
-      };
-      localStorage.setItem(storageKey, JSON.stringify(state));
-    } catch (error) {
-      console.error('Error saving quiz state:', error);
     }
   };
 
@@ -448,13 +400,28 @@ export function useQuizState(quizData: QuizData, resourceSlug: string) {
     });
   };
 
+  // Function to manually mark quiz as completed (allows completion without answering all questions)
+  const handleCompleteQuiz = () => {
+    setCompleted(true);
+    // Save to localStorage
+    try {
+      const state: QuizState = {
+        selectedAnswers,
+        score,
+        completed: true,
+        timestamp: Date.now(),
+        randomMode,
+      };
+      localStorage.setItem(storageKey, JSON.stringify(state));
+    } catch (error) {
+      console.error('Error saving quiz completion:', error);
+    }
+  };
+
   return {
     selectedAnswers,
     score,
     completed,
-    quizCompleted,
-    markQuizCompleted,
-    saveQuizStateNow,
     currentQuestionIndex,
     setCurrentQuestionIndex,
     shuffledQuestions,
@@ -474,5 +441,6 @@ export function useQuizState(quizData: QuizData, resourceSlug: string) {
     isSelected,
     hasAnswered,
     getIncorrectQuestions,
+    handleCompleteQuiz,
   };
 }

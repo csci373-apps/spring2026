@@ -19,6 +19,7 @@ interface QuizNavigationProps {
   hasAnswered: (questionId: string) => boolean;
   revealedQuestions?: Set<string>;
   showSummary?: boolean;
+  isReviewMode?: boolean;
   isDark: boolean;
 }
 
@@ -37,6 +38,7 @@ export default function QuizNavigation({
   hasAnswered,
   revealedQuestions,
   showSummary,
+  isReviewMode = false,
   isDark,
 }: QuizNavigationProps) {
   return (
@@ -67,7 +69,7 @@ export default function QuizNavigation({
             onQuestionClick={onQuestionClick}
             hasAnswered={hasAnswered}
             revealedQuestions={revealedQuestions}
-            showSummary={showSummary}
+            showSummary={showSummary || isReviewMode}
           />
         </div>
         <button

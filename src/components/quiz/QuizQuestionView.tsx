@@ -93,7 +93,7 @@ export default function QuizQuestionView({
           const selected = isSelected(question.id, optionIndex);
           const correct = isCorrect(question.id, optionIndex);
           // Show feedback for all options when revealed or on summary screen
-          // For single-select, only show feedback for selected or correct option
+          // For single-select, show feedback for selected or correct option (to highlight correct answer)
           // For multi-select, show feedback for all options
           const showFeedback = shouldShowFeedback && (isMultiSelect ? true : (selected || correct));
 
@@ -116,12 +116,12 @@ export default function QuizQuestionView({
               if (isDark) {
                 inlineStyle = { borderColor: '#ef4444', backgroundColor: 'rgba(127, 29, 29, 0.3)' };
               }
-            } else if (correct && !selected && isMultiSelect) {
-              // Correct option that should have been selected (multi-select only)
-              borderColor = 'border-green-300 dark:border-green-700';
-              bgColor = 'bg-green-50/50 dark:bg-green-900/20';
+            } else if (correct && !selected) {
+              // Correct option that was not selected (for both single-select and multi-select)
+              borderColor = 'border-green-500 dark:border-green-500';
+              bgColor = 'bg-green-50 dark:bg-green-900/30';
               if (isDark) {
-                inlineStyle = { borderColor: '#34d399', backgroundColor: 'rgba(20, 83, 45, 0.15)' };
+                inlineStyle = { borderColor: '#10b981', backgroundColor: 'rgba(20, 83, 45, 0.3)' };
               }
             }
           } else if (selected) {
@@ -170,9 +170,9 @@ export default function QuizQuestionView({
                     ✗ Incorrect
                   </span>
                 )}
-                {showFeedback && correct && !selected && isMultiSelect && (
+                {showFeedback && correct && !selected && (
                   <span className="ml-2 text-green-600 dark:text-green-500 font-semibold">
-                    (Should be selected)
+                    (Correct answer)
                   </span>
                 )}
               </div>

@@ -6,6 +6,8 @@ import { QuizMetadata, QuizData } from '@/lib/markdown';
 
 interface QuizWithData extends QuizMetadata {
   quizData: QuizData | null;
+  weekNumber?: number;
+  daysLeft?: number | null;
 }
 
 interface QuizzesListClientProps {
@@ -140,11 +142,11 @@ export default function QuizzesListClient({ quizzes }: QuizzesListClientProps) {
       <table className="table-fixed w-full">
         <thead>
           <tr>
-            <th className="w-[50px]"></th>
+            <th className="hidden md:table-cell md:w-[100px]">Week</th>
             <th className="md:w-[300px]">Quiz</th>
+            <th className="hidden md:table-cell md:w-[100px]">Num Questions</th>
             <th className="hidden md:table-cell md:w-[120px]">Assigned</th>
-            <th className="hidden md:table-cell md:w-[100px]">Questions</th>
-            <th className="hidden md:table-cell md:w-[150px]">Score</th>
+            <th className="hidden md:table-cell md:w-[150px]">Status</th>
             <th className="md:w-[120px]">Action</th>
           </tr>
         </thead>
@@ -159,29 +161,22 @@ export default function QuizzesListClient({ quizzes }: QuizzesListClientProps) {
                 key={quiz.slug}
                 className="border-b border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors"
               >
-                <td className="py-3 px-4">
-                  {!mounted ? (
-                    <div className="w-4 h-4 rounded border-2 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 animate-pulse" />
-                  ) : (
-                    <input
-                      type="checkbox"
-                      aria-label={`Quiz "${quiz.quizName}" ${isCompleted ? 'completed' : 'not completed'} - checkbox is readonly, complete the quiz to mark it as done`}
-                      checked={isCompleted}
-                      onChange={() => {}} // Readonly - can only be checked by completing the quiz
-                      readOnly
-                      onClick={(e) => e.stopPropagation()}
-                      className="w-4 h-4 rounded border-2 border-gray-300 dark:border-gray-600 accent-blue-600 dark:accent-blue-400 cursor-default flex-shrink-0"
-                      style={isDark ? {
-                        backgroundColor: isCompleted ? '#3b82f6' : '#1f2937',
-                        borderColor: isCompleted ? '#3b82f6' : '#4b5563'
-                      } : undefined}
-                    />
+                <td className="py-3 px-4 hidden md:table-cell text-sm text-gray-600 dark:text-gray-400">
+                  {quiz.weekNumber ? `Week ${quiz.weekNumber}` : (
+                    <span className="text-gray-400 dark:text-gray-500">—</span>
                   )}
                 </td>
                 <td className="py-3 px-4">
                   <div className="font-medium text-gray-900 dark:text-gray-100">
                     {quiz.quizName}
                   </div>
+                </td>
+                <td className="py-3 px-4 hidden md:table-cell text-sm text-gray-600 dark:text-gray-400">
+                  {quiz.quizData ? (
+                    `${quiz.quizData.questions.length} question${quiz.quizData.questions.length !== 1 ? 's' : ''}`
+                  ) : (
+                    <span className="text-gray-400 dark:text-gray-500">—</span>
+                  )}
                 </td>
                 <td className="py-3 px-4 hidden md:table-cell text-sm text-gray-600 dark:text-gray-400">
                   {quiz.start_date ? (() => {
@@ -198,17 +193,20 @@ export default function QuizzesListClient({ quizzes }: QuizzesListClientProps) {
                   )}
                 </td>
                 <td className="py-3 px-4 hidden md:table-cell text-sm text-gray-600 dark:text-gray-400">
-                  {quiz.quizData ? (
-                    `${quiz.quizData.questions.length} question${quiz.quizData.questions.length !== 1 ? 's' : ''}`
-                  ) : (
-                    <span className="text-gray-400 dark:text-gray-500">—</span>
-                  )}
-                </td>
-                <td className="py-3 px-4 hidden md:table-cell text-sm text-gray-600 dark:text-gray-400">
                   {!mounted ? (
                     <span className="text-gray-400 dark:text-gray-500">—</span>
                   ) : status && status.completed ? (
+                    // Rule 1: If taken, show score
                     `${status.score} / ${status.total} (${status.total > 0 ? Math.round((status.score / status.total) * 100) : 0}%)`
+                  ) : quiz.daysLeft !== null && quiz.daysLeft !== undefined ? (
+                    // Rule 2 & 3: If not taken, show days left or overdue
+                    quiz.daysLeft > 0 ? (
+                      <span className="text-blue-600 dark:text-blue-400">{quiz.daysLeft} day{quiz.daysLeft !== 1 ? 's' : ''} left</span>
+                    ) : quiz.daysLeft === 0 ? (
+                      <span className="text-orange-600 dark:text-orange-400">Today</span>
+                    ) : (
+                      <span className="text-red-600 dark:text-red-400">Overdue</span>
+                    )
                   ) : (
                     <span className="text-gray-400 dark:text-gray-500">—</span>
                   )}

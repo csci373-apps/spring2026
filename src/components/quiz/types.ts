@@ -40,7 +40,6 @@ export interface QuizState {
   }; // Store option text for multiple-choice, or code for JS/DOM questions
   score: number;
   completed: boolean;
-  quizCompleted?: boolean;
   timestamp: number;
   randomMode?: boolean; // Store the random mode state when saving
 }

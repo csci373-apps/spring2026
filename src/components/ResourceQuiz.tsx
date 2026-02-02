@@ -5,7 +5,6 @@ import { useDarkMode } from '@/hooks/useDarkMode';
 import { triggerConfetti } from '@/lib/utils';
 import { ResourceQuizProps } from './quiz/types';
 import { useQuizState } from './quiz/useQuizState';
-import { TestRunner } from './quiz/javascript-dom/TestRunner';
 import QuizDrawer from './quiz/QuizDrawer';
 import QuizInstructions from './quiz/QuizInstructions';
 import QuizQuestionView from './quiz/QuizQuestionView';
@@ -21,7 +20,7 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
   const [isGeneratingReport, setIsGeneratingReport] = useState<boolean>(false);
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const [revealedQuestions, setRevealedQuestions] = useState<Set<string>>(new Set());
-  const reviewTestRunnerRef = useRef<TestRunner | null>(null);
+  const [isReviewMode, setIsReviewMode] = useState<boolean>(false);
   // Initialize from localStorage synchronously if available (client-side only)
   const [hasCompletedFromStorage, setHasCompletedFromStorage] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
@@ -30,7 +29,7 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
       const saved = localStorage.getItem(storageKey);
       if (saved) {
         const savedState = JSON.parse(saved);
-        return (savedState.quizCompleted ?? savedState.completed) || false;
+        return savedState.completed || false;
       }
     } catch (error) {
       console.error('Error checking quiz completion status:', error);
@@ -43,9 +42,6 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
     selectedAnswers,
     score,
     completed,
-    quizCompleted,
-    markQuizCompleted,
-    saveQuizStateNow,
     currentQuestionIndex,
     setCurrentQuestionIndex,
     shuffledQuestions,
@@ -65,19 +61,8 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
     isSelected,
     hasAnswered,
     getIncorrectQuestions,
+    handleCompleteQuiz,
   } = useQuizState(quizData, resourceSlug);
-
-  useEffect(() => {
-    if (!reviewTestRunnerRef.current) {
-      reviewTestRunnerRef.current = new TestRunner();
-    }
-
-    return () => {
-      if (reviewTestRunnerRef.current) {
-        reviewTestRunnerRef.current.cleanup();
-      }
-    };
-  }, []);
 
   // Use a ref to track the current circleWindowStart value to avoid infinite loops
   const circleWindowStartRef = useRef(circleWindowStart);
@@ -133,7 +118,7 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
       const saved = localStorage.getItem(storageKey);
       if (saved) {
         const savedState = JSON.parse(saved);
-        const wasCompleted = (savedState.quizCompleted ?? savedState.completed) || false;
+        const wasCompleted = savedState.completed || false;
         setHasCompletedFromStorage(wasCompleted);
       } else {
         setHasCompletedFromStorage(false);
@@ -143,20 +128,12 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
     }
   }, [resourceSlug]);
 
-  // Update hasCompletedFromStorage when quiz completion changes from useQuizState
+  // Update hasCompletedFromStorage when completed changes from useQuizState
   useEffect(() => {
-    if (quizCompleted) {
+    if (completed) {
       setHasCompletedFromStorage(true);
     }
-  }, [quizCompleted]);
-
-  // If the quiz is already completed, reveal all answers for review
-  useEffect(() => {
-    if (!shuffledQuestions.length) return;
-    if (quizCompleted || hasCompletedFromStorage) {
-      setRevealedQuestions(new Set(shuffledQuestions.map(question => question.id)));
-    }
-  }, [quizCompleted, hasCompletedFromStorage, shuffledQuestions]);
+  }, [completed]);
 
   // Detect mobile screen size
   useEffect(() => {
@@ -241,8 +218,12 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
     } else if (currentQuestionIndex < shuffledQuestions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
     } else if (currentQuestionIndex === shuffledQuestions.length - 1) {
-      // Complete quiz and show summary
-      markQuizCompleted();
+      // On last question - allow completion even if not all questions answered
+      if (!completed) {
+        // Mark as completed and show summary
+        handleCompleteQuiz();
+      }
+      // Show summary
       setCurrentQuestionIndex(shuffledQuestions.length);
     }
   };
@@ -260,61 +241,42 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
     setRevealedQuestions(prev => new Set([...prev, questionId]));
   };
 
-  const handleReview = async () => {
-    // Mark quiz as completed so grading is enabled
-    markQuizCompleted();
-
-    // Run tests for JavaScript DOM questions so they are graded during review
-    if (reviewTestRunnerRef.current) {
-      for (const question of shuffledQuestions) {
-        if (question.type !== 'javascript-dom') continue;
-
-        const savedAnswer = selectedAnswers[question.id];
-        const hasCodeAnswer = typeof savedAnswer === 'object' && savedAnswer !== null && 'html' in savedAnswer;
-        if (!hasCodeAnswer) continue;
-
-        const codeAnswer = savedAnswer as { html: string; css: string; js: string; testResults?: { allPassed: boolean } };
-        try {
-          const results = await reviewTestRunnerRef.current.executeTests(
-            codeAnswer.html,
-            codeAnswer.css,
-            codeAnswer.js,
-            question.testCases,
-            question.testCode
-          );
-          handleCodeAnswerSelect(question.id, { ...codeAnswer, testResults: results }, results.allPassed);
-        } catch (error) {
-          handleCodeAnswerSelect(
-            question.id,
-            {
-              ...codeAnswer,
-              testResults: {
-                allPassed: false,
-                results: [],
-                executionError: error instanceof Error ? error.message : 'Unknown error',
-              },
-            },
-            false
-          );
-        }
-      }
-    }
-
-    // Reveal all questions
-    const allQuestionIds = new Set(shuffledQuestions.map(q => q.id));
-    setRevealedQuestions(allQuestionIds);
-
-    // Persist latest state before navigating
-    saveQuizStateNow();
-
-    // Navigate to first question
-    setCurrentQuestionIndex(0);
-  };
-
   const handleClearQuizWithReveals = () => {
     handleClearQuiz();
     setRevealedQuestions(new Set());
-    setHasCompletedFromStorage(false);
+    setIsReviewMode(false);
+  };
+
+  const handleReview = () => {
+    // Reveal all questions before starting review
+    const allQuestionIds = new Set(shuffledQuestions.map(q => q.id));
+    setRevealedQuestions(allQuestionIds);
+    setIsReviewMode(true);
+    
+    // Update localStorage to ensure quiz state is saved with all questions revealed
+    // The quiz state is already saved, but we'll ensure it's up to date
+    try {
+      const storageKey = `quiz-${resourceSlug}`;
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        const savedState = JSON.parse(saved);
+        // Update the saved state to ensure it's current
+        const updatedState = {
+          ...savedState,
+          selectedAnswers,
+          score,
+          completed: true,
+          timestamp: Date.now(),
+          randomMode,
+        };
+        localStorage.setItem(storageKey, JSON.stringify(updatedState));
+      }
+    } catch (error) {
+      console.error('Error updating localStorage for review:', error);
+    }
+    
+    // Start review by going to first question
+    setCurrentQuestionIndex(0);
   };
 
   // Don't render until questions are shuffled
@@ -418,9 +380,9 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
                   isSelected={isSelected}
                   hasAnswered={hasAnswered}
                   completed={completed}
-                  isRevealed={revealedQuestions.has(currentQuestion.id)}
+                  isRevealed={isReviewMode || revealedQuestions.has(currentQuestion.id)}
                   onRevealAnswer={handleRevealAnswer}
-                  showSummary={showSummary}
+                  showSummary={showSummary || isReviewMode}
                   isDark={isDark}
                 />
               ) : null}
@@ -445,7 +407,8 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
           onQuestionClick={setCurrentQuestionIndex}
           hasAnswered={hasAnswered}
           revealedQuestions={revealedQuestions}
-          showSummary={showSummary}
+          showSummary={showSummary || isReviewMode}
+          isReviewMode={isReviewMode}
           isDark={isDark}
         />
       )}

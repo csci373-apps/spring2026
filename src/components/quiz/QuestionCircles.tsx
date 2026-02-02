@@ -44,7 +44,7 @@ export default function QuestionCircles({
           const index = startIndex + relativeIndex;
           const answered = hasAnswered(question.id);
           const isCurrent = index === currentQuestionIndex;
-          const isRevealed = revealedQuestions.has(question.id);
+          const isRevealed = revealedQuestions.has(question.id) || showSummary;
           const shouldShowGrade = isRevealed || showSummary;
           
           // Check if saved answer matches the correct answer(s) - only if revealed or on summary
@@ -87,25 +87,20 @@ export default function QuestionCircles({
         if (isCurrent) {
           bgColor = 'bg-blue-600 dark:bg-blue-500';
           borderColor = 'border-blue-700 dark:border-blue-400';
-        } else if (answered) {
-          if (shouldShowGrade) {
-            // Show green/red only if revealed or on summary
-            if (isCorrect) {
-              bgColor = 'bg-green-500 dark:bg-green-600';
-              borderColor = 'border-green-600 dark:border-green-500';
-            } else {
-              bgColor = 'bg-red-500 dark:bg-red-600';
-              borderColor = 'border-red-600 dark:border-red-500';
-            }
-          } else {
-            // Show dark gray if answered but not revealed
-            bgColor = 'bg-gray-600 dark:bg-gray-700';
-            borderColor = 'border-gray-700 dark:border-gray-600';
-          }
         } else if (shouldShowGrade) {
-          // Unanswered questions are treated as incorrect during review
-          bgColor = 'bg-red-500 dark:bg-red-600';
-          borderColor = 'border-red-600 dark:border-red-500';
+          // In review mode or summary, show all questions as graded
+          if (answered && isCorrect) {
+            bgColor = 'bg-green-500 dark:bg-green-600';
+            borderColor = 'border-green-600 dark:border-green-500';
+          } else {
+            // Red for incorrect or unanswered (in review mode)
+            bgColor = 'bg-red-500 dark:bg-red-600';
+            borderColor = 'border-red-600 dark:border-red-500';
+          }
+        } else if (answered) {
+          // Show dark gray if answered but not revealed
+          bgColor = 'bg-gray-600 dark:bg-gray-700';
+          borderColor = 'border-gray-700 dark:border-gray-600';
         }
         
         return (

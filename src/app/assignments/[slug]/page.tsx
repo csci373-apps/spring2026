@@ -36,6 +36,7 @@ export default async function AssignmentPage({ params }: AssignmentPageProps) {
     
     const { heading_max_level } = postData;
     const isStyleGuideDemo = slug === 'style-guide-demo';
+    const isTutorial02 = slug === 'tutorial02';
     
     return (
       <ContentLayout
@@ -44,7 +45,7 @@ export default async function AssignmentPage({ params }: AssignmentPageProps) {
         showToc={postData.toc !== false}
         tocMaxLevel={heading_max_level || 2}
       >
-        <div className="assignment-page">
+        <div className={`assignment-page${isTutorial02 ? ' assignment-page-tutorial02' : ''}`}>
           <div className="mb-4">
             <Link href="/assignments" className="text-blue-600 dark:text-blue-400 hover:underline">
               Assignments

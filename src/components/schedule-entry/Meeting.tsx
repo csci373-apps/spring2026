@@ -220,7 +220,7 @@ export default function Meeting({
             <div className="w-full">
                 <p className={clsx({
                     '!mb-3': !showDetails && !isTutorialOnlyMeeting,
-                    '!mb-0': showDetails || isTutorialOnlyMeeting,
+                    '!mb-2': showDetails || isTutorialOnlyMeeting,
                     'cursor-pointer': !isTutorialOnlyMeeting && 'pointer',
                   })} onClick={isTutorialOnlyMeeting ? undefined : toggleDetails}>
                   {isTutorialOnlyMeeting && tutorialInfo ? (

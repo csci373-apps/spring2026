@@ -196,6 +196,11 @@ li:has(input[type="checkbox"]) {
   @apply !mb-0;
 }
 
+/* Tutorial02 specific styles - remove margin from li in blockquotes */
+.assignment-page-tutorial02 blockquote li {
+  @apply !mb-0;
+}
+
 .syllabus-page {
   h2 {
     color: var(--primary);

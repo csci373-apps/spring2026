@@ -395,6 +395,53 @@ ${html || '<!-- Your HTML here -->'}
           </p>
         </div>
       )}
+
+      {/* Correct Answer Code - shown when revealed */}
+      {shouldShowFeedback && (question.targetHtml || question.targetCss || question.targetJs) && (
+        <div className="mt-6 py-4 border-t border-gray-300 dark:border-gray-700" style={isDark ? { borderColor: '#374151' } : undefined}>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4" style={isDark ? { color: '#f9fafb' } : undefined}>
+            Correct Answer:
+          </h3>
+          <div className="space-y-4">
+            {question.targetHtml && (
+              <div>
+                <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" style={isDark ? { color: '#d1d5db' } : undefined}>
+                  HTML:
+                </h4>
+                <pre className="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg overflow-x-auto border border-gray-300 dark:border-gray-700" style={isDark ? { backgroundColor: '#111827', borderColor: '#374151' } : undefined}>
+                  <code className="text-sm text-gray-900 dark:text-gray-100" style={isDark ? { color: '#e2e8f0' } : undefined}>
+                    {question.targetHtml}
+                  </code>
+                </pre>
+              </div>
+            )}
+            {question.targetCss && (
+              <div>
+                <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" style={isDark ? { color: '#d1d5db' } : undefined}>
+                  CSS:
+                </h4>
+                <pre className="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg overflow-x-auto border border-gray-300 dark:border-gray-700" style={isDark ? { backgroundColor: '#111827', borderColor: '#374151' } : undefined}>
+                  <code className="text-sm text-gray-900 dark:text-gray-100" style={isDark ? { color: '#e2e8f0' } : undefined}>
+                    {question.targetCss}
+                  </code>
+                </pre>
+              </div>
+            )}
+            {question.targetJs && (
+              <div>
+                <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" style={isDark ? { color: '#d1d5db' } : undefined}>
+                  JavaScript:
+                </h4>
+                <pre className="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg overflow-x-auto border border-gray-300 dark:border-gray-700" style={isDark ? { backgroundColor: '#111827', borderColor: '#374151' } : undefined}>
+                  <code className="text-sm text-gray-900 dark:text-gray-100" style={isDark ? { color: '#e2e8f0' } : undefined}>
+                    {question.targetJs}
+                  </code>
+                </pre>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
