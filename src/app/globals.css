@@ -115,7 +115,20 @@ li {
 }
 
 blockquote {
-  @apply bg-yellow-50 dark:bg-yellow-800 border border-yellow-200 dark:border-yellow-800 p-4 !mb-10;
+  @apply bg-yellow-50 rounded-lg border border-yellow-200 p-4 !mb-10 dark:bg-yellow-900 dark:border-yellow-500;
+}
+
+ul + blockquote,
+ol + blockquote,
+li + blockquote {
+  @apply !mt-8;
+}
+
+blockquote > h1:first-child,
+blockquote > h2:first-child,
+blockquote > h3:first-child,
+blockquote > h4:first-child {
+  @apply !mt-0;
 }
 
 blockquote h2 {
@@ -126,10 +139,43 @@ blockquote > *:last-child {
   @apply !mb-0;
 }
 
-.dark blockquote {
+/* .dark blockquote {
   background-color: #1f2937 !important;
   border-color: #4b5563 !important;
   color: #e5e7eb;
+} */
+
+blockquote.info {
+    @apply bg-green-50 p-4 rounded-lg border-green-300 dark:!border-green-500 dark:!bg-green-900;
+}
+
+ul + blockquote.info,
+ol + blockquote.info,
+li + blockquote.info {
+  @apply !mt-8;
+}
+
+blockquote.info > h1:first-child,
+blockquote.info > h2:first-child,
+blockquote.info > h3:first-child,
+blockquote.info > h4:first-child {
+  @apply !mt-0;
+}
+
+blockquote.info h2 {
+  @apply !mt-0;
+}
+
+blockquote.info > *:last-child {
+  @apply !mb-0;
+}
+
+/* Remove bottom margin from nested list items */
+ul ul li,
+ol ol li,
+ul ol li,
+ol ul li {
+  @apply !mb-0;
 }
 
 /* Hide bullets for list items with checkboxes and use flexbox layout */
