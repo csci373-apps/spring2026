@@ -190,7 +190,21 @@ export const baseTopics = [
         "Apply design principles (cohesion, coupling, DRY, data minimization) directly to the starter architecture. Use tests to refactor safely. SDLC concept: design for change.",
       meetings: [
         {
-          date: "Tu, Feb 3",
+            date: "Tu, Feb 3",
+            topic: "HW1 Reflection + Data Modeling Studio",
+            description: (
+              <>
+                <ul>
+                  <li>
+                    <a href="https://docs.google.com/document/d/1n0SLMoV4vxg0HzaUWZlStF-LL30mNDpz5kzNv9K4P7M/edit?usp=sharing" target='_blank'>HW1 Feedback & Discussion</a></li>
+                  <li>Show & Tell: Compare your implementation with your counterpart on the other team and discuss.</li>
+                  <li>Discussion of each team's data model</li>
+                </ul>
+              </>
+            )
+        },
+        {
+          date: "Th, Feb 5",
           topic: "Design principles (practical) + refactoring with tests",
           description: (
             <>
@@ -231,26 +245,6 @@ export const baseTopics = [
               ),
             },
           ],
-        },
-        {
-          date: "Th, Feb 5",
-          topic: "Design-oriented code review + iteration",
-          description: (
-            <>
-              <ul>
-                <li>Studio: finish refactor/extension</li>
-                <li>Review focus: 'What breaks if this changes?' and 'Are responsibilities clear?'</li>
-                <li>Instructor models high-signal review comments</li>
-                <li>Iteration based on review feedback</li>
-              </ul>
-            </>
-          ),
-          assigned: {
-            titleShort: "HW3",
-            title: "Refactor/Extension PR + Tests + 1 Peer Review (Design Focus)",
-            url: "/assignments/hw03-refactor-extension",
-            draft: 1,
-          },
         },
       ],
     },

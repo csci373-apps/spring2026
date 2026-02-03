@@ -18,7 +18,7 @@ export default function DiscussionQuestions({
   return (
     <div className="mb-4">
       <strong className="text-gray-700 dark:text-gray-300" style={isDark ? { color: '#d1d5db' } : undefined}>Discussion Questions</strong>
-      <ul className="!list-none !pl-4">
+      <ul className="!pl-8 !list-decimal space-y-2">
         {discussionQuestions.map((dq, index) => (
           <li key={index} className="text-gray-700 dark:text-gray-300" style={isDark ? { color: '#d1d5db' } : undefined}>
             {dq.question}

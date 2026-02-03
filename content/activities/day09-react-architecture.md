@@ -3,6 +3,7 @@ title: "React Architecture"
 start_date: "2026-02-10"
 type: "activity"
 draft: 1
+heading_max_level: 3
 ---
 
 

@@ -1,104 +1,13 @@
 ---
 title: "Design Principles"
-start_date: "2026-02-03"
+start_date: "2026-02-05"
 type: "activity"
 draft: 1
+heading_max_level: 3
 ---
 
 
-## Learning Objectives
-
-By the end of this session, students will:
-- Understand design principles: cohesion, coupling, DRY, size
-- Be able to identify code smells in existing code
-- Understand how to refactor safely using tests
-- Be able to plan a refactoring with tests as guardrails
-- Reflect on what they learned from HW2 (design decisions and code reviews)
-
-
-## Agenda (90 minutes)
-
-| Time | Activity | Description |
-|------|----------|-------------|
-| 0:00-0:15 | Reflection on HW2 | Review design decisions and code reviews |
-| 0:15-0:40 | Design Principles Lecture | Cohesion, coupling, DRY, size |
-| 0:40-1:05 | Code Smell Hunt | Identify issues in starter code |
-| 1:05-1:20 | Refactoring Planning | Plan refactor with tests |
-| 1:20-1:30 | Q&A & Wrap-up | Questions, preview homework |
-
-
-## Detailed Instructions
-
-### Part 1: Reflection on HW2 (15 minutes)
-
-#### Check-in (3 minutes)
-1. **Welcome back**
-2. **Quick check:** "Raise your hand if:"
-   - You completed HW2 (model + API + tests)
-   - You received feedback on your PR
-   - You have questions about design decisions
-
-#### Reflection Activity: Design Decisions (7 minutes)
-
-**Instructor asks teams to discuss:**
-
-1. **What design decisions did you make?**
-   - What model did you create?
-   - What relationships did you choose?
-   - Why did you choose that design?
-
-2. **What tradeoffs did you consider?**
-   - Simple vs flexible?
-   - Performance vs maintainability?
-   - What alternatives did you consider?
-
-3. **What would you do differently?**
-   - If you could redesign, what would change?
-   - What did you learn from the review process?
-   - What questions do you still have?
-
-**Instructor asks 2-3 teams to share:**
-- One design decision they made
-- One tradeoff they considered
-- One thing they learned
-
-**Common insights to highlight:**
-- "I didn't realize how many decisions go into design"
-- "Review feedback helped me see alternatives"
-- "Simple designs are often better"
-- "Tests helped clarify requirements"
-
-**Key Point:** "Design is about tradeoffs. There's rarely one right answer."
-
-#### Reflection Activity: Code Reviews (5 minutes)
-
-**Instructor asks teams to discuss:**
-
-1. **What feedback did you receive?**
-   - Was it helpful?
-   - Did it change your design?
-   - What did you learn from it?
-
-2. **What feedback did you give?**
-   - Did you focus on design?
-   - Did you focus on testing?
-   - Was your feedback constructive?
-
-3. **How has your review process improved?**
-   - Are you more specific?
-   - Do you focus on behavior and design?
-   - What would you do differently?
-
-**Instructor:** Highlight good review practices, address common issues
-
-**Key Point:** "Code review is a skill. You're getting better at it."
-
-**Transition:** "Now let's learn about design principles..."
-
-
-### Part 2: Design Principles Lecture (25 minutes)
-
-#### What Makes Code "Good"? (3 minutes)
+## 1. What Makes Code "Good"?
 
 **Instructor asks:** "What makes code 'good'? What makes code 'bad'?"
 
@@ -114,7 +23,7 @@ By the end of this session, students will:
 
 **Key Point:** "Good code is code that's easy to understand and easy to change."
 
-#### Principle 1: Cohesion (5 minutes)
+### Principle 1: Cohesion
 
 **Instructor explains:**
 - **Cohesion:** How well do the parts of a module/class/function work together?
@@ -155,7 +64,7 @@ class UserService:
 
 **Key Point:** "High cohesion means each class/function has one clear responsibility."
 
-#### Principle 2: Coupling (5 minutes)
+### Principle 2: Coupling
 
 **Instructor explains:**
 - **Coupling:** How much does one module depend on another?
@@ -182,7 +91,7 @@ class UserService:
 
 **Key Point:** "Low coupling means changes in one module don't break others."
 
-#### Principle 3: DRY (Don't Repeat Yourself) (5 minutes)
+### Principle 3: DRY (Don't Repeat Yourself)
 
 **Instructor explains:**
 - **DRY:** Don't repeat code
@@ -233,7 +142,7 @@ def create_group(name, description):
 
 **Key Point:** "DRY means extract common code, but don't over-abstract."
 
-#### Principle 4: Size (5 minutes)
+### Principle 4: Size
 
 **Instructor explains:**
 - **Size:** How long are functions/classes?
@@ -273,33 +182,27 @@ def process_user_registration(username, email, password, profile_data):
 
 **Key Point:** "Small functions are easier to understand, test, and maintain."
 
-#### Putting It Together (2 minutes)
-
-**Instructor summarizes:**
-- **Cohesion:** One responsibility per class/function
-- **Coupling:** Minimize dependencies
-- **DRY:** Don't repeat code
-- **Size:** Keep functions and classes small
-
-**These principles help us write maintainable code.**
-
-**Transition:** "Now let's find code smells in the starter code..."
+> **Summary**
+> 
+> - **Cohesion:** One responsibility per class/function
+> - **Coupling:** Minimize dependencies
+> - **DRY:** Don't repeat code
+> - **Size:** Keep functions and classes small
+> 
+> **These principles help us write maintainable code.**
 
 
-### Part 3: Code Smell Hunt (25 minutes)
+## 2. "Code Smell" Hunt
 
-#### What is a Code Smell? (3 minutes)
+### What is a Code Smell?
 
-**Instructor explains:**
 - **Code smell:** Code that works but has design issues
 - **Not a bug:** The code works, but it's hard to maintain
 - **Examples:** Long functions, repeated code, unclear names
 
-**Key Point:** "Code smells are warning signs. They suggest the code could be better."
+**Key Point:** "Code smells" are warning signs. They suggest the code could be better.
 
-#### Hunt for Code Smells (20 minutes)
-
-**Instructor provides checklist:**
+### Hunt for Code Smells
 
 ```markdown
 # Code Smell Checklist
@@ -359,8 +262,7 @@ def process_user_registration(username, email, password, profile_data):
 - Ensure they understand the principles
 - Guide them to specific files if needed
 
-#### Share Findings (2 minutes)
-
+#### Share Findings
 **Ask 2-3 teams to share:**
 - One code smell they found
 - What principle it violates
@@ -373,9 +275,9 @@ def process_user_registration(username, email, password, profile_data):
 **Transition:** "Now let's plan how to refactor safely..."
 
 
-### Part 4: Refactoring Planning (15 minutes)
+## 3. Refactoring Planning
 
-#### How to Refactor Safely (5 minutes)
+### How to Refactor Safely
 
 **Instructor explains the process:**
 
@@ -421,7 +323,7 @@ def create_group(name, description, user_id):
 
 **Key Point:** "Tests let us refactor safely. They verify behavior doesn't change."
 
-#### Plan a Refactor (10 minutes)
+### Plan a Refactor
 
 **Instructor asks teams to:**
 1. **Pick one code smell** from their hunt
@@ -454,12 +356,9 @@ def create_group(name, description, user_id):
 - Test database errors
 ```
 
-**Instructor circulates:**
-- Help teams create plans
-- Ensure they think about tests
-- Check that plans are realistic
 
-#### Share Plans (5 minutes)
+
+### Share Plans
 
 **Ask 1-2 teams to share:**
 - Their refactoring plan
@@ -473,44 +372,12 @@ def create_group(name, description, user_id):
 **Transition:** "On Thursday, you'll refactor together..."
 
 
-### Part 5: Q&A & Wrap-up (10 minutes)
+## 4. Q&A & Wrap-up
 
-#### Questions (7 minutes)
-- Open floor for questions
-- Address common confusions:
-  - "Cohesion vs Coupling?" → Cohesion = internal, Coupling = external
-  - "When is code too DRY?" → When abstraction makes code harder to understand
-  - "How small is too small?" → When functions are so small they're meaningless
+* Questions?
+* HW3 Preview
 
-#### Preview Homework (2 minutes)
-- **HW3:** Refactor existing code or extend API
-- **Due:** Next Tuesday (Feb 10)
-- **Process:**
-  1. Identify code smell (or extend existing feature)
-  2. Write/update tests
-  3. Refactor (or extend)
-  4. Verify tests pass
-  5. Create PR
-  6. Review another team's refactor PR
-  7. Reflect on what refactoring taught you
-
-#### Wrap-up (1 minute)
-- Remind students to:
-  - Read Clean Code Ch. 2-3 (selected sections)
-  - Read "Designing for Change" handout (due Thursday)
-  - Come ready to refactor on Thursday
-
-
-## Materials Needed
-
-- Codebase open and navigable
-- Code smell checklist (handout or digital)
-- Refactoring plan template (handout or digital)
-- Whiteboard for examples
-
-## Instructor Notes
-
-### Common Confusions
+## Common Points of Confusion
 
 **"Cohesion vs Coupling - what's the difference?"**
 - Cohesion: How well do parts of a module work together? (internal)
@@ -526,27 +393,4 @@ def create_group(name, description, user_id):
 - If you can't understand it in one read, it's probably too long
 - If you need comments to explain what it does, it's probably too long
 - Rule of thumb: < 20 lines for functions, < 200 lines for classes
-
-### Time Management
-
-- **If running short:** Focus on 2-3 principles, skip code smell hunt
-- **If running long:** Move refactoring planning to homework, focus on principles
-
-### Differentiation
-
-- **For advanced students:** Have them identify more complex code smells, plan larger refactors
-- **For struggling students:** Provide simpler examples, focus on one principle at a time
-
-
-## Student Deliverables
-
-- Code smells identified (documented)
-- Refactoring plan created (can be part of HW3)
-- Reflection on HW2 (design decisions and code reviews)
-
-## Next Steps
-
-- **Before Thursday:** Read Clean Code Ch. 2-3, "Designing for Change" handout
-- **Thursday:** Refactoring studio - refactor together with tests as guardrails
-- **Homework:** HW3 due next Tuesday
 

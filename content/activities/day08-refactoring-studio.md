@@ -3,63 +3,11 @@ title: "Refactoring Studio"
 start_date: "2026-02-05"
 type: "activity"
 draft: 1
+heading_max_level: 3
 ---
 
 
-## Learning Objectives
-
-By the end of this session, students will:
-- Be able to refactor code safely using tests as guardrails
-- Understand how to give design-focused code review feedback
-- Practice pair programming for refactoring
-- Reflect on what refactoring teaches us about code quality
-
-
-## Agenda (90 minutes)
-
-| Time | Activity | Description |
-|------|----------|-------------|
-| 0:00-0:10 | Review & Warm-up | Review design principles, address questions |
-| 0:10-0:50 | Refactoring Studio | Refactor code together with tests |
-| 0:50-1:10 | Design-Focused Review | Practice reviewing refactored code |
-| 1:10-1:25 | Team Reflection | What did refactoring teach us? |
-| 1:25-1:30 | Wrap-up | Preview homework |
-
-
-## Detailed Instructions
-
-### Part 1: Review & Warm-up (10 minutes)
-
-#### Check-in (3 minutes)
-1. **Welcome back**
-2. **Quick check:** "Raise your hand if:"
-   - You read the Clean Code sections
-   - You identified code smells (from Tuesday)
-   - You have questions about design principles
-
-#### Review Design Principles (5 minutes)
-
-**Instructor asks:** "Who found code smells? Share one thing you learned."
-
-**Common insights:**
-- "I didn't realize how many code smells exist"
-- "Long functions are harder to understand"
-- "Repeated code is everywhere"
-
-**Address questions** about design principles
-
-#### Preview Today (2 minutes)
-- "Today we're refactoring together"
-- "We'll use tests as guardrails"
-- "Then we'll practice design-focused review"
-- "This is what you'll do for homework"
-
-**Transition:** "Let's start refactoring..."
-
-
-### Part 2: Refactoring Studio (40 minutes)
-
-#### Choose a Refactor Target (5 minutes)
+## Choose a Refactor Target
 
 **Instructor provides options (or use code smells from Tuesday):**
 
