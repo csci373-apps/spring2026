@@ -139,11 +139,11 @@ blockquote > *:last-child {
   @apply !mb-0;
 }
 
-/* .dark blockquote {
+.dark blockquote {
   background-color: #1f2937 !important;
   border-color: #4b5563 !important;
   color: #e5e7eb;
-} */
+}
 
 blockquote.info {
     @apply bg-green-50 p-4 rounded-lg border-green-300 dark:!border-green-500 dark:!bg-green-900;
