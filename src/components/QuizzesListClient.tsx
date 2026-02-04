@@ -6,6 +6,7 @@ import { QuizMetadata, QuizData } from '@/lib/markdown';
 
 interface QuizWithData extends QuizMetadata {
   quizData: QuizData | null;
+  cheatsheetContent?: string | null;
   weekNumber?: number;
   daysLeft?: number | null;
 }
@@ -248,6 +249,7 @@ export default function QuizzesListClient({ quizzes }: QuizzesListClientProps) {
             variant="desktop"
             autoOpen={true}
             onClose={() => setOpenQuizSlug(null)}
+            cheatsheetContent={openQuiz.cheatsheetContent || undefined}
           />
         </div>
       )}

@@ -242,7 +242,7 @@ export function useQuizState(quizData: QuizData, resourceSlug: string) {
     setSelectedAnswers({});
     setScore(0);
     setCompleted(false);
-    setCurrentQuestionIndex(0);
+    setCurrentQuestionIndex(-1); // Go back to instructions
     setStudentName('');
     try {
       localStorage.removeItem(storageKey);
@@ -261,8 +261,8 @@ export function useQuizState(quizData: QuizData, resourceSlug: string) {
       console.error('Error saving random mode preference:', error);
     }
     // Don't clear localStorage - answers will be automatically remapped when questions reshuffle
-    // Just reset the UI state
-    setCurrentQuestionIndex(0);
+    // Just reset the UI state to instructions
+    setCurrentQuestionIndex(-1);
   };
 
   const handleAnswerSelect = (questionId: string, optionIndex: number) => {

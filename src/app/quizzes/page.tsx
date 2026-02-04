@@ -1,4 +1,4 @@
-import { getAllQuizMetadata, getQuizData, QuizMetadata, QuizData } from '@/lib/markdown';
+import { getAllQuizMetadata, getQuizData, getQuizCheatsheet, QuizMetadata, QuizData } from '@/lib/markdown';
 import PageHeader from '@/components/PageHeader';
 import ContentLayout from '@/components/ContentLayout';
 import QuickLinksNav from '@/components/QuickLinksNav';
@@ -44,13 +44,16 @@ export default async function QuizzesPage() {
   const publishedQuizzes = allQuizzes.filter(quiz => !quiz.draft || quiz.draft !== 1);
   
   // Load quiz data for all quizzes and calculate week/days left
-  const quizzesWithData: Array<QuizMetadata & { quizData: QuizData | null; weekNumber?: number; daysLeft?: number | null }> = publishedQuizzes.map(quiz => {
+  const quizzesWithData: Array<QuizMetadata & { quizData: QuizData | null; cheatsheetContent: string | null; weekNumber?: number; daysLeft?: number | null }> = publishedQuizzes.map(quiz => {
     const weekNumber = quiz.start_date ? getWeekNumber(quiz.start_date) : undefined;
     const daysLeft = quiz.start_date ? getDaysLeft(quiz.start_date) : null;
+    const quizData = getQuizData(quiz.slug);
+    const cheatsheetContent = getQuizCheatsheet(quizData, quiz.slug);
     
     return {
       ...quiz,
-      quizData: getQuizData(quiz.slug),
+      quizData,
+      cheatsheetContent,
       weekNumber,
       daysLeft
     };

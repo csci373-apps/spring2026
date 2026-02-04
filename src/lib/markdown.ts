@@ -36,6 +36,7 @@ export interface PostData {
   toc?: boolean;
   heading_max_level?: number;
   quicklink?: number;
+  quizzes?: string[];
 }
 
 export function getAllPostIds(subdirectory?: string) {
@@ -216,6 +217,8 @@ export interface QuizData {
   quizName?: string;
   start_date?: string;
   draft?: number;
+  folder?: string;
+  cheatsheet?: string;
   questions: QuizQuestion[];
 }
 
@@ -242,11 +245,120 @@ function loadQuestionTemplate(quizSlug: string, questionId: string, templateFile
   return undefined;
 }
 
+export function getQuizCheatsheet(quizData: QuizData | null, slug: string): string | null {
+  // First, check if quiz has a cheatsheet key pointing to the new cheatsheets folder
+  if (quizData?.cheatsheet) {
+    const cheatsheetPath = path.join(quizzesDirectory, 'cheatsheets', quizData.cheatsheet);
+    if (fs.existsSync(cheatsheetPath)) {
+      try {
+        return fs.readFileSync(cheatsheetPath, 'utf8');
+      } catch (error) {
+        console.error(`Error reading cheatsheet file ${cheatsheetPath}:`, error);
+        return null;
+      }
+    }
+  }
+  
+  // Fall back to old folder-based method for backward compatibility
+  const folderName = quizData?.folder || slug;
+  const cheatsheetPath = path.join(quizzesDirectory, folderName, 'cheatsheet.html');
+  
+  if (fs.existsSync(cheatsheetPath)) {
+    try {
+      return fs.readFileSync(cheatsheetPath, 'utf8');
+    } catch (error) {
+      console.error(`Error reading cheatsheet file ${cheatsheetPath}:`, error);
+      return null;
+    }
+  }
+  
+  return null;
+}
+
+export function getAllMatchingQuizzes(slug: string): string[] {
+  // First try exact slug match
+  const exactQuizPath = path.join(quizzesDirectory, `${slug}.json`);
+  
+  if (fs.existsSync(exactQuizPath)) {
+    // Exact match found, return it
+    return [slug];
+  }
+  
+  // If exact match not found, try pattern matching
+  // For example: "css-07-flexbox" should match "css-07a-flexbox.json" or "css-07b-flexbox.json"
+  if (!fs.existsSync(quizzesDirectory)) {
+    return [];
+  }
+  
+  const files = fs.readdirSync(quizzesDirectory);
+  const match = slug.match(/^([a-z]+-\d+)([a-z]?)-(.+)$/);
+  
+  if (!match) {
+    return [];
+  }
+  
+  const [, base, , topic] = match;
+  // Match pattern: base + optional letter + topic
+  // e.g., "css-07a-flexbox.json", "css-07b-flexbox.json" when slug is "css-07-flexbox"
+  const pattern = new RegExp(`^${base}[a-z]?-${topic}\\.json$`);
+  const matchingQuizzes = files.filter((file: string) => pattern.test(file));
+  
+  if (matchingQuizzes.length === 0) {
+    return [];
+  }
+  
+  // Return all matching quiz slugs (remove .json extension)
+  return matchingQuizzes.map((file: string) => file.replace(/\.json$/, ''));
+}
+
 export function getQuizData(slug: string): QuizData | null {
-  const quizPath = path.join(quizzesDirectory, `${slug}.json`);
+  // First try exact slug match
+  let quizPath = path.join(quizzesDirectory, `${slug}.json`);
+  let actualQuizSlug = slug;
   
   if (!fs.existsSync(quizPath)) {
-    return null;
+    // If exact match not found, try pattern matching
+    // For example: "css-07-flexbox" should match "css-07a-flexbox.json" or "css-07b-flexbox.json"
+    if (fs.existsSync(quizzesDirectory)) {
+      const files = fs.readdirSync(quizzesDirectory);
+      const match = slug.match(/^([a-z]+-\d+)([a-z]?)-(.+)$/);
+      
+      if (match) {
+        const [, base, , topic] = match;
+        // Match pattern: base + optional letter + topic
+        // e.g., "css-07a-flexbox.json", "css-07b-flexbox.json" when slug is "css-07-flexbox"
+        const pattern = new RegExp(`^${base}[a-z]?-${topic}\\.json$`);
+        const matchingQuizzes = files.filter((file: string) => pattern.test(file));
+        
+        if (matchingQuizzes.length > 0) {
+          // Prefer quizzes that have a folder property (they have supplementary files)
+          let selectedQuiz = matchingQuizzes[0];
+          
+          for (const quizFile of matchingQuizzes) {
+            try {
+              const quizFilePath = path.join(quizzesDirectory, quizFile);
+              const quizContent = fs.readFileSync(quizFilePath, 'utf8');
+              const quizData: QuizData = JSON.parse(quizContent);
+              if (quizData.folder) {
+                selectedQuiz = quizFile;
+                break; // Found one with folder property, use it
+              }
+            } catch (error) {
+              // Continue to next file if this one can't be read
+            }
+          }
+          
+          actualQuizSlug = selectedQuiz.replace(/\.json$/, '');
+          quizPath = path.join(quizzesDirectory, selectedQuiz);
+        } else {
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
   }
   
   try {
@@ -254,21 +366,22 @@ export function getQuizData(slug: string): QuizData | null {
     const quizData: QuizData = JSON.parse(fileContents);
     
     // Load template files from question directories if they exist
+    // Use actualQuizSlug (the quiz file name) for loading templates, not the resource slug
     if (quizData.questions && Array.isArray(quizData.questions)) {
       quizData.questions = quizData.questions.map((question: QuizQuestion) => {
         if (question.id && 'type' in question && question.type === 'javascript-dom') {
-          const questionDir = path.join(quizzesDirectory, slug, question.id);
+          const questionDir = path.join(quizzesDirectory, actualQuizSlug, question.id);
           
           // Only load from files if the directory exists
           if (fs.existsSync(questionDir)) {
             // Load template files (override JSON values if files exist)
-            const htmlTemplate = loadQuestionTemplate(slug, question.id, 'html.html');
-            const cssTemplate = loadQuestionTemplate(slug, question.id, 'css.css');
-            const jsTemplate = loadQuestionTemplate(slug, question.id, 'js.js');
+            const htmlTemplate = loadQuestionTemplate(actualQuizSlug, question.id, 'html.html');
+            const cssTemplate = loadQuestionTemplate(actualQuizSlug, question.id, 'css.css');
+            const jsTemplate = loadQuestionTemplate(actualQuizSlug, question.id, 'js.js');
             // Load target files from answers directory
-            const targetHtml = loadQuestionTemplate(slug, question.id, 'answers/html.html');
-            const targetCss = loadQuestionTemplate(slug, question.id, 'answers/css.css');
-            const targetJs = loadQuestionTemplate(slug, question.id, 'answers/js.js');
+            const targetHtml = loadQuestionTemplate(actualQuizSlug, question.id, 'answers/html.html');
+            const targetCss = loadQuestionTemplate(actualQuizSlug, question.id, 'answers/css.css');
+            const targetJs = loadQuestionTemplate(actualQuizSlug, question.id, 'answers/js.js');
             
             // Override with file contents if they exist
             // Type assertion needed because we know this is a javascript-dom question
@@ -289,7 +402,7 @@ export function getQuizData(slug: string): QuizData | null {
             if (targetJs !== undefined) jsQuestion.targetJs = targetJs;
             
             // Load JavaScript test file
-            const testCode = loadQuestionTemplate(slug, question.id, 'tests.js');
+            const testCode = loadQuestionTemplate(actualQuizSlug, question.id, 'tests.js');
             if (testCode !== undefined) jsQuestion.testCode = testCode;
           }
         }

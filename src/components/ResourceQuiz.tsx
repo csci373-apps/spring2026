@@ -6,12 +6,12 @@ import { triggerConfetti } from '@/lib/utils';
 import { ResourceQuizProps } from './quiz/types';
 import { useQuizState } from './quiz/useQuizState';
 import QuizDrawer from './quiz/QuizDrawer';
-import QuizInstructions from './quiz/QuizInstructions';
+import QuizInstructions, { QuizInstructionsFooter } from './quiz/QuizInstructions';
 import QuizQuestionView from './quiz/QuizQuestionView';
 import QuizSummary from './quiz/QuizSummary';
 import QuizNavigation from './quiz/QuizNavigation';
 
-export default function ResourceQuiz({ quizData, resourceSlug, variant = 'desktop', autoOpen = false, onClose: externalOnClose }: ResourceQuizProps & { autoOpen?: boolean; onClose?: () => void }) {
+export default function ResourceQuiz({ quizData, resourceSlug, variant = 'desktop', autoOpen = false, onClose: externalOnClose, cheatsheetContent }: ResourceQuizProps & { autoOpen?: boolean; onClose?: () => void }) {
   // variant is kept for potential future use but currently unused
   void variant;
   const [isQuizDrawerOpen, setIsQuizDrawerOpen] = useState<boolean>(autoOpen);
@@ -21,6 +21,25 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const [revealedQuestions, setRevealedQuestions] = useState<Set<string>>(new Set());
   const [isReviewMode, setIsReviewMode] = useState<boolean>(false);
+  const [showResetMessage, setShowResetMessage] = useState<boolean>(false);
+  // Track if we've already auto-entered review mode to prevent re-triggering
+  const hasAutoEnteredReviewModeRef = useRef<boolean>(false);
+  // Track if quiz was completed when first loaded (before any state updates)
+  const getInitialCompletedStatus = (): boolean => {
+    if (typeof window === 'undefined') return false;
+    try {
+      const storageKey = `quiz-${resourceSlug}`;
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        const savedState = JSON.parse(saved);
+        return savedState.completed || false;
+      }
+    } catch (error) {
+      console.error('Error checking quiz completion status:', error);
+    }
+    return false;
+  };
+  const wasCompletedOnLoadRef = useRef<boolean>(getInitialCompletedStatus());
   // Initialize from localStorage synchronously if available (client-side only)
   const [hasCompletedFromStorage, setHasCompletedFromStorage] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
@@ -120,9 +139,14 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
         const savedState = JSON.parse(saved);
         const wasCompleted = savedState.completed || false;
         setHasCompletedFromStorage(wasCompleted);
+        // Update the ref to track if quiz was completed when loaded
+        wasCompletedOnLoadRef.current = wasCompleted;
       } else {
         setHasCompletedFromStorage(false);
+        wasCompletedOnLoadRef.current = false;
       }
+      // Reset auto-review flag when switching quizzes
+      hasAutoEnteredReviewModeRef.current = false;
     } catch (error) {
       console.error('Error checking quiz completion status:', error);
     }
@@ -134,6 +158,31 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
       setHasCompletedFromStorage(true);
     }
   }, [completed]);
+
+  // Auto-enter review mode when quiz is completed and questions are loaded
+  useEffect(() => {
+    // Only auto-enter review mode if:
+    // 1. Quiz was already completed when first loaded (wasCompletedOnLoadRef)
+    // 2. Quiz is currently completed (completed)
+    // 3. Questions are loaded
+    // 4. We haven't already auto-entered review mode
+    // 5. Initial load is complete (to avoid triggering during state restoration)
+    if (
+      wasCompletedOnLoadRef.current &&
+      completed &&
+      shuffledQuestions.length > 0 &&
+      !hasAutoEnteredReviewModeRef.current &&
+      !isInitialLoad.current
+    ) {
+      // Reveal all questions
+      const allQuestionIds = new Set(shuffledQuestions.map(q => q.id));
+      setRevealedQuestions(allQuestionIds);
+      // Enter review mode
+      setIsReviewMode(true);
+      // Mark that we've auto-entered review mode
+      hasAutoEnteredReviewModeRef.current = true;
+    }
+  }, [completed, shuffledQuestions.length, isInitialLoad]);
 
   // Detect mobile screen size
   useEffect(() => {
@@ -213,7 +262,7 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
   const handleNext = () => {
     if (shuffledQuestions.length === 0) return;
     if (currentQuestionIndex === -1) {
-      // Move from instructions to first question
+      // Move from instructions directly to first question
       setCurrentQuestionIndex(0);
     } else if (currentQuestionIndex < shuffledQuestions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
@@ -245,6 +294,15 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
     handleClearQuiz();
     setRevealedQuestions(new Set());
     setIsReviewMode(false);
+    // Reset the auto-review flag so it can trigger again if quiz is completed again
+    hasAutoEnteredReviewModeRef.current = false;
+    // Reset hasCompletedFromStorage so button text updates
+    setHasCompletedFromStorage(false);
+    // Show reset confirmation message
+    setShowResetMessage(true);
+    setTimeout(() => {
+      setShowResetMessage(false);
+    }, 3000); // Hide after 3 seconds
   };
 
   const handleReview = () => {
@@ -310,7 +368,7 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
     return (
       <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
         <div className="text-center">
-          <h2>Take the Quiz</h2>
+          <h2>Quizzes</h2>
           <button
             onClick={() => setIsQuizDrawerOpen(true)}
             className="px-8 py-4 text-lg font-medium text-white bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 rounded-lg transition-colors shadow-lg"
@@ -337,6 +395,14 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
       onClose={handleCloseDrawer}
       isDark={isDark}
     >
+      {/* Reset confirmation message */}
+      {showResetMessage && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 animate-fade-in-out pointer-events-none">
+          <div className="bg-green-600 dark:bg-green-500 text-white px-6 py-3 rounded-md shadow-lg">
+            <span className="text-sm font-medium">Quiz has been reset</span>
+          </div>
+        </div>
+      )}
       <div className="flex-1 overflow-y-auto pb-4">
         <div className="max-w-4xl mx-auto p-6">
           {/* Instructions Page */}
@@ -347,6 +413,11 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
               onClearQuiz={handleClearQuizWithReveals}
               onStartQuiz={handleNext}
               isDark={isDark}
+              cheatsheetContent={cheatsheetContent}
+              quizName={quizData.quizName}
+              hasCompleted={hasCompletedFromStorage || completed}
+              previousScore={hasCompletedFromStorage || completed ? score : undefined}
+              totalQuestions={hasCompletedFromStorage || completed ? shuffledQuestions.length : undefined}
             />
           ) : (
             <>
@@ -391,7 +462,19 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
         </div>
       </div>
       
-      {/* Fixed Navigation buttons at bottom - only in content area */}
+      {/* Fixed Navigation buttons at bottom - Instructions footer */}
+      {showInstructions && (
+        <QuizInstructionsFooter
+          randomMode={randomMode}
+          onToggleRandomMode={handleToggleRandomMode}
+          onClearQuiz={handleClearQuizWithReveals}
+          onStartQuiz={handleNext}
+          isDark={isDark}
+          hasCompleted={hasCompletedFromStorage || completed}
+        />
+      )}
+      
+      {/* Fixed Navigation buttons at bottom - Question navigation */}
       {!showSummary && !showInstructions && currentQuestion && (
         <QuizNavigation
           currentQuestionIndex={currentQuestionIndex}

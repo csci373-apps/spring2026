@@ -25,10 +25,6 @@ const courseConfig = getCourseConfig();
 export const metadata: Metadata = {
   title: courseConfig.title,
   description: courseConfig.description,
-  icons: {
-    icon: '/favicon.ico', // or '/your-favicon.png'
-    // apple: '/apple-touch-icon.png', // for iOS devices
-  },
 };
 
 export default function RootLayout({

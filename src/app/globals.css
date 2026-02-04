@@ -115,20 +115,7 @@ li {
 }
 
 blockquote {
-  @apply bg-yellow-50 rounded-lg border border-yellow-200 p-4 !mb-10 dark:bg-yellow-900 dark:border-yellow-500;
-}
-
-ul + blockquote,
-ol + blockquote,
-li + blockquote {
-  @apply !mt-8;
-}
-
-blockquote > h1:first-child,
-blockquote > h2:first-child,
-blockquote > h3:first-child,
-blockquote > h4:first-child {
-  @apply !mt-0;
+  @apply bg-yellow-50 dark:bg-yellow-800 border border-yellow-200 dark:border-yellow-800 p-4 !mb-10;
 }
 
 blockquote h2 {
@@ -145,23 +132,24 @@ blockquote > *:last-child {
   color: #e5e7eb;
 }
 
+  
 blockquote.info {
-    @apply bg-green-50 p-4 rounded-lg border-green-300 dark:!border-green-500 dark:!bg-green-900;
+  @apply bg-green-50 p-4 rounded-lg border-green-300 dark:!border-green-500 dark:!bg-green-900;
 }
-
+  
 ul + blockquote.info,
 ol + blockquote.info,
 li + blockquote.info {
   @apply !mt-8;
 }
-
+  
 blockquote.info > h1:first-child,
 blockquote.info > h2:first-child,
 blockquote.info > h3:first-child,
 blockquote.info > h4:first-child {
   @apply !mt-0;
 }
-
+  
 blockquote.info h2 {
   @apply !mt-0;
 }
@@ -169,7 +157,7 @@ blockquote.info h2 {
 blockquote.info > *:last-child {
   @apply !mb-0;
 }
-
+  
 /* Remove bottom margin from nested list items */
 ul ul li,
 ol ol li,
@@ -907,4 +895,59 @@ code {
 
 .dark .button:hover, .dark .nu-button:hover {
     @apply bg-blue-400 text-white
+}
+
+/* Cheatsheet styles */
+.cheatsheet-content h2 {
+  @apply text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4;
+}
+
+.cheatsheet-content table.cheatsheet-table {
+  @apply w-full border-collapse mt-4;
+}
+
+.cheatsheet-content table.cheatsheet-table thead {
+  @apply bg-gray-100 dark:bg-gray-800;
+}
+
+.cheatsheet-content table.cheatsheet-table th {
+  @apply px-4 py-3 text-left font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-300 dark:border-gray-700;
+}
+
+.cheatsheet-content table.cheatsheet-table td {
+  @apply px-4 py-3 text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-800;
+}
+
+.cheatsheet-content table.cheatsheet-table td:first-child {
+  @apply font-mono text-sm;
+  color: var(--foreground);
+}
+
+.cheatsheet-content table.cheatsheet-table code {
+  @apply font-mono text-sm;
+  color: var(--foreground);
+}
+
+/* Fade in/out animation for reset message */
+@keyframes fade-in-out {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -10px);
+  }
+  10% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  90% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -10px);
+  }
+}
+
+.animate-fade-in-out {
+  animation: fade-in-out 3s ease-in-out;
 }

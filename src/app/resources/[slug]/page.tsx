@@ -1,9 +1,9 @@
-import { getPostData, getAllPosts, PostData, getQuizData } from '@/lib/markdown';
+import { getPostData, getAllPosts, PostData, getQuizData, getQuizCheatsheet, getAllMatchingQuizzes } from '@/lib/markdown';
 import { generateStaticParamsForContentType, validatePostForRender } from '@/lib/static-params';
 import PageHeader from '@/components/PageHeader';
 import MarkdownContent from '@/components/MarkdownContent';
 import ResourcesNav from '@/components/ResourcesNav';
-import ResourceQuiz from '@/components/ResourceQuiz';
+import ResourceQuizzesWrapper from '@/components/ResourceQuizzesWrapper';
 import ContentLayout from '@/components/ContentLayout';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -35,8 +35,23 @@ export default async function ResourcePage({ params }: PageProps) {
       notFound();
     }
     
-    const { title, excerpt, group, toc, heading_max_level } = postData;
-    const quizData = getQuizData(slug);
+    const { title, excerpt, group, toc, heading_max_level, quizzes: explicitQuizzes } = postData;
+    
+    // Determine which quiz slugs to use
+    const quizSlugs: string[] = explicitQuizzes && explicitQuizzes.length > 0 
+      ? explicitQuizzes 
+      : getAllMatchingQuizzes(slug);
+    
+    // Load quiz data and cheatsheet content for each quiz
+    const quizzesWithData = quizSlugs.map(quizSlug => {
+      const quizData = getQuizData(quizSlug);
+      const cheatsheetContent = getQuizCheatsheet(quizData, quizSlug);
+      return {
+        slug: quizSlug,
+        quizData,
+        cheatsheetContent
+      };
+    }).filter(item => item.quizData !== null); // Only include quizzes that were found
     
     // Get all resources for navigation
     const resourcePosts = getAllPosts('resources');
@@ -81,9 +96,13 @@ export default async function ResourcePage({ params }: PageProps) {
         <div>
           <MarkdownContent content={postData.content} />
           
-          {/* Quiz */}
-          {quizData && (
-            <ResourceQuiz key={`quiz-${slug}`} quizData={quizData} resourceSlug={slug} variant="desktop" />
+          {/* Quizzes */}
+          {quizzesWithData.length > 0 && (
+            <ResourceQuizzesWrapper quizzes={quizzesWithData.map(q => ({
+              slug: q.slug,
+              quizData: q.quizData!,
+              cheatsheetContent: q.cheatsheetContent
+            }))} />
           )}
           
           {/* Next/Previous Navigation */}

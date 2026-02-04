@@ -26,6 +26,8 @@ export interface QuizData {
   quizName?: string;
   start_date?: string;
   draft?: number;
+  folder?: string;
+  cheatsheet?: string;
   questions: QuizQuestion[];
 }
 
@@ -48,4 +50,5 @@ export interface ResourceQuizProps {
   quizData: QuizData;
   resourceSlug: string;
   variant?: 'mobile' | 'desktop';
+  cheatsheetContent?: string;
 }
