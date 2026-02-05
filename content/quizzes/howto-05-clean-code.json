@@ -1,0 +1,237 @@
+{
+  "quizName": "Clean Code Best Practices",
+  "start_date": "2026-02-05",
+  "questions": [
+    {
+      "id": "q1",
+      "question": "Why is this code problematic? (Select all that apply)\n\n```python\ndef handle_user_registration(user_data, db, email_service, logger):\n    # Validate email format\n    if not '@' in user_data.email:\n        raise ValueError(\"Invalid email\")\n    if len(user_data.email) > 255:\n        raise ValueError(\"Email too long\")\n    \n    # Validate password\n    if len(user_data.password) < 8:\n        raise ValueError(\"Password too short\")\n    if not any(c.isdigit() for c in user_data.password):\n        raise ValueError(\"Password must contain a number\")\n    \n    # Hash password\n    hashed = bcrypt.hashpw(user_data.password.encode(), bcrypt.gensalt())\n    \n    # Create user in database\n    user = User(email=user_data.email, password=hashed)\n    db.add(user)\n    db.commit()\n    db.refresh(user)\n    \n    # Send welcome email\n    email_service.send(\n        to=user.email,\n        subject=\"Welcome!\",\n        body=\"Thanks for joining!\"\n    )\n    \n    # Log registration\n    logger.info(f\"User {user.id} registered\")\n    \n    return user\n```",
+      "type": "select-all",
+      "options": [
+        "Function is too long (should be broken into smaller functions)",
+        "Function has too many responsibilities (low cohesion)",
+        "Function is hard to test"
+      ],
+      "correct": [0, 1, 2],
+      "explanation": "This function violates multiple principles: it's too long (over 20 lines), has low cohesion (does validation, database operations, email sending, and logging), and is hard to test because it does too many things. It should be broken into smaller, focused functions."
+    },
+    {
+      "id": "q2",
+      "question": "Which of the following are code smells? (Select all that apply)",
+      "type": "select-all",
+      "options": [
+        "Long functions (> 20 lines)",
+        "Duplicated code",
+        "Unclear names",
+        "Magic numbers",
+        "Deep nesting"
+      ],
+      "correct": [0, 1, 2, 3, 4],
+      "explanation": "All of these are code smells: long functions, duplicated code (DRY violations), unclear names, magic numbers, and deep nesting. These indicate code that could be improved."
+    },
+    {
+      "id": "q3",
+      "question": "What principles are being violated in this code? (Select all that apply)\n\n```python\ndef process_user_registration(username, email, password, profile_data, preferences, settings, notifications):\n    pass\n```",
+      "type": "select-all",
+      "options": [
+        "Too many function arguments",
+        "Low cohesion",
+        "Vague function name (not descriptive)"
+      ],
+      "correct": [0, 1, 2],
+      "explanation": "This function violates multiple principles: it has too many arguments (7 parameters), it's too long (50 lines), and likely has low cohesion (doing too many things)."
+    },
+    {
+      "id": "q4",
+      "question": "Why is this code problematic? (Select all that apply)\n\n```python\nclass OrderProcessor:\n    def validate_order(self, order):\n        if order.total < 0:\n            raise ValueError(\"Invalid total\")\n        return True\n    \n    def calculate_tax(self, order):\n        return order.total * 0.08\n    \n    def process_payment(self, order, payment_info):\n        pass\n    \n    def send_confirmation_email(self, order):\n        pass\n    \n    def update_inventory(self, order):\n        pass\n```",
+      "type": "select-all",
+      "options": [
+        "Violates Single Responsibility Principle (multiple reasons to change)",
+        "Low cohesion (unrelated methods)",
+        "Hard to test and maintain"
+      ],
+      "correct": [0, 1, 2],
+      "explanation": "This class violates the Single Responsibility Principle - it has multiple reasons to change (validation rules, tax rates, payment processing, email format, inventory system). It also has low cohesion (unrelated methods) and is hard to test because it does too many things. Each responsibility should be in a separate class."
+    },
+    {
+      "id": "q5",
+      "question": "What principles are being violated in this code? (Select all that apply)\n\n```python\ndb_connection = None\n\ndef get_user(user_id):\n    return db_connection.query(User).filter_by(id=user_id).first()\n```",
+      "type": "select-all",
+      "options": [
+        "Global variables instead of arguments",
+        "High coupling",
+        "Side effects"
+      ],
+      "correct": [0, 1],
+      "explanation": "This code uses a global variable instead of passing the database connection as an argument. This creates high coupling (function depends on global state), makes testing difficult, and creates hidden dependencies. Note: While this creates hidden dependencies, it's not technically a side effect (the function doesn't modify state, it just reads from it)."
+    },
+    {
+      "id": "q6",
+      "question": "Which of the following are good practices for refactoring safely? (Select all that apply)",
+      "type": "select-all",
+      "options": [
+        "Write/update tests first",
+        "Make small changes",
+        "Run tests after each change",
+        "Keep behavior the same"
+      ],
+      "correct": [0, 1, 2, 3],
+      "explanation": "All of these are important for safe refactoring: write tests first, make small incremental changes, run tests after each change, and ensure behavior remains unchanged."
+    },
+    {
+      "id": "q7",
+      "question": "What principle is being violated in this code?\n\n```python\ndef create_group(name, description):\n    if not name or len(name) > 100:\n        raise ValueError(\"Invalid name\")\n    if description and len(description) > 1000:\n        raise ValueError(\"Invalid description\")\n    group = Group(name=name, description=description)\n    db.add(group)\n    db.commit()\n    return group\n\ndef create_course(title, description):\n    if not title or len(title) > 200:\n        raise ValueError(\"Invalid title\")\n    if description and len(description) > 1000:\n        raise ValueError(\"Invalid description\")\n    course = Course(title=title, description=description)\n    db.add(course)\n    db.commit()\n    return course\n```",
+      "options": [
+        "DRY (Don't Repeat Yourself)",
+        "Low cohesion",
+        "Magic numbers",
+        "Deep nesting"
+      ],
+      "correct": 0,
+      "explanation": "This code violates DRY - the validation logic for descriptions is duplicated in both functions. The same validation pattern appears in multiple places and should be extracted to a shared function."
+    },
+    {
+      "id": "q8",
+      "question": "Why is this code problematic? (Select all that apply)\n\n```python\nclass OrderService:\n    def __init__(self):\n        self.db = PostgreSQLConnection(\"localhost\", \"mydb\", \"user\", \"pass\")\n        self.email = SendGridEmailService(\"api-key-123\")\n        self.payment = StripePaymentProcessor(\"stripe-key-456\")\n    \n    def process_order(self, order):\n        self.db.save(order)\n        self.email.send(order.customer_email, \"Order confirmed\")\n        self.payment.charge(order.total, order.card_token)\n```",
+      "type": "select-all",
+      "options": [
+        "High coupling (depends on specific implementations, hard to change or test)",
+        "Does too much work inside a single method",
+        "Hard to test (can't easily mock dependencies)"
+      ],
+      "correct": [0, 2],
+      "explanation": "This code has high coupling - it directly depends on specific implementations (PostgreSQL, SendGrid, Stripe). If you want to switch to a different database or email service, you'd have to modify this class. It's also hard to test because you can't easily inject mock dependencies. The class should depend on abstractions (interfaces) rather than concrete implementations."
+    },
+    {
+      "id": "q9",
+      "question": "What principles are being violated in this code? (Select all that apply)\n\n```python\nclass UserManager:\n    def validate_email(self, email):\n        pass\n    \n    def save_to_database(self, user):\n        pass\n    \n    def send_welcome_email(self, user):\n        pass\n    \n    def log_user_action(self, action):\n        pass\n```",
+      "type": "select-all",
+      "options": [
+        "Low cohesion",
+        "High coupling",
+        "Single Responsibility Principle violation"
+      ],
+      "correct": [0, 2],
+      "explanation": "This class violates the Single Responsibility Principle - it has multiple reasons to change (validation rules, database schema, email format, logging requirements). It also has low cohesion (unrelated methods that don't work together toward a single goal). High coupling refers to dependencies on external modules, which isn't the main issue here."
+    },
+    {
+      "id": "q10",
+      "question": "What is a 'magic number'?",
+      "options": [
+        "A number that appears in calculations",
+        "A hard-coded value with unclear meaning",
+        "A random number generator",
+        "A number that changes frequently"
+      ],
+      "correct": 1,
+      "explanation": "A magic number is a hard-coded value with unclear meaning. For example, `if len(members) > 50:` - what does 50 represent? It should be extracted to a named constant like `MAX_GROUP_SIZE = 50`."
+    },
+    {
+      "id": "q11",
+      "question": "What principle is being violated in this code?\n\n```python\ndef process_user(user):\n    if user:\n        if user.is_active:\n            if user.has_permission:\n                if user.credits > 0:\n                    # do something\n                    pass\n```",
+      "options": [
+        "Deep nesting",
+        "Low cohesion",
+        "Magic numbers",
+        "DRY violation"
+      ],
+      "correct": 0,
+      "explanation": "This code has deep nesting (4 levels of if statements). This makes it hard to read and understand. It should be refactored using early returns or extracted functions."
+    },
+    {
+      "id": "q12",
+      "question": "Why is this code problematic? (Select all that apply)\n\n```python\ndef process_order(order):\n    # Check if order total is greater than zero\n    if order.total > 0:\n        # Calculate tax by multiplying total by 0.08\n        tax = order.total * 0.08\n        # Add tax to total\n        final_total = order.total + tax\n        # Return the final total\n        return final_total\n    else:\n        # Return zero if order total is zero or negative\n        return 0\n```",
+      "type": "select-all",
+      "options": [
+        "Excessive comments (explaining what instead of why)",
+        "Magic number (0.08 should be a named constant)"
+      ],
+      "correct": [0, 1],
+      "explanation": "This code has multiple issues: (1) Excessive comments that explain *what* the code does instead of *why* - the code should be self-explanatory and (2) Magic number (0.08) should be a named constant like `TAX_RATE = 0.08`. Comments should explain *why* (business logic, non-obvious decisions), not *what*."
+    },
+    {
+      "id": "q13",
+      "question": "What principles are being violated in this code? (Select all that apply)\n\n```python\nuser_count = 0\n\ndef process_user(user_data):\n    global user_count\n    user = create_user(user_data)\n    user_count += 1\n    return user\n```",
+      "type": "select-all",
+      "options": [
+        "Side effects",
+        "Global variables",
+        "High coupling"
+      ],
+      "correct": [0, 1],
+      "explanation": "This code has multiple issues: it uses global variables (hard to test, creates hidden dependencies) and has hidden side effects (modifies global state). High coupling refers to dependencies on external modules, which isn't the main issue here."
+    },
+    {
+      "id": "q14",
+      "question": "Which of the following are characteristics of good function names? (Select all that apply)",
+      "type": "select-all",
+      "options": [
+        "Descriptive - clearly describe what the function does",
+        "Consistent vocabulary - use the same word for the same concept",
+        "Searchable - avoid abbreviations and magic numbers"
+      ],
+      "correct": [0, 1, 2],
+      "explanation": "Good function names are descriptive, use consistent vocabulary (don't mix `fetch`, `get`, `retrieve`), and are searchable (avoid abbreviations like `calc` instead of `calculate`)."
+    },
+    {
+      "id": "q15",
+      "question": "What principles are being violated in this code? (Select all that apply)\n\n```python\ndef calc_total(items):\n    total = 0  # Initialize total to zero\n    for item in items:  # Loop through items\n        total += item.price  # Add price to total\n    return total  # Return total\n```",
+      "type": "select-all",
+      "options": [
+        "Unclear name (`calc_total` should be `calculate_total`)",
+        "Excessive comments (explaining what instead of why)",
+        "No violations - this code is fine"
+      ],
+      "correct": [0, 1],
+      "explanation": "This code has two issues: (1) Unclear name - `calc` is an abbreviation, should be `calculate_total`, and (2) Excessive comments - the comments explain what the code does instead of why, and the code should be self-explanatory."
+    },
+    {
+      "id": "q16",
+      "question": "Why is this code problematic? (Select all that apply)\n\n```python\ndef create_user(username, email, password):\n    if not username or len(username) < 3:\n        raise ValueError(\"Username must be at least 3 characters\")\n    if not email or '@' not in email:\n        raise ValueError(\"Invalid email\")\n    if not password or len(password) < 8:\n        raise ValueError(\"Password must be at least 8 characters\")\n    user = User(username=username, email=email, password=password)\n    db.add(user)\n    db.commit()\n    return user\n\ndef update_user(user_id, username, email, password):\n    if not username or len(username) < 3:\n        raise ValueError(\"Username must be at least 3 characters\")\n    if not email or '@' not in email:\n        raise ValueError(\"Invalid email\")\n    if not password or len(password) < 8:\n        raise ValueError(\"Password must be at least 8 characters\")\n    user = db.query(User).filter_by(id=user_id).first()\n    user.username = username\n    user.email = email\n    user.password = password\n    db.commit()\n    return user\n```",
+      "type": "select-all",
+      "options": [
+        "DRY violation (validation logic is duplicated)",
+        "Hard to maintain (changes must be made in multiple places)",
+        "Inconsistent validation (easy to update one but forget the other)"
+      ],
+      "correct": [0, 1, 2],
+      "explanation": "This code violates DRY (Don't Repeat Yourself) - the validation logic is duplicated in both functions. This makes it hard to maintain because if validation rules change, you must update multiple places. It's also easy to accidentally update one function but forget the other, leading to inconsistent behavior. The validation logic should be extracted to a shared function."
+    },
+    {
+      "id": "q17",
+      "question": "What principle is being violated in this code?\n\n```python\ndef update_user_email(user, new_email):\n    user.email = new_email\n    return user\n```",
+      "options": [
+        "Side effects (mutating input parameter)",
+        "High coupling",
+        "Low cohesion",
+        "Magic numbers"
+      ],
+      "correct": 0,
+      "explanation": "This function has a side effect - it mutates the input parameter `user`. The caller might not expect this mutation. It's better to return a new object instead of mutating the input."
+    },
+    {
+      "id": "q18",
+      "question": "Which of the following are design principles for clean code? (Select all that apply)",
+      "type": "select-all",
+      "options": [
+        "High cohesion",
+        "Low coupling",
+        "DRY (Don't Repeat Yourself)",
+        "Clarity over cleverness"
+      ],
+      "correct": [0, 1, 2, 3],
+      "explanation": "All of these are important design principles: high cohesion (parts work together), low coupling (minimize dependencies), DRY (don't repeat code), and clarity over cleverness (readable code is better than clever code)."
+    },
+    {
+      "id": "q19",
+      "question": "What principle is being violated in this code?\n\n```python\nif len(members) > 50:\n    raise ValueError(\"Too many members\")\n```",
+      "options": [
+        "Magic number (50 should be a named constant)",
+        "Unclear name",
+        "Deep nesting",
+        "DRY violation"
+      ],
+      "correct": 0,
+      "explanation": "The number `50` is a magic number - it's a hard-coded value with unclear meaning. It should be extracted to a named constant like `MAX_GROUP_SIZE = 50` to make the code more readable and maintainable."
+    }
+  ]
+}

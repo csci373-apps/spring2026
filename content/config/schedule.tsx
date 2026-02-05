@@ -205,7 +205,7 @@ export const baseTopics = [
         },
         {
           date: "Th, Feb 5",
-          topic: "Design principles (practical) + refactoring with tests",
+          topic: "Writing Clean Code and Refactoring Safely",
           description: (
             <>
               <ul>
@@ -214,19 +214,12 @@ export const baseTopics = [
               </ul>
             </>
           ),
-          discussionQuestions: [
-            {
-              question: "When is a function 'too long'? How do you decide when to extract a function?",
-            },
-            {
-              question: "What's the difference between refactoring and extending? When should you do one vs. the other?",
-            },
-            {
-              question: "How do tests help you refactor safely? What happens if you don't have tests?",
-            },
-          ],
           activities: [
-            { title: "Slides", url: "#", draft: 1 },
+            { 
+                title: "Activity:Code Refactoring Worksheet", 
+                url: "https://docs.google.com/document/d/1a_liQ8fj5Xz62MGFZCqMI-8G725TQ2lr_33S6ekU2Kg/edit?tab=t.0", 
+                draft: 0
+            },
           ],
           readings: [
             {

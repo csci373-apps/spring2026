@@ -205,6 +205,7 @@ li:has(input[type="checkbox"]) {
 
 .syllabus-page,
 .assignment-page {
+    min-height: 60vh;
   li {
     @apply mb-1;
   }

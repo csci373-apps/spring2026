@@ -188,6 +188,96 @@ class ShoppingCart:
 - **Symptom:** Hard-coded values with unclear meaning
 - **Fix:** Extract to named constants
 
+### Deep nesting
+- **Symptom:** Multiple levels of if/for/while statements (3+ levels deep)
+- **Fix:** Extract nested logic into separate functions, use early returns, or combine conditions
+
+```python
+# Bad: Deep nesting
+def process_user(user):
+    if user:
+        if user.is_active:
+            if user.has_permission:
+                if user.credits > 0:
+                    # do something
+                    pass
+
+# Good: Early returns and extracted functions
+def process_user(user):
+    if not user or not user.is_active:
+        return
+    if not user.has_permission:
+        return
+    if user.credits <= 0:
+        return
+    # do something
+    pass
+```
+
+### Excessive comments
+- **Symptom:** Comments explaining *what* the code does (code should be self-explanatory)
+- **Fix:** Make code clearer with better names and structure, remove redundant comments
+- **Note:** Comments are good for explaining *why* (business logic, non-obvious decisions)
+
+```python
+# Bad: Comment explains what code does
+def calc_total(items):
+    total = 0  # Initialize total to zero
+    for item in items:  # Loop through items
+        total += item.price  # Add price to total
+    return total  # Return total
+
+# Good: Code is self-explanatory
+def calculate_total(items):
+    return sum(item.price for item in items)
+
+# Good: Comment explains why
+def calculate_discount(price):
+    # Apply 10% discount for early-bird customers (business rule from 2024)
+    return price * 0.9
+```
+
+### Side effects
+- **Symptom:** Function modifies state outside its scope (mutates globals, modifies input parameters, changes database)
+- **Fix:** Prefer pure functions when possible; make side effects explicit and documented
+- **Note:** Some side effects are necessary (database writes, API calls), but minimize them and make them obvious
+
+```python
+# Bad: Hidden side effect (modifies global state)
+user_count = 0  # global variable
+
+def process_user(user_data):
+    global user_count
+    user = create_user(user_data)
+    user_count += 1  # Side effect: modifies global
+    return user
+
+# Bad: Mutates input parameter unexpectedly
+def update_user_email(user, new_email):
+    user.email = new_email  # Mutates input - caller might not expect this
+    return user
+
+# Good: Pure function (no side effects)
+def calculate_user_age(birth_date):
+    return (datetime.now() - birth_date).days // 365
+
+# Good: Side effect is explicit and necessary
+def save_user_to_database(user, db):
+    """Saves user to database. Side effect: modifies database state."""
+    db.add(user)
+    db.commit()
+    return user
+
+# Good: Returns new object instead of mutating input
+def update_user_email(user, new_email):
+    """Returns new user object with updated email. Does not mutate input."""
+    return User(
+        id=user.id,
+        email=new_email,
+        name=user.name
+    )
+```
+
 ## 5. Refactoring Safely
 
 ### Use tests as guardrails
@@ -235,6 +325,9 @@ Before submitting code, ask:
 - [ ] Are dependencies passed as arguments (not global variables)?
 - [ ] Is there duplicated code that could be extracted?
 - [ ] Are there magic numbers/strings that should be constants?
+- [ ] Is there deep nesting that could be simplified?
+- [ ] Are comments explaining *what* instead of *why*?
+- [ ] Are there hidden side effects (mutating globals, modifying inputs)?
 - [ ] Would a new team member understand this code?
 - [ ] Do tests still pass after refactoring?
 
