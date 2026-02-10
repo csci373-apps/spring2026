@@ -2,502 +2,193 @@
 title: "React Architecture"
 start_date: "2026-02-10"
 type: "activity"
-draft: 1
+draft: 0
 heading_max_level: 3
 ---
 
+React feels like “a lot” at first. Today you’ll build one small page from scratch, connect it to the backend, and learn just enough architecture to keep going.
 
-## Learning Objectives
+**Assigned reading (use these while you work):**
+- [Intro to React](/spring2026/resources/web-ui-01-intro-to-react)
+- [TypeScript & JavaScript Patterns](/spring2026/resources/web-ui-02-typescript-js-patterns)
+- [Front-End Design with Mantine UI & Tailwind](/spring2026/resources/web-ui-03-mantine-tailwind)
+- [Testing with Vitest](/spring2026/resources/web-ui-04-testing)
 
-By the end of this session, students will:
-- Understand React as an architectural system
-- Be able to distinguish between pages and components
-- Understand local vs global state and when to use each
-- Be able to map backend features to UI flows
-- Identify UI states and edge cases
-- Reflect on what they learned from HW3 (refactoring and code quality)
+## 1. Goal
 
+By the end of this lesson, you should be able to:
 
-## Agenda (90 minutes)
-
-| Time | Activity | Description |
-|------|----------|-------------|
-| 0:00-0:15 | Reflection on HW3 | Review refactoring experience and code quality |
-| 0:15-0:35 | React Architecture Lecture | Pages vs components, state ownership, data flow |
-| 0:35-1:05 | Backend-to-Frontend Mapping | Map backend feature to UI flow |
-| 1:05-1:20 | UI States & Edge Cases | Identify states and edge cases |
-| 1:20-1:30 | Q&A & Wrap-up | Questions, preview homework |
+- Fetch real data from the backend in React.
+- Explain and implement UI states: loading / error / empty / success.
+- Explain how authentication works in this app at a high level.
 
 
-## Detailed Instructions
+## 2. AuthContext (guided reading)
 
-### Part 1: Reflection on HW3 (15 minutes)
+### 2.1. Open `AuthContext`
 
-#### Check-in (3 minutes)
-1. **Welcome back**
-2. **Quick check:** "Raise your hand if:"
-   - You completed HW3 (refactoring/extension)
-   - You received feedback on your PR
-   - You have questions about refactoring or design
+Open `ui/src/contexts/AuthContext.tsx`, then find:
 
-#### Reflection Activity: Refactoring Experience (7 minutes)
+- Auth state (`isAuthenticated`, `userInfo`, `loading`)
+- API base URL (`API_URL`)
+- Token storage (`localStorage` key `auth_token`)
+- Page load behavior (a `useEffect` calls `checkAuthentication()` and hits `/auth/me`)
 
-**Instructor asks teams to discuss:**
+### 2.2. Open `ProtectedRoute`
 
-1. **What did you refactor/extend?**
-   - What code did you improve?
-   - What design principles did you apply?
-   - What was the outcome?
+Open `ui/src/components/auth/ProtectedRoute.tsx`, then answer:
 
-2. **What did refactoring teach you?**
-   - About code quality?
-   - About design principles?
-   - About testing as guardrails?
+- What happens while `loading` is true?
+- What happens if you’re not authenticated?
+- What happens if you’re authenticated but lack a required role?
 
-3. **What was hard about refactoring?**
-   - What took longer than expected?
-   - What was confusing?
-   - What questions do you still have?
+Then open `ui/src/App.tsx` and find one real usage of `ProtectedRoute` (copy the route path it is protecting).
 
-**Instructor asks 2-3 teams to share:**
-- One thing they learned from refactoring
-- One thing that was hard
-- One question they have
+## 3. Task (individual)
 
-**Common insights to highlight:**
-- "Refactoring is easier with tests"
-- "Small functions are easier to understand"
-- "Design principles guide decisions"
-- "Code review helps catch issues"
+### 3.1. Branch
 
-**Key Point:** "Refactoring teaches us about code quality. Now we'll apply similar thinking to frontend architecture."
+- Create a branch: `scratch/<yourname>-react-practice`.
 
-#### Reflection Activity: Code Quality (5 minutes)
+### 3.2. Build one minimal list page
 
-**Instructor asks teams to discuss:**
+Pick one (Modules if available; otherwise Groups or Courses).
 
-1. **What makes code maintainable?**
-   - Clear structure?
-   - Good tests?
-   - Design principles?
-   - What else?
+### 3.3. Recreate an existing endpoint (recommended: Groups)
 
-2. **How will you apply this to frontend?**
-   - Will the same principles apply?
-   - What's different about frontend?
-   - What questions do you have?
+Use the backend endpoint:
 
-**Instructor:** Highlight that frontend has similar principles but different concerns
+- `GET /api/groups` (authenticated)
 
-**Key Point:** "Frontend has its own architecture. We'll learn React's architectural patterns today."
+That means your fetch URL should look like:
 
-**Transition:** "Now let's learn about React architecture..."
+- `${API_URL}/groups`
 
+### 3.4. Starter code (copy/paste)
 
-### Part 2: React Architecture Lecture (20 minutes)
+Create a new page component (your team will agree on the exact file + route), and start from this:
 
-#### React as Architecture (3 minutes)
+```tsx
+import { useEffect, useState } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
 
-**Instructor explains:**
-- React is not just a library - it's an architectural system
-- It provides patterns for organizing code
-- Understanding these patterns helps you build maintainable UIs
-- Frontend architecture is different from backend, but has similar principles
+export default function PracticeGroupsPage() {
+  const { API_URL } = useAuth();
 
-**Key Point:** "React gives us patterns for organizing UI code. Understanding these patterns is crucial."
-
-#### Pages vs Components (5 minutes)
-
-**Instructor explains the distinction:**
-
-**Pages:**
-- Top-level routes (e.g., `/courses`, `/groups`)
-- Responsible for doing the their own data fetching
-- Coordinate multiple components
-- Handle navigation and routing
-
-**Components:**
-- Reusable UI pieces (e.g., `Button`, `Card`, `UserList`)
-- Receive data via props (function arguments)
-- Focus on presentation
-- Can be used in multiple places
-
-**Show example from codebase:**
-
-```typescript
-// Page: Owns data, coordinates components
-export default function CourseDetailPage() {
-  const { courseId } = useParams();
-  const [course, setCourse] = useState<Course | null>(null);
+  const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchCourse();
-  }, [courseId]);
+    async function fetchItems() {
+      try {
+        setLoading(true);
+        setError(null);
+        const token = localStorage.getItem('auth_token');
+        const res = await fetch(`${API_URL}/groups`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        });
+        if (!res.ok) throw new Error('Failed to fetch groups');
+        setItems(await res.json());
+      } catch (e) {
+        setError(e instanceof Error ? e.message : 'Unknown error');
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchItems();
+  }, [API_URL]);
 
-  return (
-    <Container>
-      {loading ? <LoadingSpinner /> : <CourseDetail course={course} />}
-    </Container>
-  );
-}
+  // UI states
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+  if (items.length === 0) return <div>No groups found.</div>;
 
-// Component: Receives data, focuses on presentation
-function CourseDetail({ course }: { course: Course }) {
-  return (
-    <Card>
-      <Title>{course.title}</Title>
-      <Text>{course.description}</Text>
-      <ModuleList modules={course.modules} />
-    </Card>
-  );
-}
-```
-
-**Key Point:** "Pages own data and logic. Components receive data and render UI."
-
-#### Local vs Global State (7 minutes)
-
-**Instructor explains state ownership:**
-
-**Local State (useState):**
-- State that belongs to one component
-- Not shared with other components
-- Example: Form input values, toggle states, UI state
-
-**Global State (Context, State Management):**
-- State shared across multiple components
-- Needs to be accessible from different parts of the app
-- Example: User authentication, theme, app-wide settings
-
-**Show example:**
-
-```typescript
-// Local state: Only this component needs it
-function CreatePostForm() {
-  const [title, setTitle] = useState(''); // Local - only this form needs it
-  const [content, setContent] = useState(''); // Local
-  
-  return (
-    <form>
-      <input value={title} onChange={(e) => setTitle(e.target.value)} />
-      <textarea value={content} onChange={(e) => setContent(e.target.value)} />
-    </form>
-  );
-}
-
-// Global state: Multiple components need it
-const AuthContext = createContext();
-
-function AuthProvider({ children }) {
-  const [user, setUser] = useState(null); // Global - many components need user
-  
-  return (
-    <AuthContext.Provider value={{ user, setUser }}>
-      {children}
-    </AuthContext.Provider>
-  );
-}
-```
-
-**Decision framework:**
-- **Use local state if:** Only one component needs it
-- **Use global state if:** Multiple components need it, or it's app-wide (like auth)
-
-**Key Point:** "State should live as close to where it's used as possible. Only lift it up if needed."
-
-#### Data Flow (5 minutes)
-
-**Instructor explains React's data flow:**
-
-1. **Data flows down:** Props pass data from parent to child
-2. **Events flow up:** Callbacks pass events from child to parent
-3. **State is owned by the component that needs it**
-
-**Show example:**
-
-```typescript
-// Parent owns state, passes data down
-function CoursePage() {
-  const [courses, setCourses] = useState([]);
-  
-  // Data flows down via props
-  return <CourseList courses={courses} onSelect={handleSelect} />;
-}
-
-// Child receives data, sends events up
-function CourseList({ courses, onSelect }) {
   return (
     <div>
-      {courses.map(course => (
-        <CourseCard 
-          key={course.id} 
-          course={course}
-          onClick={() => onSelect(course.id)} // Event flows up
-        />
-      ))}
+      <h1>Groups</h1>
+      <pre>{JSON.stringify(items, null, 2)}</pre>
     </div>
   );
 }
 ```
 
-**Key Point:** "Data flows down, events flow up. This unidirectional flow makes React predictable."
+> #### Summary of the Code Above
+> 
+> - Adds state: `items`, `loading`, `error`.
+> - Fetches once on mount (`useEffect`).
+> - Renders UI states:
+>   - loading
+>   - error
+>   - empty
+>   - success (render list)
+> - Uses `useAuth()` to get `API_URL` for your request.
 
-**Transition:** "Now let's practice mapping backend features to UI..."
+### 3.5. How to test your page (run + route)
 
+- Access the front end web server from Docker (probably runs on port 5432)
+- Log in at `/login`.
+- Add a route to your page in `ui/src/App.tsx`:
+  - Import your page component near the other imports.
+  - Add a new `<Route ... />` near the other “User routes”.
+  - Tip: copy the `/dashboard/user/groups` route and change the `path` + page component.
+- Visit your route in the browser and confirm you see:
+  - Loading, then either JSON data or an empty state.
+  - If you get a 401/403, log in again and refresh.
 
-### Part 3: Backend-to-Frontend Mapping (30 minutes)
+### 3.6. Pick 1-2 enhancements to complete:
 
-#### Setup (5 minutes)
+1. Replace the `<pre>` with a real list (`<ul><li>...</li></ul>`).
+1. Add a simple search filter (`filter(...)`) and conditional rendering.
+1. Extract `ItemsList` as a child component that receives `items` as props.
+1. Swap one HTML element for Mantine (`Button`, `Alert`, or `Loader`).
+1. Add one CRUD action (pick one):
 
-**Instructor provides scenario:**
+    - Create: add a small form and call `POST /api/groups`
+    - Edit: add an “Edit” button per item and call `PATCH /api/groups/{id}`
+    - Delete: add a “Delete” button per item and call `DELETE /api/groups/{id}`
+    - Note: these endpoints may require an admin/manager role (if you get 403, that’s expected).
 
-**Scenario:** You need to build a UI for the Groups feature. The backend has:
-- `GET /api/groups` - List groups
-- `GET /api/groups/{id}` - Get group details
-- `POST /api/groups` - Create group
-- `PATCH /api/groups/{id}` - Update group
-- `DELETE /api/groups/{id}` - Delete group
-
-**Task:** Map this backend API to a UI flow.
 
-#### Team Activity: Map Backend to UI (20 minutes)
-
-**Instructions:**
-1. **Work in teams**
-2. **Design the UI flow:**
-   - What pages do you need?
-   - What components do you need?
-   - What state do you need?
-   - How does data flow?
 
-3. **Use this template:**
+## 4. Turn-in (end of class)
+- Open a PR (do not merge).
+- In the PR description:
+  - Endpoint called (method + path)
+  - UI states handled
+  - Enhancement(s) that you made
 
-```markdown
-## UI Flow Design
-
-### Pages
-- `/groups` - List all groups
-- `/groups/new` - Create new group
-- `/groups/{id}` - View group details
-- `/groups/{id}/edit` - Edit group
-
-### Components
-- `GroupList` - Displays list of groups
-- `GroupCard` - Displays one group
-- `GroupForm` - Form for creating/editing
-- `GroupDetail` - Shows group details
-
-### State
-- **Local:**
-  - Form inputs (in GroupForm)
-  - Loading states (in pages)
-- **Global:**
-  - User authentication (from AuthContext)
-  - Groups list (could be local to page or global)
-
-### Data Flow
-1. User navigates to `/groups`
-2. Page fetches groups from API
-3. Page passes groups to GroupList component
-4. GroupList renders GroupCard for each group
-5. User clicks group → navigates to `/groups/{id}`
-6. Page fetches group details
-7. Page passes group to GroupDetail component
-```
-
-**Instructor circulates:**
-- Help teams think through the design
-- Ensure they consider pages vs components
-- Check that state ownership is clear
-- Guide data flow thinking
-
-#### Share Designs (5 minutes)
-
-**Ask 2-3 teams to share:**
-- Their UI flow design
-- Their reasoning (why this structure?)
-- Questions they have
-
-**Instructor leads discussion:**
-- Validate designs
-- Point out good patterns
-- Address common issues
-- Discuss alternatives
 
-**Common issues to address:**
-- **Too many pages:** Can some be components?
-- **State in wrong place:** Should this be local or global?
-- **Unclear data flow:** How does data move through the app?
+--- 
 
-**Key Point:** "Mapping backend to frontend helps you think through the architecture before coding."
-
-**Transition:** "Now let's think about UI states and edge cases..."
+## Appendix
 
-
-### Part 4: UI States & Edge Cases (15 minutes)
-
-#### What are UI States? (3 minutes)
-
-**Instructor explains:**
-- UI states are different conditions the UI can be in
-- Examples: Loading, error, empty, success, editing
-- Each state needs different UI
-
-**Show example:**
-
-```typescript
-// Component with multiple states
-function GroupList() {
-  const [groups, setGroups] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  // States:
-  // 1. Loading: Show spinner
-  // 2. Error: Show error message
-  // 3. Empty: Show "no groups" message
-  // 4. Success: Show groups list
-
-  if (loading) return <Spinner />;
-  if (error) return <ErrorMessage error={error} />;
-  if (groups.length === 0) return <EmptyState />;
-  return <GroupCards groups={groups} />;
-}
-```
-
-**Key Point:** "UI has multiple states. You need to handle each one."
-
-#### Identify States and Edge Cases (10 minutes)
-
-**Instructor asks teams to:**
-1. **For your UI flow, identify all states:**
-   - Loading states (fetching data)
-   - Error states (API errors, network errors)
-   - Empty states (no data)
-   - Success states (data loaded)
-   - Form states (editing, submitting, validation errors)
-
-2. **Identify edge cases:**
-   - What if API is slow?
-   - What if network fails?
-   - What if data is empty?
-   - What if user is unauthorized?
-   - What if form validation fails?
-
-**Template:**
-
-```markdown
-## UI States & Edge Cases
+### 1. Notes on Contexts in React
+React Context solves a simple problem: sometimes lots of components need the same data, and passing it through props level-by-level is annoying.
 
-### Group List Page (`/groups`)
-**States:**
-- Loading: Fetching groups
-- Error: API error, network error
-- Empty: No groups exist
-- Success: Groups loaded
+#### The pieces in this app
 
-**Edge Cases:**
-- User has no groups (empty state)
-- API returns 401 (unauthorized - redirect to login)
-- Network timeout (show error, retry button)
-- User is admin vs regular user (different permissions)
-```
+- **`AuthContext`**: the *shared shape* (what auth data/functions exist), like:
+  - `isAuthenticated`, `userInfo`, `API_URL`
+  - functions like `login()` and `logout()`
+- **`AuthProvider`**: the component that *creates and supplies the real values*
+  - It wraps the app and renders `<AuthContext.Provider value={...}>`.
+  - Inside it, you’ll see `useState`/`useEffect` used to track auth state and check the token.
+- **`useAuth()`**: the helper hook that *reads the context*
+  - It calls `useContext(AuthContext)` and returns the shared auth value.
+  - If you call it outside an `AuthProvider`, it throws an error so you notice immediately.
 
-**Instructor circulates:**
-- Help teams identify states
-- Ensure they think about edge cases
-- Guide them to consider user experience
+- **Important rule**: to use a context, your component must be *wrapped by its Provider* somewhere above it in the component tree (for auth, that means the app must be inside `<AuthProvider>...</AuthProvider>`).
 
-#### Share States and Edge Cases (2 minutes)
+**Takeaway:** Context defines what’s shared, the provider supplies it, and `useAuth()` is how components read it.
 
-**Ask 1-2 teams to share:**
-- States they identified
-- Edge cases they considered
-- How they'll handle them
+### 2. Notes on `ProtectedRoute`
 
-**Instructor:** Validate, point out missing states/edge cases
+`ProtectedRoute` is a wrapper component used in `ui/src/App.tsx` to protect pages that require login (and sometimes a role).
 
-**Key Point:** "Thinking about states and edge cases helps you build robust UIs."
+- If auth is still loading: show a loading spinner.
+- If you are not logged in: redirect to `/login`.
+- If a page requires a role and you don’t have it: redirect to `/unauthorized`.
+- Otherwise: render the page normally.
 
-**Transition:** "On Thursday, you'll implement this together..."
-
-
-### Part 5: Q&A & Wrap-up (10 minutes)
-
-#### Questions (7 minutes)
-- Open floor for questions
-- Address common confusions:
-  - "Pages vs Components?" → Pages own data, components render UI
-  - "Local vs Global state?" → Use local unless multiple components need it
-  - "How do I know what state to use?" → Start local, lift up if needed
-
-#### Preview Homework (2 minutes)
-- **HW4:** Build React UI that connects to existing backend feature
-- **Due:** Next Tuesday (Feb 17)
-- **Process:**
-  1. Choose a backend feature (or use groups)
-  2. Design UI flow (pages, components, state)
-  3. Implement React components
-  4. Connect to backend API
-  5. Handle states and edge cases
-  6. Create PR
-  7. Review another team's frontend PR
-  8. Reflect on frontend experience
-
-#### Wrap-up (1 minute)
-- Remind students to:
-  - Read "Thinking in React" (due Thursday)
-  - Read "Mapping User Goals to UI State" handout (due Thursday)
-  - Come ready to code on Thursday
-
-
-## Materials Needed
-
-- Codebase open and navigable (web frontend)
-- Whiteboard for UI flow diagrams
-- UI flow template (handout or digital)
-- States & edge cases template (handout or digital)
-
-## Instructor Notes
-
-### Common Confusions
-
-**"Pages vs Components - what's the difference?"**
-- Pages: Top-level routes, own data fetching, coordinate components
-- Components: Reusable UI pieces, receive data via props, focus on presentation
-- Rule of thumb: If it has a route, it's a page. If it's reusable, it's a component.
-
-**"When do I use local vs global state?"**
-- Local: Only one component needs it (form inputs, UI toggles)
-- Global: Multiple components need it (user auth, theme, app settings)
-- Start with local, lift up if needed
-
-**"How do I know what components to create?"**
-- Look for repeated UI patterns → extract to component
-- Look for complex UI → break into smaller components
-- Start with pages, then identify reusable pieces
-
-### Time Management
-
-- **If running short:** Focus on pages vs components, skip some edge cases
-- **If running long:** Move UI states to homework, focus on architecture
-
-### Differentiation
-
-- **For advanced students:** Have them design more complex flows, consider state management libraries
-- **For struggling students:** Provide simpler examples, focus on one page at a time
-
-
-## Student Deliverables
-
-- UI flow designed (can be part of HW4)
-- States and edge cases identified (can be part of HW4)
-- Reflection on HW3 (refactoring and code quality)
-
-## Next Steps
-
-- **Before Thursday:** Read "Thinking in React", "Mapping User Goals to UI State"
-- **Thursday:** TypeScript, Contexts, Hooks workshop + integration practice
-- **Homework:** HW4 due next Tuesday
-
+To see it in action, look in `ui/src/App.tsx` for routes wrapped like `<ProtectedRoute> ... </ProtectedRoute>` (for example, many `/dashboard/...` pages).

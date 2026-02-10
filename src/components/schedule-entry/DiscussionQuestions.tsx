@@ -18,9 +18,9 @@ export default function DiscussionQuestions({
   return (
     <div className="mb-4">
       <strong className="text-gray-700 dark:text-gray-300" style={isDark ? { color: '#d1d5db' } : undefined}>Discussion Questions</strong>
-      <ul className="!list-decimal !pl-12">
+      <ul className="!list-none !pl-4">
         {discussionQuestions.map((dq, index) => (
-          <li key={index} className="mb-3 text-gray-700 dark:text-gray-300" style={isDark ? { color: '#d1d5db' } : undefined}>
+          <li key={index} className="text-gray-700 dark:text-gray-300" style={isDark ? { color: '#d1d5db' } : undefined}>
             {dq.question}
           </li>
         ))}

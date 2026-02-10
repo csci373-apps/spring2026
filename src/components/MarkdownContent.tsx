@@ -100,6 +100,90 @@ export default function MarkdownContent({ content, className }: MarkdownContentP
     };
   }, [content]);
 
+  // Add copy buttons to code blocks
+  useEffect(() => {
+    if (!contentRef.current) return;
+
+    const codeBlocks = contentRef.current.querySelectorAll('pre code');
+    
+    codeBlocks.forEach((codeElement) => {
+      const preElement = codeElement.parentElement as HTMLElement;
+      
+      // Skip if we've already added a copy button
+      if (preElement.querySelector('.copy-code-button')) return;
+      
+      // Make pre element relative for absolute positioning of button
+      preElement.style.position = 'relative';
+      
+      // Create copy button
+      const copyButton = document.createElement('button');
+      copyButton.className = 'copy-code-button';
+      // Using Heroicons ClipboardDocumentIcon outline (24x24) - standard copy icon
+      copyButton.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+        </svg>
+        <span class="copy-code-text">Copy</span>
+      `;
+      copyButton.setAttribute('aria-label', 'Copy code');
+      copyButton.setAttribute('title', 'Copy code');
+      
+      // Copy functionality
+      copyButton.addEventListener('click', async () => {
+        const codeText = codeElement.textContent || '';
+        
+        try {
+          await navigator.clipboard.writeText(codeText);
+          
+          // Update button to show success
+          const textSpan = copyButton.querySelector('.copy-code-text');
+          if (textSpan) {
+            textSpan.textContent = 'Copied!';
+            copyButton.classList.add('copied');
+          }
+          
+          // Reset after 2 seconds
+          setTimeout(() => {
+            if (textSpan) {
+              textSpan.textContent = 'Copy';
+            }
+            copyButton.classList.remove('copied');
+          }, 2000);
+        } catch (err) {
+          console.error('Failed to copy code:', err);
+          // Fallback for older browsers
+          const textArea = document.createElement('textarea');
+          textArea.value = codeText;
+          textArea.style.position = 'fixed';
+          textArea.style.opacity = '0';
+          document.body.appendChild(textArea);
+          textArea.select();
+          try {
+            document.execCommand('copy');
+            const textSpan = copyButton.querySelector('.copy-code-text');
+            if (textSpan) {
+              textSpan.textContent = 'Copied!';
+              copyButton.classList.add('copied');
+            }
+            setTimeout(() => {
+              if (textSpan) {
+                textSpan.textContent = 'Copy';
+              }
+              copyButton.classList.remove('copied');
+            }, 2000);
+          } catch (fallbackErr) {
+            console.error('Fallback copy failed:', fallbackErr);
+          }
+          document.body.removeChild(textArea);
+        }
+      });
+      
+      // Insert button into pre element
+      preElement.appendChild(copyButton);
+    });
+  }, [content]);
+
 //   useEffect(() => {
 //     if (!contentRef.current) return;
 

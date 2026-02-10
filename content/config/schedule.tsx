@@ -260,7 +260,7 @@ export const baseTopics = [
             </>
           ),
           activities: [
-            { title: "Slides", url: "#", draft: 1 },
+            { title: "Slides", url: "https://docs.google.com/presentation/d/1S_QJ-hNRHGXo5-uA1RrWjK1GHPHb0Zy7/edit?usp=sharing&ouid=113376576186080604800&rtpof=true&sd=true", draft: 0 },
           ],
           readings: [
             {
@@ -270,15 +270,7 @@ export const baseTopics = [
                 </>
               ),
               url: "https://react.dev/learn/thinking-in-react",
-            },
-            {
-              citation: (
-                <>
-                  Short handout: <em>Mapping User Goals to UI State</em>
-                </>
-              ),
-              url: "/readings/user-goals-to-ui-state",
-            },
+            }
           ],
         },
         {
@@ -293,6 +285,40 @@ export const baseTopics = [
               </ul>
             </>
           ),
+          readings: [
+            {
+              citation: (
+                <>
+                  Course resource. <em>Intro to React</em>.
+                </>
+              ),
+              url: "/spring2026/resources/web-ui-01-intro-to-react",
+            },
+            {
+              citation: (
+                <>
+                  Course resource. <em>TypeScript &amp; JavaScript Patterns</em>.
+                </>
+              ),
+              url: "/spring2026/resources/web-ui-02-typescript-js-patterns",
+            },
+            {
+              citation: (
+                <>
+                  Course resource. <em>Front-End Design with Mantine UI &amp; Tailwind</em>.
+                </>
+              ),
+              url: "/spring2026/resources/web-ui-03-mantine-tailwind",
+            },
+            {
+              citation: (
+                <>
+                  Course resource. <em>Testing with Vitest</em>.
+                </>
+              ),
+              url: "/spring2026/resources/web-ui-04-testing",
+            },
+          ],
           assigned: {
             titleShort: "HW4",
             title: "Frontend Integration PR + 1 Peer Review (Frontend Focus)",

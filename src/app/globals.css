@@ -11,9 +11,11 @@
   --secondary: #22c55e;
   --accent: transparent;
   --border: #e5e7eb;
+  /* --border: #F00; */
   --muted: #6b7280;
   --card: #ffffff;
   --card-foreground: #171717;
+  --table-header: #F4F4F4;
 }
 
 /* Dark mode variables */
@@ -26,6 +28,7 @@
   --muted: #9ca3af;
   --card: #1f2937;
   --card-foreground: #f9fafb;
+  --table-header: #222;
 }
 
 h1 {
@@ -65,9 +68,10 @@ h5 {
 
 
 table {
-  @apply w-full border-collapse mb-20;
+  @apply w-full border-collapse mb-20 rounded-lg overflow-hidden border;
   border-color: var(--border);
-  table-layout: auto;
+  table-layout: auto;  
+  box-shadow: 0 0 7px rgba(0, 0, 0, .1);
 }
 
 th,
@@ -76,12 +80,20 @@ td {
   border-color: var(--border);
   color: var(--foreground);
   word-wrap: break-word;
+  vertical-align: top;
 }
 
 th {
   @apply text-left border-b;
   border-color: var(--border);
+  background: var(--table-header);
   color: var(--foreground);
+}
+
+.wireframe-rules-table td,
+.wireframe-rules-table th {
+  border-left: solid 1px var(--border) !important;
+  vertical-align: top;
 }
 
 /* a {
@@ -103,6 +115,18 @@ ol {
 ul {
   @apply list-disc pl-6 mb-4;
   color: var(--foreground);
+}
+
+/* Top-level lists (not nested in li) get more bottom margin */
+ul:not(li ul),
+ol:not(li ol) {
+  @apply mb-6;
+}
+
+/* Nested lists keep smaller margin */
+li ul,
+li ol {
+  @apply mb-2;
 }
 
 p {
@@ -205,7 +229,6 @@ li:has(input[type="checkbox"]) {
 
 .syllabus-page,
 .assignment-page {
-    min-height: 60vh;
   li {
     @apply mb-1;
   }
@@ -467,15 +490,6 @@ li:has(input[type="checkbox"]) {
   color: #60a5fa; /* blue-400 */
 }
 
-/* Better table styling if used */
-.prose table {
-  @apply rounded-lg overflow-hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.prose th {
-  background: var(--card);
-}
 
 /* Numbered steps styling */
 .prose ol li {
@@ -693,6 +707,85 @@ code {
 .dark .hljs {
   background: #1e293b;
   color: #e2e8f0;
+}
+
+/* Copy code button styles */
+.copy-code-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.copy-code-button:hover {
+  background: rgba(255, 255, 255, 1);
+  border-color: #9ca3af;
+  color: #111827;
+}
+
+.copy-code-button:active {
+  transform: scale(0.95);
+}
+
+.copy-code-button.copied {
+  background: #10b981;
+  border-color: #10b981;
+  color: white;
+}
+
+.copy-code-button.copied:hover {
+  background: #059669;
+  border-color: #059669;
+}
+
+.copy-code-button svg {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+
+.copy-code-text {
+  font-size: 12px;
+  line-height: 1;
+}
+
+/* Dark mode copy button */
+.dark .copy-code-button {
+  background: rgba(31, 41, 55, 0.95);
+  border-color: #4b5563;
+  color: #e5e7eb;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.dark .copy-code-button:hover {
+  background: rgba(31, 41, 55, 1);
+  border-color: #6b7280;
+  color: #f9fafb;
+}
+
+.dark .copy-code-button.copied {
+  background: #10b981;
+  border-color: #10b981;
+  color: white;
+}
+
+.dark .copy-code-button.copied:hover {
+  background: #059669;
+  border-color: #059669;
 }
 
 .hljs-comment,
