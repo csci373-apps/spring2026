@@ -275,16 +275,10 @@ export const baseTopics = [
         },
         {
           date: "Th, Feb 12",
-          topic: "Integration studio: connect frontend to backend feature",
-          description: (
-            <>
-              <ul>
-                <li>Studio: implement UI integration with a tested backend endpoint</li>
-                <li>Review focus: component responsibility and predictable data flow</li>
-                <li>Quick check: 'What can a user do now?'</li>
-              </ul>
-            </>
-          ),
+          topic: "Review of Tuesday's Activity; New team assignments",
+          activities: [
+            { title: "Slides", url: "https://docs.google.com/presentation/d/1KWG4rNJpnDq4sHH-O0M7LU5hbfyMKmtU/edit?usp=sharing&ouid=113376576186080604800&rtpof=true&sd=true", draft: 0},
+          ],
           readings: [
             {
               citation: (
