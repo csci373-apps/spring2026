@@ -1,6 +1,6 @@
 ---
 title: "TypeScript, Contexts, Hooks"
-start_date: "2026-02-12"
+start_date: "2026-02-17"
 type: "activity"
 draft: 1
 heading_max_level: 3
