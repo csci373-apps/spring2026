@@ -112,6 +112,9 @@ export default function MarkdownContent({ content, className }: MarkdownContentP
       // Skip if we've already added a copy button
       if (preElement.querySelector('.copy-code-button')) return;
       
+      // Skip if the code block has language-text (no copy button for text blocks)
+      if (codeElement.classList.contains('language-text')) return;
+      
       // Make pre element relative for absolute positioning of button
       preElement.style.position = 'relative';
       
