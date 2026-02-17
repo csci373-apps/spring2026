@@ -9,6 +9,7 @@ interface Activity {
   url?: string;
   draft?: number;
   excluded?: number;
+  ordering?: number;
 }
 
 interface Assignment {
@@ -308,7 +309,10 @@ async function enrichTopicsWithMarkdown(baseTopics: BaseTopicsArray): Promise<To
           title: activity.title,
           url: `/activities/${activity.id}/`,
           draft: activity.draft || 0,
-          excluded: activity.excluded ? 1 : 0
+          excluded: activity.excluded ? 1 : 0,
+          // Use optional frontmatter ordering to sort “sub-activities” on the schedule page.
+          // (e.g., UI Testing Part 1, Part 2, etc.)
+          ordering: activity.ordering ?? activity.order ?? undefined,
         }));
       
       // Create auto-populated assignment entries for assigned (all matches, including drafts)
@@ -351,6 +355,17 @@ async function enrichTopicsWithMarkdown(baseTopics: BaseTopicsArray): Promise<To
         const existingUrls = new Set(existingActivities.map((a: Activity) => a.url));
         const newAutoActivities = autoActivities.filter((a: Activity) => !existingUrls.has(a.url));
         meeting.activities = [...existingActivities, ...newAutoActivities];
+      }
+
+      // Sort schedule activities by frontmatter ordering, then title.
+      // Unordered items (e.g., “Slides”) appear first (ordering treated as -1).
+      if (meeting.activities && meeting.activities.length > 1) {
+        meeting.activities.sort((a, b) => {
+          const aOrder = a.ordering ?? -1;
+          const bOrder = b.ordering ?? -1;
+          if (aOrder !== bOrder) return aOrder - bOrder;
+          return a.title.localeCompare(b.title);
+        });
       }
       
       // Merge assigned assignments: add all auto-populated ones (including drafts)

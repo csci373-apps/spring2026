@@ -18,6 +18,7 @@ export interface PostData {
   group?: string;
   group_order?: number;
   order?: number;
+  ordering?: number;
   description?: string;
   date: string;
   start_date?: string;

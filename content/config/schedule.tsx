@@ -320,6 +320,17 @@ export const baseTopics = [
             draft: 1,
           },
         },
+        {
+            date: "Tu, Feb 17",
+            topic: "Workday + Front-end Testing",
+            activities: [
+              { 
+                title: "Slides", 
+                url: "#", 
+                draft: 1
+              },
+            ],
+        }
       ],
     },
   
@@ -330,8 +341,8 @@ export const baseTopics = [
         "Build mobile UI using React Native and Expo. Connect mobile app to backend API. SDLC concept: platform considerations and mobile-specific patterns.",
       meetings: [
         {
-          date: "Tu, Feb 17",
-          topic: "React Native architecture + Expo setup",
+          date: "Th, Feb 19",
+          topic: "React Native I",
           description: (
             <>
               <ul>
@@ -357,8 +368,8 @@ export const baseTopics = [
           ],
         },
         {
-          date: "Th, Feb 19",
-          topic: "Mobile UI + navigation + backend integration",
+          date: "Tu, Feb 24",
+          topic: "React Native II",
           description: (
             <>
               <ul>
@@ -377,6 +388,11 @@ export const baseTopics = [
             draft: 1,
           },
         },
+        {
+          date: "Th, Feb 26",
+          topic: "React Native III",
+          description: ""
+        }
       ],
     },
   
@@ -387,7 +403,7 @@ export const baseTopics = [
         "Introduce HCD and low-fidelity prototyping once technical fluency exists. Use critique to surface mismatches between user intent and current implementation.",
       meetings: [
         {
-          date: "Tu, Feb 24",
+          date: "Tu, Mar 3",
           topic: "Human-centered design + low-fi prototyping",
           description: (
             <>
@@ -421,7 +437,7 @@ export const baseTopics = [
           ],
         },
         {
-          date: "Th, Feb 26",
+          date: "Th, Mar 5",
           topic: "Iterate based on prototype + review focus on assumptions",
           description: (
             <>
@@ -440,55 +456,7 @@ export const baseTopics = [
         },
       ],
     },
-  
-    {
-      id: 8,
-      title: "Design Synthesis + Sprint 1 Demo + Phase 1 Reflection",
-      description:
-        "Synthesize design work, stabilize Phase 1 contributions, and demo. Prepare for the Phase 2 shift from exploration to shared ownership.",
-      meetings: [
-        {
-          date: "Tu, Mar 3",
-          topic: "High-fi prototyping + demo prep",
-          description: (
-            <>
-              <ul>
-                <li>High-fidelity prototyping and alignment: confirm prototype behaviors map to system behaviors</li>
-                <li>Studio: prepare Sprint 1 demos and ensure PRs are reviewable and rebased (linear history)</li>
-              </ul>
-            </>
-          ),
-          readings: [
-            {
-              citation: (
-                <>
-                  Short reading: <em>Agile Overview</em> (forward-looking; prepares for Phase 2)
-                </>
-              ),
-              url: "/readings/agile-overview",
-            },
-          ],
-        },
-        {
-          date: "Th, Mar 5",
-          topic: "Sprint 1 demos + Phase 1 retrospective",
-          description: (
-            <>
-              <ul>
-                <li>Sprint 1 demos</li>
-                <li>Phase 1 retrospective: what improved (tests, reviews, design clarity), what remained hard, and what will change in Phase 2 (shared repo, vertical slices)</li>
-              </ul>
-            </>
-          ),
-          assigned: {
-            titleShort: "HW7",
-            title: "Phase 1 Reflection + Phase 2 Preparation",
-            url: "/assignments/hw07-phase1-reflection",
-            draft: 1,
-          },
-        },
-      ],
-    },
+
   
     // Keep everything after Week 8 as-is from your original file
     {

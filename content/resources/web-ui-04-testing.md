@@ -76,7 +76,7 @@ This tells Vitest to:
 
 Tests are organized in `__tests__` directories next to the code they test:
 
-```
+```bash
 ui/
 └── src/
     ├── utils/
@@ -315,7 +315,7 @@ it('should fetch user data', async () => {
 Here's what happens without mocking vs. with mocking:
 
 **Without mocking (real code):**
-```
+```bash
 fetchUser(1) 
   → calls real fetch('http://localhost:8000/api/users/1')
   → actually makes HTTP request
@@ -324,7 +324,7 @@ fetchUser(1)
 ```
 
 **With mocking (in tests):**
-```
+```bash
 fetchUser(1)
   → calls fake fetch('http://localhost:8000/api/users/1')
   → returns { id: 1, username: 'testuser' } (what we configured)
@@ -384,8 +384,11 @@ describe('LoginForm', () => {
         
         render(<LoginForm onSubmit={onSubmit} />);
         
+        // simulate the user typing the username and password:
         await user.type(screen.getByLabelText(/username/i), 'testuser');
         await user.type(screen.getByLabelText(/password/i), 'password123');
+
+        // simulate a click event:
         await user.click(screen.getByRole('button', { name: /sign in/i }));
         
         expect(onSubmit).toHaveBeenCalledWith({

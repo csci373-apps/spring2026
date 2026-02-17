@@ -16,6 +16,7 @@ export interface Activity {
   url?: string;
   draft?: number;
   excluded?: number;
+  ordering?: number;
 }
 
 export interface DiscussionQuestion {
