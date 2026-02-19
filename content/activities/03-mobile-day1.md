@@ -1,8 +1,8 @@
 ---
 title: "React Native + Expo"
-start_date: "2026-02-17"
+start_date: "2026-02-19"
 type: "activity"
-draft: 1
+draft: 0
 ---
 
 
@@ -16,124 +16,39 @@ By the end of this session, students will:
 - Reflect on what they learned from HW4 (frontend integration)
 
 
-## Agenda (90 minutes)
+## React Native vs React
 
-| Time | Activity | Description |
-|------|----------|-------------|
-| 0:00-0:15 | Reflection on HW4 | Review frontend integration experience |
-| 0:15-0:35 | React Native vs React | Similarities and differences |
-| 0:35-1:05 | Expo Setup & Structure | Set up Expo project, understand structure |
-| 1:05-1:20 | Mobile vs Web Discussion | How is mobile different? What's the same? |
-| 1:20-1:30 | Q&A & Wrap-up | Questions, preview homework |
+#### What is React Native?
 
+React Native enables the development of mobile applications using React. Applications are written in JavaScript or TypeScript and execute on both iOS and Android platforms. React Native utilizes native components rather than web components, maintaining conceptual similarity to React while incorporating mobile-specific differences.
 
-## Detailed Instructions
+**Key Point:** React Native applies React concepts to mobile development, using the same fundamental principles but with different component implementations.
 
-### Part 1: Reflection on HW4 (15 minutes)
+#### Similarities
 
-#### Check-in (3 minutes)
-1. **Welcome back**
-2. **Quick check:** "Raise your hand if:"
-   - You completed HW4 (frontend integration)
-   - You received feedback on your PR
-   - You have questions about React or frontend
-
-#### Reflection Activity: Frontend Integration (7 minutes)
-
-**Instructor asks teams to discuss:**
-
-1. **What did you build?**
-   - What feature did you implement?
-   - What was the UI flow?
-   - What components did you create?
-
-2. **What was different about frontend?**
-   - How was it different from backend?
-   - What was easier? What was harder?
-   - What skills transferred?
-
-3. **What clicked?**
-   - What React concepts make sense now?
-   - What patterns do you understand?
-   - What feels natural?
-
-4. **What's still confusing?**
-   - What concepts are unclear?
-   - What questions do you have?
-   - What would help?
-
-**Instructor asks 2-3 teams to share:**
-- One thing that was different about frontend
-- One thing that clicked
-- One question they have
-
-**Common insights to highlight:**
-- "Frontend is more visual and interactive"
-- "State management is different from backend"
-- "TypeScript helps catch errors"
-- "Context makes global state easier"
-- "Hooks take practice but are powerful"
-
-**Key Point:** "Frontend has different concerns than backend. Now we'll see how mobile is similar and different."
-
-#### Reflection Activity: Code Review (5 minutes)
-
-**Instructor asks teams to discuss:**
-
-1. **What feedback did you receive?**
-   - Was it helpful?
-   - Did it change your approach?
-   - What did you learn?
-
-2. **What feedback did you give?**
-   - Did you focus on frontend concerns?
-   - Was your feedback constructive?
-   - What would you do differently?
-
-**Instructor:** Highlight good review practices, address common issues
-
-**Key Point:** "Code review helps us learn. We'll continue this with mobile."
-
-**Transition:** "Now let's learn about React Native..."
-
-
-### Part 2: React Native vs React (20 minutes)
-
-#### What is React Native? (5 minutes)
-
-**Instructor explains:**
-- React Native lets you build mobile apps using React
-- Write JavaScript/TypeScript, runs on iOS and Android
-- Uses native components (not web components)
-- Similar to React but with mobile-specific differences
-
-**Key Point:** "React Native is React for mobile. Same concepts, different components."
-
-#### Similarities (7 minutes)
-
-**Instructor explains what's the same:**
+The following similarities exist between React (web) and React Native (mobile):
 
 1. **Component-based architecture:**
-   - Same component model
-   - Props and state work the same
-   - Same lifecycle concepts
+   - Identical component model
+   - Props and state function identically
+   - Equivalent lifecycle concepts
 
 2. **Hooks:**
-   - useState, useEffect work the same
-   - Custom hooks work the same
-   - Context works the same
+   - useState and useEffect function identically
+   - Custom hooks function identically
+   - Context API functions identically
 
 3. **TypeScript:**
-   - Same type system
-   - Same interfaces and types
-   - Same benefits
+   - Identical type system
+   - Equivalent interfaces and types
+   - Equivalent benefits
 
 4. **State management:**
    - Local state (useState)
    - Global state (Context)
-   - Same patterns
+   - Equivalent patterns
 
-**Show example:**
+**Example:**
 
 ```typescript
 // React (Web)
@@ -146,19 +61,20 @@ function Button({ title, onPress }) {
   return <Pressable onPress={onPress}><Text>{title}</Text></Pressable>;
 }
 
-// Same component logic, different components!
+// Identical component logic, different component implementations
 ```
 
-**Key Point:** "The React concepts you learned apply to mobile too."
+**Key Point:** The React concepts previously covered apply to mobile development as well.
 
-#### Differences (8 minutes)
+#### Differences
 
-**Instructor explains what's different:**
+The following differences exist:
 
 1. **Components:**
    - Web: `<div>`, `<button>`, `<input>`
    - Mobile: `<View>`, `<Pressable>`, `<TextInput>`
    - No HTML elements in React Native
+   - Learn more: <a href="https://reactnative.dev/docs/components-and-apis" target="_blank" rel="noopener noreferrer">React Native Core Components</a>
 
 2. **Styling:**
    - Web: CSS or CSS-in-JS
@@ -171,11 +87,11 @@ function Button({ title, onPress }) {
    - Different navigation patterns
 
 4. **Platform differences:**
-   - iOS vs Android have different behaviors
-   - Need to handle platform-specific code sometimes
-   - Testing on both platforms
+   - iOS and Android exhibit different behaviors
+   - Platform-specific code may be required
+   - Testing must be performed on both platforms
 
-**Show example:**
+**Example:**
 
 ```typescript
 // Web: CSS
@@ -194,33 +110,26 @@ const styles = StyleSheet.create({
 });
 ```
 
-**Key Point:** "Mobile uses different components and styling, but the React patterns are the same."
-
-**Transition:** "Now let's set up Expo..."
+**Key Point:** Mobile uses different components and styling, but the React patterns are the same.
 
 
-### Part 3: Expo Setup & Structure (30 minutes)
+## Expo Setup & Structure
 
-#### What is Expo? (5 minutes)
+#### What is Expo?
 
-**Instructor explains:**
-- Expo is a framework for React Native
-- Simplifies development and deployment
-- Provides tools and services
-- File-based routing (Expo Router)
-- Built-in components and APIs
+Expo is a framework for React Native that simplifies development and deployment. It provides tools and services, including file-based routing (Expo Router) and built-in components and APIs.
 
-**Why use Expo?**
-- Easier setup (no native code needed initially)
-- Fast development (hot reload, easy testing)
+**Advantages of Expo:**
+- Simplified setup (no native code required initially)
+- Rapid development (hot reload, simplified testing)
 - Built-in features (camera, location, etc.)
-- Easy deployment
+- Streamlined deployment
 
-**Key Point:** "Expo makes React Native development easier."
+**Key Point:** Expo simplifies React Native development.
 
-#### Set Up Expo Project (15 minutes)
+#### Set Up Expo Project
 
-**Instructor guides teams:**
+Collaborate with your team to set up Expo by following these steps:
 
 1. **Check prerequisites:**
    ```bash
@@ -254,18 +163,13 @@ const styles = StyleSheet.create({
    - Press `a` for Android emulator
    - Press `w` for web
 
-**Instructor circulates:**
-- Help teams set up Expo
-- Troubleshoot installation issues
-- Ensure everyone can start the dev server
+**Key Point:** Expo facilitates testing on physical devices and simulators.
 
-**Key Point:** "Expo makes it easy to test on real devices and simulators."
+#### Understand Project Structure
 
-#### Understand Project Structure (10 minutes)
+The typical structure of an Expo Router project consists of the following:
 
-**Instructor walks through structure:**
-
-```
+```bash
 mobile/
 ├── app/                    # Expo Router app directory
 │   ├── (auth)/            # Route group (auth screens)
@@ -291,7 +195,7 @@ mobile/
 - **Components:** Reusable UI pieces
 - **Services:** API calls and business logic
 
-**Show example:**
+**Example:**
 
 ```typescript
 // app/(tabs)/groups.tsx
@@ -306,141 +210,34 @@ export default function GroupsScreen() {
 }
 ```
 
-**Instructor:** Walk through existing codebase structure
+Examine the existing codebase structure to observe these concepts in practice.
 
-**Key Point:** "Expo Router uses file-based routing. Files become routes automatically."
-
-**Transition:** "Let's discuss how mobile is different from web..."
+**Key Point:** Expo Router employs file-based routing, where files automatically become routes.
 
 
-### Part 4: Mobile vs Web Discussion (15 minutes)
+## Code Walkthrough
 
-#### Discussion Activity (12 minutes)
+The mobile app follows a standard Expo Router structure:
 
-**Instructor asks teams to discuss:**
+- **`app/`** - Expo Router file-based routing. Files here become routes automatically:
+  - `(auth)/` - Authentication screens (login, home)
+  - `(tabs)/` - Tab navigation screens (courses, groups, profile, etc.)
+  - `[id].tsx` files - Dynamic routes (e.g., `/courses/123`)
 
-1. **How is mobile different from web?**
-   - User interaction (touch vs click)
-   - Screen size (small, portrait/landscape)
-   - Navigation (tabs, stacks vs URLs)
-   - Performance (mobile devices are slower)
-   - Network (can be slow or offline)
+- **`components/`** - Reusable UI components (ErrorBoundary, ProtectedRoute, InfoBadge)
 
-2. **What's the same?**
-   - React concepts (components, state, hooks)
-   - TypeScript
-   - API integration
-   - State management patterns
+- **`contexts/`** - React Context providers (AuthContext for user authentication)
 
-3. **What's easier about mobile?**
-   - Native feel (tabs, gestures)
-   - Focused experience (one app at a time)
-   - Built-in features (camera, location)
+- **`services/`** - API service functions organized by resource (courses, groups, posts, etc.)
 
-4. **What's harder about mobile?**
-   - Platform differences (iOS vs Android)
-   - Testing (need simulators/emulators)
-   - Deployment (app stores)
-   - Performance optimization
+- **`types/`** - TypeScript type definitions for API responses and app data
 
-**Instructor asks 2-3 teams to share:**
-- One way mobile is different
-- One way mobile is the same
-- One question they have
+- **`utils/`** - Utility functions (type guards, storage helpers)
 
-**Common insights:**
-- "Mobile is more touch-focused"
-- "Navigation is different but similar concepts"
-- "React skills transfer well"
-- "Testing is more complex"
+- **`theme.ts`** - React Native Paper theme configuration with design tokens
 
-**Key Point:** "Mobile has different constraints, but React skills transfer."
-
-#### Preview Thursday (3 minutes)
-
-**Instructor previews:**
-- "Thursday we'll build mobile UI"
-- "We'll connect to the same backend API"
-- "We'll practice mobile-specific patterns"
-- "You'll see how similar it is to web"
-
-**Transition:** "Let's wrap up..."
+- **`App.tsx`** - Root component (minimal in Expo Router, routing handled by `app/_layout.tsx`)
 
 
-### Part 5: Q&A & Wrap-up (10 minutes)
-
-#### Questions (7 minutes)
-- Open floor for questions
-- Address common confusions:
-  - "React Native vs React?" → Same concepts, different components
-  - "Expo vs React Native?" → Expo is a framework for React Native
-  - "File-based routing?" → Files in `app/` become routes
-
-#### Preview Homework (2 minutes)
-- **HW5:** Build mobile UI that connects to existing backend feature
-- **Due:** Next Tuesday (Feb 24)
-- **Process:**
-  1. Choose a backend feature (or use groups)
-  2. Design mobile UI flow
-  3. Implement React Native components
-  4. Connect to backend API
-  5. Handle mobile-specific concerns
-  6. Create PR
-  7. Review another team's mobile PR
-  8. Reflect on mobile vs web experience
-
-#### Wrap-up (1 minute)
-- Remind students to:
-  - Read Expo Documentation "Getting Started" (due Thursday)
-  - Set up Expo on their machines
-  - Come ready to code on Thursday
-
-
-## Materials Needed
-
-- Codebase open and navigable (mobile app)
-- Expo CLI installed (or use npx)
-- Node.js 18.x or 20.x
-- Expo Go app on phones (optional, for testing)
-- iOS Simulator or Android Emulator (optional)
-
-## Instructor Notes
-
-### Common Issues
-
-**Issue: Expo installation fails**  
-Solution: Check Node.js version, use npx instead of global install, clear npm cache
-
-**Issue: Can't connect to dev server**  
-Solution: Check network, ensure phone and computer are on same network, try tunnel mode
-
-**Issue: Simulator/emulator not working**  
-Solution: Check Xcode/Android Studio installation, ensure simulators are set up
-
-**Issue: File-based routing is confusing**  
-Solution: Show examples, explain route groups, walk through existing structure
-
-### Time Management
-
-- **If running short:** Focus on Expo setup, skip some structure details
-- **If running long:** Move discussion to async, focus on setup
-
-### Differentiation
-
-- **For advanced students:** Have them explore Expo Router features, custom navigation
-- **For struggling students:** Provide more setup help, focus on basic concepts
-
-
-## Student Deliverables
-
-- Expo project set up (or existing project explored)
-- Dev server running
-- Project structure understood
-- Reflection on HW4 (frontend integration)
-
-## Next Steps
-
-- **Before Thursday:** Read Expo Documentation "Getting Started"
-- **Thursday:** Mobile UI + navigation + backend integration
-- **Homework:** HW5 due next Tuesday
-
+## Intro to Homework 5
+* [Homework 5](/spring2026/assignments/hw05)

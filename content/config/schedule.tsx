@@ -345,17 +345,9 @@ export const baseTopics = [
           topic: "React Native I",
           description: (
             <>
-              <ul>
-                <li>React Native vs React: similarities and differences</li>
-                <li>Expo: what it is, why we use it</li>
-                <li>Team activity: set up Expo project, understand structure</li>
-                <li>Discussion: "How is mobile different from web? What's the same?"</li>
-              </ul>
+              Intro to Expo and React Native
             </>
           ),
-          activities: [
-            { title: "Slides", url: "#", draft: 1 },
-          ],
           readings: [
             {
               citation: (
