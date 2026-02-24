@@ -15,12 +15,15 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
       const isResourcesDetail = pathname.startsWith('/resources/') && pathname !== '/resources';
       const isDetailWithToc = pathname === '/syllabus' || 
                               (pathname.startsWith('/assignments/') && pathname !== '/assignments') ||
-                              (pathname.startsWith('/activities/') && pathname !== '/activities');
+                              (pathname.startsWith('/activities/') && pathname !== '/activities') ||
+                              (pathname.startsWith('/exams/') && pathname !== '/exams') ||
+                              pathname === '/repos-hidden';
       const isListPage = pathname === '/' || 
                         pathname === '/assignments' || 
                         pathname === '/activities' || 
                         pathname === '/resources' ||
-                        pathname === '/quizzes';
+                        pathname === '/quizzes' ||
+                        pathname === '/exams';
       
       // Apply appropriate data attributes and classes
       // All pages using ContentLayout need html overflow hidden for scrollable containers

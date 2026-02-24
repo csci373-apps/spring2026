@@ -112,9 +112,6 @@ export default function MarkdownContent({ content, className }: MarkdownContentP
       // Skip if we've already added a copy button
       if (preElement.querySelector('.copy-code-button')) return;
       
-      // Skip if the code block has language-text (no copy button for text blocks)
-      if (codeElement.classList.contains('language-text')) return;
-      
       // Make pre element relative for absolute positioning of button
       preElement.style.position = 'relative';
       
@@ -185,6 +182,58 @@ export default function MarkdownContent({ content, className }: MarkdownContentP
       // Insert button into pre element
       preElement.appendChild(copyButton);
     });
+  }, [content]);
+
+  // Add toggle functionality for answer buttons
+  useEffect(() => {
+    if (!contentRef.current) return;
+
+    const toggleButtons = contentRef.current.querySelectorAll<HTMLButtonElement>('[data-toggle-answer]');
+    
+    toggleButtons.forEach((button) => {
+      // Skip if we've already added the event listener
+      if (button.dataset.listenerAdded === 'true') return;
+      
+      const answerId = button.getAttribute('data-toggle-answer');
+      if (!answerId) return;
+      
+      const answerDiv = contentRef.current?.querySelector(`#${answerId}`) as HTMLElement;
+      if (!answerDiv) return;
+      
+      // Ensure overflow-hidden is always present for the animation
+      answerDiv.classList.add('overflow-hidden');
+      
+      // Set initial hidden state - use a large max-height value via inline style for flexibility
+      answerDiv.style.maxHeight = '0px';
+      answerDiv.classList.add('opacity-0', 'py-0');
+      answerDiv.classList.remove('opacity-100', 'py-4');
+      
+      button.addEventListener('click', () => {
+        const isHidden = answerDiv.style.maxHeight === '0px';
+        
+        if (isHidden) {
+          // Show: set large max-height, remove hidden classes, add visible classes
+          answerDiv.style.maxHeight = '2000px';
+          answerDiv.classList.remove('opacity-0', 'py-0');
+          answerDiv.classList.add('opacity-100', 'py-4');
+        } else {
+          // Hide: set max-height to 0, remove visible classes, add hidden classes
+          answerDiv.style.maxHeight = '0px';
+          answerDiv.classList.remove('opacity-100', 'py-4');
+          answerDiv.classList.add('opacity-0', 'py-0');
+        }
+      });
+      
+      // Mark as processed
+      button.dataset.listenerAdded = 'true';
+    });
+    
+    // Cleanup event listeners
+    return () => {
+      toggleButtons.forEach((button) => {
+        button.dataset.listenerAdded = '';
+      });
+    };
   }, [content]);
 
 //   useEffect(() => {

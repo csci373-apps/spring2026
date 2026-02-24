@@ -5,7 +5,7 @@ import QuickLinksNav from '@/components/QuickLinksNav';
 import ContentTable from '@/components/assignments/ContentTable';
 import externalAssignments from '../../../content/config/external-assignments.json';
 
-interface AssignmentData {
+interface ExamData {
   id: string;
   num?: string;
   title: string;
@@ -20,16 +20,15 @@ interface AssignmentData {
   external_type?: string;
   excluded?: boolean;
   no_render?: number;
-  hide_from_list?: number;
 }
 
 
-export default async function AssignmentsPage() {
+export default async function ExamsPage() {
   // Get all assignment files from content/assignments directory
-  const assignmentIds = getAllPostIds('assignments');
+  const examIds = getAllPostIds('exams');
   
-  const markdownAssignments: AssignmentData[] = await Promise.all(assignmentIds.map(async ({ params }) => {
-    const postData = await getPostData(params.id, 'assignments');
+  const markdownExams: ExamData[] = await Promise.all(examIds.map(async ({ params }) => {
+    const postData = await getPostData(params.id, 'exams');
     return {
       id: params.id,
       num: postData.num,
@@ -43,22 +42,16 @@ export default async function AssignmentsPage() {
       draft: postData.draft,
       excluded: postData.excluded,
       no_render: postData.no_render,
-      hide_from_list: postData.hide_from_list,
     };
   }));
 
   // Combine markdown assignments with external assignments
-  let assignments: AssignmentData[] = [...markdownAssignments, ...externalAssignments];
-  // Filter out excluded assignments, no_render assignments, and explicitly hidden list items.
-  assignments = assignments.filter(
-    assignment =>
-      !assignment.excluded &&
-      assignment.no_render !== 1 &&
-      assignment.hide_from_list !== 1
-  );
+  let exams: ExamData[] = [...markdownExams];
+  // Filter out excluded exams and no_render exams (drafts are shown but not linkable)
+  exams = exams.filter(exam => !exam.excluded && exam.no_render !== 1);
 
-  // Sort assignments
-  assignments.sort((a, b) => {
+  // Sort exams
+  exams.sort((a, b) => {
     // Primary sort: by date
     if (a.due_date && b.due_date) {
       const dateComparison = new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
@@ -78,11 +71,11 @@ export default async function AssignmentsPage() {
     <ContentLayout variant="list" leftNav={<QuickLinksNav />}>
       <div className="space-y-6">
         <PageHeader 
-          title="Assignments" 
-          excerpt="All lab, homework, and project assignments are due at 11:59pm ET on the due date. Assignments should be submitted to the course Moodle unless otherwise specified."
+          title="Exams" 
+          excerpt="Exams and practice assessments for the course."
         />
         
-        <ContentTable items={assignments} contentType="assignments" />
+        <ContentTable items={exams} contentType="exams" />
       </div>
     </ContentLayout>
   );

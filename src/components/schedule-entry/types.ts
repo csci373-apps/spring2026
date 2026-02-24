@@ -16,7 +16,6 @@ export interface Activity {
   url?: string;
   draft?: number;
   excluded?: number;
-  ordering?: number;
 }
 
 export interface DiscussionQuestion {
@@ -27,6 +26,7 @@ export interface Quiz {
   title: string;
   slug: string;
   quizData?: QuizData;
+  cheatsheetContent?: string | null;
   draft?: number;
 }
 
@@ -35,6 +35,7 @@ export interface Assignment {
   title: string;
   url?: string;
   draft?: number;
+  type?: string;
 }
 
 export interface MeetingData {

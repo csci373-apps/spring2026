@@ -68,17 +68,16 @@ export function useMeetingChecklist(
     
     // Note: "Assigned" items are intentionally excluded from completion check (only "Due" items are tracked)
     
-    // Collect due keys (excluding draft assignments and tutorials from completion check)
-    // Tutorials don't show checkboxes for "due" items, so they shouldn't be in completion calculation
+    // Collect due keys (excluding draft assignments from completion check)
+    // Tutorials and homework are now included in completion check since they have checkboxes
     // Prefer assignment ID key for syncing with assignments page, fallback to schedule key
     if (meeting.due) {
       if (Array.isArray(meeting.due)) {
         meeting.due.forEach((dueItem, index) => {
           if (typeof dueItem === 'object') {
             const isDraft = dueItem.draft === 1;
-            const isTutorial = dueItem.titleShort?.startsWith('Tutorial') || false;
-            // Exclude draft assignments and tutorials from completion check
-            if (!isDraft && !isTutorial) {
+            // Include non-draft assignments and tutorials in completion check
+            if (!isDraft) {
               // Try to extract assignment ID from URL
               const assignmentId = dueItem.url?.match(/\/assignments\/([^\/]+)\/?/)?.[1];
               if (assignmentId) {
@@ -93,9 +92,8 @@ export function useMeetingChecklist(
         });
       } else if (typeof meeting.due === 'object') {
         const isDraft = meeting.due.draft === 1;
-        const isTutorial = meeting.due.titleShort?.startsWith('Tutorial') || false;
-        // Exclude draft assignments and tutorials from completion check
-        if (!isDraft && !isTutorial) {
+        // Include non-draft assignments and tutorials in completion check
+        if (!isDraft) {
           // Try to extract assignment ID from URL
           const assignmentId = meeting.due.url?.match(/\/assignments\/([^\/]+)\/?/)?.[1];
           if (assignmentId) {

@@ -33,8 +33,9 @@ export default function AssignmentsList({
     }
     
     const isDraft = assignment.draft && assignment.draft === 1;
-    const isTutorial = assignment.titleShort?.startsWith('Tutorial') || false;
-    const showCheckbox = type === 'due' && !isDraft && !isTutorial; // Show checkbox for non-draft "due" items only, but not for tutorials
+    // Check type field first: if 'tutorial', it's a tutorial; if 'homework', it's not; otherwise fall back to titleShort
+    const isTutorial = assignment.type === 'tutorial' || (assignment.type !== 'homework' && assignment.titleShort?.startsWith('Tutorial')) || false;
+    const showCheckbox = type === 'due' && !isDraft; // Show checkbox for non-draft "due" items
     
     // Extract assignment ID from URL (e.g., "/assignments/hw01/" -> "hw01")
     const assignmentId = assignment.url?.match(/\/assignments\/([^\/]+)\/?/)?.[1];
@@ -74,8 +75,8 @@ export default function AssignmentsList({
     // Format tutorial display: "Tutorial X: Name of Tutorial"
     let displayText: React.ReactNode;
     if (isTutorial) {
-      // Extract tutorial number from titleShort (e.g., "Tutorial 1" -> "1")
-      const tutorialMatch = assignment.titleShort?.match(/Tutorial\s+(\d+)/i);
+      // Extract tutorial number from titleShort (e.g., "Tutorial 1" -> "1", "Tutorial 2a" -> "2a")
+      const tutorialMatch = assignment.titleShort?.match(/Tutorial\s+(\S+)/i);
       const tutorialNum = tutorialMatch ? tutorialMatch[1] : '';
       const tutorialLabel = tutorialNum ? `Tutorial ${tutorialNum}` : assignment.titleShort || 'Tutorial';
       
@@ -141,17 +142,13 @@ export default function AssignmentsList({
   return (
     <div className="mb-4">
       <strong className="text-gray-700 dark:text-gray-300" style={isDark ? { color: '#d1d5db' } : undefined}>{label}: </strong>
-      {assignmentsArray.length > 1 ? (
-        <ul className="!list-none !pl-4">
+        <ul className={`!list-disc ${type === 'assigned' ? '!pl-8' : '!pl-4'}`}>
           {assignmentsArray.map((assignment, index) => (
             <li key={index} className="text-gray-700 dark:text-gray-300">
               {renderAssignment(assignment, index)}
             </li>
           ))}
         </ul>
-      ) : (
-        renderAssignment(assignmentsArray[0])
-      )}
     </div>
   );
 }

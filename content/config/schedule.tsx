@@ -336,9 +336,9 @@ export const baseTopics = [
   
     {
       id: 6,
-      title: "Mobile - React Native and Expo",
+      title: "Mobile - React Native and Expo + AI Coding Tools",
       description:
-        "Build mobile UI using React Native and Expo. Connect mobile app to backend API. SDLC concept: platform considerations and mobile-specific patterns.",
+        "Build mobile UI using React Native and Expo. Connect mobile app to backend API. Introduce AI coding assistants and best practices for using them in software development. SDLC concepts: platform considerations, mobile-specific patterns, and modern development tooling.",
       meetings: [
         {
           date: "Th, Feb 19",
@@ -361,29 +361,52 @@ export const baseTopics = [
         },
         {
           date: "Tu, Feb 24",
-          topic: "React Native II",
+          topic: "AI Coding Tools I",
           description: (
-            <>
-              <ul>
-                <li>Mobile UI patterns: navigation, screens, components</li>
-                <li>Team studio: build mobile UI for existing backend feature</li>
-                <li>Connect mobile app to same backend API</li>
-                <li>Pair programming: one codes, one reviews, then switch</li>
-                <li>Reflection: "What's hard about mobile? What's easier than web?"</li>
-              </ul>
-            </>
+            <>Introduction to using AI coding assistants (Cursor)</>
           ),
-          assigned: {
-            titleShort: "HW5",
-            title: "Mobile Integration PR + Peer Review + Reflection",
-            url: "/assignments/hw05-mobile-integration",
-            draft: 1,
-          },
+          readings: [
+            {
+              citation: (
+                <>
+                  <a href="/spring2026/resources/howto-06-cursor">Working with the Cursor AI Editor</a>
+                </>
+              ),
+            },
+          ],
         },
         {
           date: "Th, Feb 26",
-          topic: "React Native III",
-          description: ""
+          topic: "AI Coding Tools II",
+          description: (
+            <>
+              <ul>
+                <li>Discussion: Vibe Coding readings</li>
+                <li>Work on mobile interface (HW5)</li>
+              </ul>
+            </>
+          ),
+          readings: [
+            {
+              citation: (
+                <>
+                  Willison, S. <em><a href="https://simonwillison.net/2025/Mar/19/vibe-coding/" target="_blank" rel="noopener noreferrer">Vibe Coding</a></em>.
+                </>
+              ),
+            },
+            {
+              citation: (
+                <>
+                  Willison, S. <em><a href="https://simonwillison.net/2025/Oct/7/vibe-engineering/" target="_blank" rel="noopener noreferrer">Vibe Engineering</a></em>.
+                </>
+              ),
+            },
+            {
+              citation: (
+                <><a href="https://www.youtube.com/watch?v=0aJRtCn_WqM" target="_blank" rel="noopener noreferrer">Vibe Coding For Grownups with Gene Kim</a></>
+              ),
+            },
+          ],
         }
       ],
     },
@@ -401,30 +424,39 @@ export const baseTopics = [
             <>
               <ul>
                 <li>Intro to HCD</li>
-                <li>Create low-fidelity prototypes (paper or Figma) for a targeted flow</li>
-                <li>Studio critique: identify mismatches between current UI/system behavior and user goals</li>
+                <li>Heuristic evaluation</li>
+                <li>Practice creating low-fidelity prototypes (paper)</li>
               </ul>
             </>
           ),
-          activities: [
-            { title: "Slides", url: "#", draft: 1 },
-          ],
           readings: [
             {
               citation: (
                 <>
-                  Krug, S. (2014). <em>Don’t Make Me Think</em>. (Ch. 1–2 -- selected)
+                  Interaction Design Foundation. <em><a href="https://www.interaction-design.org/literature/topics/low-fidelity-prototypes" target="_blank" rel="noopener noreferrer">Low-Fidelity Prototypes</a></em>.
                 </>
               ),
-              url: "https://www.sensible.com/dmmt.html",
             },
             {
               citation: (
                 <>
-                  Nielsen Norman Group. <em>10 Usability Heuristics</em>. (selected)
+                  Nielsen Norman Group. <em><a href="https://www.nngroup.com/articles/ten-usability-heuristics/" target="_blank" rel="noopener noreferrer">10 Usability Heuristics</a></em>. (selected)
                 </>
               ),
-              url: "https://www.nngroup.com/articles/ten-usability-heuristics/",
+            },
+            {
+              citation: (
+                <>
+                  Krug, S. (2014). <em><a href="https://learning.oreilly.com/library/view/dont-make-me/0321344758/ch01.html" target="_blank" rel="noopener noreferrer">Don't Make Me Think</a></em>. (Chapters 1, 3, and 6)
+                </>
+              ),
+            },
+            {
+              citation: (
+                <>
+                  <span className="badge">skim</span> Nielsen Norman Group. <em><a href="https://www.nngroup.com/articles/paper-prototyping/" target="_blank" rel="noopener noreferrer">Paper Prototyping: Getting User Data Before You Code</a></em>.
+                </>
+              ),
             },
           ],
         },
@@ -433,12 +465,32 @@ export const baseTopics = [
           topic: "Iterate based on prototype + review focus on assumptions",
           description: (
             <>
-              <ul>
-                <li>Studio: revise a flow or UI element based on prototype critique</li>
-                <li>Review focus shifts: assess user assumptions and flow clarity (not code style)</li>
-              </ul>
+              Wireframes and high-fidelity prototypes in Figma.
             </>
           ),
+          readings: [
+            {
+              citation: (
+                <>
+                  <a href="https://www.youtube.com/watch?v=iyrEStiTZh0" target="_blank" rel="noopener noreferrer">Figma Wireframe Tutorial for Beginners</a> (Video), Aliena Cai
+                </>
+              ),
+            },
+            {
+              citation: (
+                <>
+                  <a href="https://www.youtube.com/watch?v=oHTaB7aT7XU" target="_blank" rel="noopener noreferrer">Generate Style Guide in Figma Automatically</a> (Video), Nick Babich
+                </>
+              ),
+            },
+            {
+              citation: (
+                <>
+                  <span className="badge">skim</span> Frost, B. <em><a href="https://atomicdesign.bradfrost.com/table-of-contents/" target="_blank" rel="noopener noreferrer">Atomic Design</a></em> 
+                </>
+              ),
+            },
+          ],
           assigned: {
             titleShort: "HW6",
             title: "Low-Fi + Hi-Fi Prototypes + UX Implementation",

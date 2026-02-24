@@ -1,4 +1,4 @@
-import { getAllPosts, PostData, getAllQuizMetadata, QuizMetadata, getQuizData, QuizData } from './markdown';
+import { getAllPosts, PostData, getAllQuizMetadata, QuizMetadata, getQuizData, getQuizCheatsheet, QuizData } from './markdown';
 import React from 'react';
 import { baseTopics } from '../../content/config/schedule';
 import { getCourseConfig } from './config';
@@ -9,7 +9,6 @@ interface Activity {
   url?: string;
   draft?: number;
   excluded?: number;
-  ordering?: number;
 }
 
 interface Assignment {
@@ -28,6 +27,7 @@ export interface Quiz {
   title: string;
   slug: string;
   quizData?: QuizData;
+  cheatsheetContent?: string | null;
   draft?: number;
 }
 
@@ -153,8 +153,8 @@ async function enrichTopicsWithMarkdown(baseTopics: BaseTopicsArray): Promise<To
     // Exclude if excluded is truthy (handles boolean true, number 1, etc.)
     return !a.excluded;
   });
-  const assignmentsWithAssignedDate = allAssignments.filter(a => a.assigned_date);
-  const assignmentsWithDueDate = allAssignments.filter(a => a.due_date);
+  const assignmentsWithAssignedDate = allAssignments.filter(a => a.assigned_date && a.hide_from_list !== 1);
+  const assignmentsWithDueDate = allAssignments.filter(a => a.due_date && a.hide_from_list !== 1);
   const quizzesWithDates = allQuizzes.filter(q => q.start_date);
   
   // Create maps for quick lookup by date
@@ -281,12 +281,33 @@ async function enrichTopicsWithMarkdown(baseTopics: BaseTopicsArray): Promise<To
           
           meeting.scheduleQuizzes = convertedScheduleQuizzes;
           
-          // Keep only Quiz objects (with title/slug) in quizzes array
-          meeting.quizzes = quizzesArray.filter(isQuiz);
-          // If no Quiz objects remain, set to undefined
-          if (meeting.quizzes.length === 0) {
-            meeting.quizzes = undefined;
+        // Keep only Quiz objects (with title/slug) in quizzes array
+        const manualQuizzes = quizzesArray.filter(isQuiz);
+        // Enrich manual quizzes with quizData and cheatsheetContent if not already present
+        meeting.quizzes = manualQuizzes.map((quiz: Quiz) => {
+          if (!quiz.quizData && quiz.slug) {
+            const quizData = getQuizData(quiz.slug);
+            const cheatsheetContent = getQuizCheatsheet(quizData, quiz.slug);
+            return {
+              ...quiz,
+              quizData: quizData || undefined,
+              cheatsheetContent: cheatsheetContent || undefined
+            };
           }
+          // If quizData exists but cheatsheetContent doesn't, load it
+          if (quiz.quizData && !quiz.cheatsheetContent && quiz.slug) {
+            const cheatsheetContent = getQuizCheatsheet(quiz.quizData, quiz.slug);
+            return {
+              ...quiz,
+              cheatsheetContent: cheatsheetContent || undefined
+            };
+          }
+          return quiz;
+        });
+        // If no Quiz objects remain, set to undefined
+        if (meeting.quizzes.length === 0) {
+          meeting.quizzes = undefined;
+        }
         }
       }
       
@@ -310,9 +331,7 @@ async function enrichTopicsWithMarkdown(baseTopics: BaseTopicsArray): Promise<To
           url: `/activities/${activity.id}/`,
           draft: activity.draft || 0,
           excluded: activity.excluded ? 1 : 0,
-          // Use optional frontmatter ordering to sort “sub-activities” on the schedule page.
-          // (e.g., UI Testing Part 1, Part 2, etc.)
-          ordering: activity.ordering ?? activity.order ?? undefined,
+          order: activity.ordering ?? activity.order
         }));
       
       // Create auto-populated assignment entries for assigned (all matches, including drafts)
@@ -322,7 +341,9 @@ async function enrichTopicsWithMarkdown(baseTopics: BaseTopicsArray): Promise<To
           titleShort: titleShort,
           title: assignment.title,
           url: `/assignments/${assignment.id}/`,
-          draft: assignment.draft || 0
+          draft: assignment.draft || 0,
+          order: assignment.order,
+          type: assignment.type
         };
       });
       
@@ -333,17 +354,21 @@ async function enrichTopicsWithMarkdown(baseTopics: BaseTopicsArray): Promise<To
           titleShort: titleShort,
           title: assignment.title,
           url: `/assignments/${assignment.id}/`,
-          draft: assignment.draft || 0
+          draft: assignment.draft || 0,
+          order: assignment.order,
+          type: assignment.type
         };
       });
       
       // Create auto-populated quiz entries (include full quiz data for client-side rendering)
       const autoQuizzes = matchingQuizzes.map((quiz: QuizMetadata) => {
         const quizData = getQuizData(quiz.slug);
+        const cheatsheetContent = getQuizCheatsheet(quizData, quiz.slug);
         return {
           title: quiz.quizName,
           slug: quiz.slug,
           quizData: quizData || undefined,
+          cheatsheetContent: cheatsheetContent || undefined,
           draft: 0
         };
       });
@@ -356,14 +381,14 @@ async function enrichTopicsWithMarkdown(baseTopics: BaseTopicsArray): Promise<To
         const newAutoActivities = autoActivities.filter((a: Activity) => !existingUrls.has(a.url));
         meeting.activities = [...existingActivities, ...newAutoActivities];
       }
-
-      // Sort schedule activities by frontmatter ordering, then title.
-      // Unordered items (e.g., “Slides”) appear first (ordering treated as -1).
-      if (meeting.activities && meeting.activities.length > 1) {
-        meeting.activities.sort((a, b) => {
-          const aOrder = a.ordering ?? -1;
-          const bOrder = b.ordering ?? -1;
-          if (aOrder !== bOrder) return aOrder - bOrder;
+      // Sort activities: first by order, then alphabetically by title (always sort if activities exist)
+      if (Array.isArray(meeting.activities) && meeting.activities.length > 0) {
+        meeting.activities.sort((a: Activity, b: Activity) => {
+          const orderA = 'order' in a && typeof a.order === 'number' ? a.order : 999999;
+          const orderB = 'order' in b && typeof b.order === 'number' ? b.order : 999999;
+          if (orderA !== orderB) {
+            return orderA - orderB;
+          }
           return a.title.localeCompare(b.title);
         });
       }
@@ -389,6 +414,18 @@ async function enrichTopicsWithMarkdown(baseTopics: BaseTopicsArray): Promise<To
           if (newAssignedAssignments.length > 0) {
             meeting.assigned = [meeting.assigned, ...newAssignedAssignments];
           }
+        }
+        // Sort assigned assignments: first by order, then alphabetically by title
+        if (Array.isArray(meeting.assigned)) {
+          meeting.assigned.sort((a: Assignment | string, b: Assignment | string) => {
+            if (typeof a === 'string' || typeof b === 'string') return 0;
+            const orderA = 'order' in a && typeof a.order === 'number' ? a.order : 999999;
+            const orderB = 'order' in b && typeof b.order === 'number' ? b.order : 999999;
+            if (orderA !== orderB) {
+              return orderA - orderB;
+            }
+            return a.title.localeCompare(b.title);
+          });
         }
       }
       
@@ -426,6 +463,18 @@ async function enrichTopicsWithMarkdown(baseTopics: BaseTopicsArray): Promise<To
           if (newDueAssignments.length > 0) {
             meeting.due = [meeting.due, ...newDueAssignments];
           }
+        }
+        // Sort due assignments: first by order, then alphabetically by title
+        if (Array.isArray(meeting.due)) {
+          meeting.due.sort((a: Assignment | string, b: Assignment | string) => {
+            if (typeof a === 'string' || typeof b === 'string') return 0;
+            const orderA = 'order' in a && typeof a.order === 'number' ? a.order : 999999;
+            const orderB = 'order' in b && typeof b.order === 'number' ? b.order : 999999;
+            if (orderA !== orderB) {
+              return orderA - orderB;
+            }
+            return a.title.localeCompare(b.title);
+          });
         }
       }
     });
@@ -510,7 +559,8 @@ async function enrichTopicsWithMarkdown(baseTopics: BaseTopicsArray): Promise<To
             titleShort: titleShort,
             title: assignment.title,
             url: `/assignments/${assignment.id}/`,
-            draft: assignment.draft || 0
+            draft: assignment.draft || 0,
+            type: assignment.type
           };
         });
         

@@ -21,6 +21,7 @@ interface AssignmentData {
   draft?: number;
   excluded?: boolean;
   external_url?: string;
+  hide_from_list?: number;
 }
 
 interface ReadingData {
@@ -59,10 +60,11 @@ export default function QuickLinksNavClient({ resources, assignments, readings }
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
-    // Filter out excluded, drafts, and past assignments
+    // Filter out excluded, drafts, hidden from list, and past assignments
     const filtered = assignments.filter(assignment => {
       if (assignment.excluded) return false;
       if (assignment.draft === 1) return false;
+      if (assignment.hide_from_list === 1) return false;
       if (!assignment.due_date) return false;
       
       const dueDate = new Date(assignment.due_date + 'T23:59:59');

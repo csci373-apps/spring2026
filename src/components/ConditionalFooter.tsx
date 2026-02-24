@@ -20,7 +20,10 @@ export default function ConditionalFooter() {
                             normalizedPath === '/resources' ||
                             normalizedPath.startsWith('/resources/') ||
                             normalizedPath === '/quizzes' ||
-                            normalizedPath.startsWith('/quizzes/');
+                            normalizedPath.startsWith('/quizzes/') ||
+                            normalizedPath === '/exams' ||
+                            normalizedPath.startsWith('/exams/') ||
+                            normalizedPath === '/repos-hidden';
   
   if (usesContentLayout) {
     return null;

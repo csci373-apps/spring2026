@@ -43,13 +43,15 @@ export default async function QuestionsPage() {
       type: postData.type,
       excluded: postData.excluded,
       draft: postData.draft,
+      no_render: postData.no_render,
     };
   }));
 
-  // Filter out excluded and draft activities, and those without dates
+  // Filter out excluded, draft, and no_render activities, and those without dates
   const filteredActivities = activities.filter(activity => 
     !activity.excluded && 
     !(activity.draft === 1) && 
+    activity.no_render !== 1 &&
     activity.date
   );
 

@@ -19,6 +19,7 @@ interface AssignmentData {
   draft?: number;
   excluded?: boolean;
   external_url?: string;
+  hide_from_list?: number;
 }
 
 interface ReadingData {
@@ -73,6 +74,7 @@ export default async function QuickLinksNav() {
       type: postData.type,
       draft: postData.draft,
       excluded: postData.excluded,
+      hide_from_list: postData.hide_from_list,
     };
   }));
 

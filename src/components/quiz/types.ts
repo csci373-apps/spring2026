@@ -44,6 +44,7 @@ export interface QuizState {
   completed: boolean;
   timestamp: number;
   randomMode?: boolean; // Store the random mode state when saving
+  revealedQuestions?: string[]; // Store array of revealed question IDs (Set is not JSON serializable)
 }
 
 export interface ResourceQuizProps {

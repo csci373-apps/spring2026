@@ -1,8 +1,8 @@
 ---
 title: "Human-Centered Design + Low-Fi Prototyping"
-start_date: "2026-02-24"
+start_date: "2026-03-02"
 type: "activity"
-draft: 1
+draft: 0
 ---
 
 ## Learning Objectives
@@ -15,66 +15,7 @@ By the end of this session, students will:
 - Reflect on what user needs aren't being met
 
 
-## Agenda (90 minutes)
-
-| Time | Activity | Description |
-|------|----------|-------------|
-| 0:00-0:15 | Reflection on HW5 | Review mobile development experience |
-| 0:15-0:35 | HCD Lecture | Human-centered design principles |
-| 0:35-1:05 | UI Critique Activity | Critique existing UI (web and mobile) |
-| 1:05-1:20 | Low-Fi Prototyping Studio | Create paper or digital prototypes |
-| 1:20-1:30 | Q&A & Wrap-up | Questions, preview homework |
-
-
-## Detailed Instructions
-
-### Part 1: Reflection on HW5 (15 minutes)
-
-#### Check-in (3 minutes)
-1. **Welcome back**
-2. **Quick check:** "Raise your hand if:"
-   - You completed HW5 (mobile integration)
-   - You received feedback on your PR
-   - You have questions about mobile development
-
-#### Reflection Activity: Mobile Development (7 minutes)
-
-**Instructor asks teams to discuss:**
-
-1. **What did you build?**
-   - What mobile UI did you implement?
-   - What was the experience like?
-   - What worked well?
-
-2. **How is mobile different from web?**
-   - What was easier? What was harder?
-   - What patterns make sense on mobile?
-   - What questions do you have?
-
-**Instructor asks 2-3 teams to share:**
-- One thing that was different about mobile
-- One thing that clicked
-- One question they have
-
-**Common insights to highlight:**
-- "Mobile feels more natural for some interactions"
-- "Navigation is different but makes sense"
-- "Touch interactions are intuitive"
-- "Styling is different but similar concepts"
-
-**Key Point:** "Now that we've built both web and mobile, let's think about the user experience from a design perspective."
-
-#### Preview Today (5 minutes)
-- "Today we're learning about human-centered design"
-- "We'll critique existing UIs and create prototypes"
-- "This shifts our focus from 'does it work?' to 'does it work well for users?'"
-
-**Transition:** "Let's learn about human-centered design..."
-
-
-### Part 2: HCD Lecture (20 minutes)
-
-#### What is Human-Centered Design? (5 minutes)
+## What is Human-Centered Design? (5 minutes)
 
 **Instructor explains:**
 - **HCD:** Design that focuses on users' needs, goals, and context
@@ -84,7 +25,7 @@ By the end of this session, students will:
 
 **Key Point:** "Good design solves real problems for real people."
 
-#### Core HCD Principles (10 minutes)
+## Core HCD Principles (10 minutes)
 
 **Instructor explains key principles:**
 
@@ -117,7 +58,7 @@ By the end of this session, students will:
 
 **Key Point:** "HCD is about empathy - understanding users' perspectives."
 
-#### 10 Usability Heuristics (5 minutes)
+## 10 Usability Heuristics (5 minutes)
 
 **Instructor introduces Nielsen's 10 Usability Heuristics:**
 
@@ -142,7 +83,7 @@ By the end of this session, students will:
 **Transition:** "Now let's critique our existing UI..."
 
 
-### Part 3: UI Critique Activity (30 minutes)
+##  UI Critique Activity (30 minutes)
 
 #### Setup (5 minutes)
 

@@ -154,8 +154,9 @@ export default function JavaScriptDOMQuestionView({
         css,
         js,
         question.testCases,  // Legacy JSON format
-        question.testCode     // New JavaScript format
+        question.testCode   // New JavaScript format
       );
+      
       setTestResults(results);
       onAnswerSelect(question.id, { html, css, js, testResults: results }, results.allPassed);
     } catch (error) {
@@ -184,7 +185,7 @@ export default function JavaScriptDOMQuestionView({
               css,
               js,
               question.testCases,  // Legacy JSON format
-              question.testCode     // New JavaScript format
+              question.testCode    // New JavaScript format
             );
             setTestResults(results);
             onAnswerSelect(question.id, { html, css, js, testResults: results }, results.allPassed);

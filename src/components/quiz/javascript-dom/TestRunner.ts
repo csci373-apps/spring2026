@@ -17,8 +17,15 @@ export class TestRunner {
     }
 
     // Create sandboxed iframe
+    // Note: Firefox may not compute styles for hidden iframes (display: none)
+    // We'll make it visible but off-screen to force style computation
     this.iframe = document.createElement('iframe');
-    this.iframe.style.display = 'none';
+    this.iframe.style.position = 'absolute';
+    this.iframe.style.left = '-9999px';
+    this.iframe.style.top = '-9999px';
+    this.iframe.style.width = '1px';
+    this.iframe.style.height = '1px';
+    this.iframe.style.visibility = 'hidden';
     this.iframe.sandbox.add('allow-scripts');
     this.iframe.sandbox.add('allow-same-origin');
     this.iframe.sandbox.add('allow-forms');
@@ -41,45 +48,174 @@ export class TestRunner {
         return;
       }
 
-      this.iframe.onload = () => {
-        // Add a small delay to ensure the iframe's JavaScript has fully executed
-        // This is important because the script tag needs time to run
-        setTimeout(async () => {
-          try {
-            let results: TestResult[];
-            if (testCode) {
-              // Execute JavaScript test code
-              results = await this.runJavaScriptTests(testCode);
-            } else if (testCases && testCases.length > 0) {
-              // Execute legacy JSON test cases
-              results = this.runTests(testCases);
-            } else {
-              results = [{
-                passed: false,
-                description: 'No tests provided',
-                error: 'No test cases or test code provided'
-              }];
+      let resolved = false;
+      const resolveOnce = (result: TestResults) => {
+        if (!resolved) {
+          resolved = true;
+          resolve(result);
+        }
+      };
+
+      // Check if document is ready and stylesheets are loaded
+      // Firefox may delay style computation in sandboxed srcdoc iframes until stylesheets are fully parsed
+      const isDocumentReady = (): boolean => {
+        if (!this.iframe?.contentDocument || !this.iframe?.contentWindow) {
+          return false;
+        }
+        const doc = this.iframe.contentDocument;
+        
+        // Document must be complete and have a body
+        if (doc.readyState !== 'complete' || !doc.body) {
+          return false;
+        }
+        
+        // Check if stylesheets are loaded (Firefox may need this for computed styles)
+        try {
+          const styleSheets = doc.styleSheets;
+          let stylesLoaded = true;
+          if (styleSheets.length > 0) {
+            // Check if stylesheets are accessible (may throw in sandboxed iframes)
+            for (let i = 0; i < styleSheets.length; i++) {
+              try {
+                void styleSheets[i].cssRules; // Accessing cssRules may throw if not loaded
+              } catch (e) {
+                // Stylesheet not accessible yet
+                stylesLoaded = false;
+                break;
+              }
             }
-            const allPassed = results.every(r => r.passed);
-            resolve({ allPassed, results });
-          } catch (error) {
-            resolve({
-              allPassed: false,
-              results: [],
-              executionError: error instanceof Error ? error.message : 'Unknown error'
-            });
           }
-        }, 100); // Give 100ms for scripts to execute
+          
+          // Force a reflow to trigger style computation in Firefox
+          const testElement = doc.querySelector('p') || doc.body;
+          if (testElement instanceof HTMLElement) {
+            void testElement.offsetHeight;
+          }
+          
+          // Proceed if stylesheets are loaded
+          return stylesLoaded;
+        } catch (e) {
+          // If we can't check stylesheets, proceed anyway
+          return true;
+        }
+      };
+
+      const runTests = async () => {
+        // Ensure iframe document is accessible
+        if (!this.iframe?.contentDocument || !this.iframe?.contentWindow) {
+          console.error('[TestRunner] Cannot access iframe document');
+          resolveOnce({
+            allPassed: false,
+            results: [],
+            executionError: 'Cannot access iframe document'
+          });
+          return;
+        }
+
+        let results: TestResult[];
+        
+        try {
+          if (testCode) {
+            // Execute JavaScript test code
+            results = await this.runJavaScriptTests(testCode);
+          } else if (testCases && testCases.length > 0) {
+            // Execute legacy JSON test cases
+            results = this.runTests(testCases);
+          } else {
+            console.error('[TestRunner] No tests provided');
+            results = [{
+              passed: false,
+              description: 'No tests provided',
+              error: 'No test cases or test code provided'
+            }];
+          }
+          
+          // Ensure results is an array and has the correct structure
+          if (!Array.isArray(results)) {
+            console.error('[TestRunner] Results is not an array:', results);
+            results = [{
+              passed: false,
+              description: 'Test execution error',
+              error: 'Invalid test results format'
+            }];
+          }
+          
+          const allPassed = results.length > 0 && results.every(r => r.passed);
+          const testResults: TestResults = { allPassed, results };
+          
+          resolveOnce(testResults);
+        } catch (error) {
+          console.error('[TestRunner] Error in runTests:', error);
+          resolveOnce({
+            allPassed: false,
+            results: [],
+            executionError: error instanceof Error ? error.message : 'Unknown error'
+          });
+        }
+      };
+
+      // Set up onload handler as a fallback (may not fire reliably in Firefox for srcdoc)
+      this.iframe.onload = () => {
+        if (isDocumentReady()) {
+          // Add small delay to ensure scripts have executed
+          setTimeout(() => {
+            if (!resolved) {
+              runTests().catch(error => {
+                console.error('[TestRunner] Error in runTests from onload:', error);
+                resolveOnce({
+                  allPassed: false,
+                  results: [],
+                  executionError: error instanceof Error ? error.message : 'Unknown error'
+                });
+              });
+            }
+          }, 100);
+        }
       };
 
       // Build and load HTML
       const fullHTML = this.buildHTML(html, css, js);
       this.iframe.srcdoc = fullHTML;
 
-      // Timeout after 5 seconds
+      // Poll for document ready state and computed styles (works in both Chrome and Firefox)
+      // Firefox computes styles on-demand, so we need to wait for them
+      let pollCount = 0;
+      const maxPolls = 30; // 3 seconds max (30 * 100ms) - Firefox may need more time
+      const pollInterval = setInterval(() => {
+        pollCount++;
+        if (isDocumentReady()) {
+          clearInterval(pollInterval);
+          // Add small delay to ensure scripts have executed
+          setTimeout(() => {
+            if (!resolved) {
+              runTests().catch(error => {
+                console.error('[TestRunner] Error in runTests from polling:', error);
+                resolveOnce({
+                  allPassed: false,
+                  results: [],
+                  executionError: error instanceof Error ? error.message : 'Unknown error'
+                });
+              });
+            }
+          }, 100);
+        } else if (pollCount >= maxPolls) {
+          console.error('[TestRunner] Max polls reached, document/styles still not ready');
+          clearInterval(pollInterval);
+          if (!resolved) {
+            resolveOnce({
+              allPassed: false,
+              results: [],
+              executionError: 'Document or styles did not become ready in time'
+            });
+          }
+        }
+      }, 100);
+
+      // Timeout after 5 seconds as a safety net
       setTimeout(() => {
-        if (this.iframe) {
-          resolve({
+        clearInterval(pollInterval);
+        if (!resolved) {
+          resolveOnce({
             allPassed: false,
             results: [],
             executionError: 'Test execution timed out'
@@ -89,14 +225,104 @@ export class TestRunner {
     });
   }
 
-  private buildHTML(html: string, css: string, js: string): string {
+  private buildHTML(html: string, css: string, js: string, imageData?: Record<string, string>): string {
+    // Replace image src attributes with base64 data URIs if imageData is provided
+    let processedHtml = html;
+    if (imageData && Object.keys(imageData).length > 0) {
+      // Use regex to find and replace img src attributes
+      processedHtml = html.replace(/<img([^>]*)\ssrc=["']([^"']+)["']([^>]*)>/gi, (match, before, src, after) => {
+        // Extract filename from src (handle both "filename.jpg" and "images/filename.jpg")
+        const filename = src.split('/').pop() || src;
+        
+        // If we have base64 data for this filename, replace the src
+        if (imageData[filename]) {
+          return `<img${before} src="${imageData[filename]}"${after}>`;
+        }
+        
+        // Otherwise, return the original match
+        return match;
+      });
+    }
+    
+    // Create image mapping script if imageData is provided
+    // This intercepts when students set img.src = 'filename.jpg' and converts it to base64
+    const imageMappingScript = imageData && Object.keys(imageData).length > 0 ? `
+      // Map image filenames to base64 data URIs
+      (function() {
+        const imageMap = ${JSON.stringify(imageData)};
+        
+        // Intercept src property setter for all img elements
+        const originalDescriptor = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src') || 
+                                   Object.getOwnPropertyDescriptor(Object.getPrototypeOf(Object.getPrototypeOf(document.createElement('img'))), 'src');
+        
+        // Store original setter if it exists
+        const originalSetter = originalDescriptor ? originalDescriptor.set : null;
+        
+        // Override the src setter
+        Object.defineProperty(HTMLImageElement.prototype, 'src', {
+          set: function(value) {
+            // Extract filename from the value (handle paths like "images/cat.jpg" or "cat.jpg")
+            const filename = value.split('/').pop() || value;
+            
+            // If this filename exists in our image map, use the base64 data URI
+            if (imageMap[filename]) {
+              // Store the original filename in a data attribute for testing
+              this.setAttribute('data-original-src', filename);
+              // Store the base64 URI in a hidden attribute
+              this.setAttribute('data-base64-src', imageMap[filename]);
+              // Use original setter if available, otherwise set directly
+              if (originalSetter) {
+                originalSetter.call(this, imageMap[filename]);
+              } else {
+                this.setAttribute('src', imageMap[filename]);
+              }
+            } else {
+              // Not in our map, clear the data attributes and set normally
+              this.removeAttribute('data-original-src');
+              this.removeAttribute('data-base64-src');
+              if (originalSetter) {
+                originalSetter.call(this, value);
+              } else {
+                this.setAttribute('src', value);
+              }
+            }
+          },
+          get: function() {
+            // If we have a stored original filename (set via our interceptor), return that
+            // This allows tests to check img.src.endsWith('cat.jpg') and it will work
+            const originalSrc = this.getAttribute('data-original-src');
+            if (originalSrc) {
+              return originalSrc;
+            }
+            // Otherwise return the actual src value
+            return this.getAttribute('src') || '';
+          },
+          configurable: true
+        });
+        
+        // Also intercept setAttribute('src', ...) calls for compatibility
+        const originalSetAttribute = Element.prototype.setAttribute;
+        Element.prototype.setAttribute = function(name, value) {
+          if (name === 'src' && this.tagName === 'IMG') {
+            const filename = value.split('/').pop() || value;
+            if (imageMap[filename]) {
+              this.setAttribute('data-original-src', filename);
+              return originalSetAttribute.call(this, name, imageMap[filename]);
+            }
+          }
+          return originalSetAttribute.call(this, name, value);
+        };
+      })();
+    ` : '';
+    
     return `<!DOCTYPE html>
 <html>
 <head>
   <style>${css || ''}</style>
 </head>
-<body>${html || ''}</body>
+<body>${processedHtml || ''}</body>
 <script>
+  ${imageMappingScript}
   ${js || ''}
 </script>
 </html>`;
@@ -339,6 +565,25 @@ export class TestRunner {
     };
   }
 
+  // Normalize color values for cross-browser compatibility
+  // Firefox may return "rgb(0,0,255)" while Chrome returns "rgb(0, 0, 255)"
+  // We normalize to the format with spaces to match test expectations
+  private normalizeColor(color: string): string {
+    if (!color) return color;
+    // Normalize rgb values: ensure spaces after commas
+    // e.g., "rgb(0,0,255)" -> "rgb(0, 0, 255)"
+    color = color.replace(/rgb\(([^)]+)\)/g, (match, content) => {
+      const parts = content.split(',').map((p: string) => p.trim());
+      return `rgb(${parts.join(', ')})`;
+    });
+    // Normalize rgba values: ensure spaces after commas
+    color = color.replace(/rgba\(([^)]+)\)/g, (match, content) => {
+      const parts = content.split(',').map((p: string) => p.trim());
+      return `rgba(${parts.join(', ')})`;
+    });
+    return color.trim();
+  }
+
   private getPropertyValue(element: Element, property: string): string | number | boolean | null | undefined {
     // Handle computed styles (e.g., "computedStyle.display", "computedStyle.gridTemplateColumns")
     if (property.startsWith('computedStyle.')) {
@@ -356,6 +601,11 @@ export class TestRunner {
         } else {
           // Fall back to getPropertyValue for kebab-case
           value = computed.getPropertyValue(styleProp) || computed.getPropertyValue(camelCaseProp);
+        }
+        
+        // Normalize color values for cross-browser compatibility
+        if (styleProp === 'color' || styleProp.toLowerCase() === 'color') {
+          value = this.normalizeColor(value);
         }
         
         // Normalize grid-template-columns/rows values
@@ -500,16 +750,75 @@ export class TestRunner {
       return value;
     };
 
+    // Helper to normalize color values for cross-browser compatibility
+    // Firefox may return "rgb(0,0,255)" while Chrome returns "rgb(0, 0, 255)"
+    // We normalize to the format with spaces to match test expectations
+    const normalizeColor = (color: string): string => {
+      if (!color) return color;
+      // Normalize rgb values: ensure spaces after commas
+      // e.g., "rgb(0,0,255)" -> "rgb(0, 0, 255)"
+      color = color.replace(/rgb\(([^)]+)\)/g, (match, content) => {
+        const parts = content.split(',').map((p: string) => p.trim());
+        return `rgb(${parts.join(', ')})`;
+      });
+      // Normalize rgba values: ensure spaces after commas
+      color = color.replace(/rgba\(([^)]+)\)/g, (match, content) => {
+        const parts = content.split(',').map((p: string) => p.trim());
+        return `rgba(${parts.join(', ')})`;
+      });
+      return color.trim();
+    };
+
     // Helper to get computed style property
+    // In Firefox with sandboxed srcdoc iframes, we need to force a reflow to trigger style computation
     const getComputedStyleValue = (element: Element, property: string): string => {
       const win = element.ownerDocument?.defaultView || window;
       if (!win) return '';
-      const computed = win.getComputedStyle(element as HTMLElement);
-      const camelCaseProp = property.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
-      if (camelCaseProp in computed) {
-        return (computed as CSSStyleDeclaration & Record<string, string>)[camelCaseProp];
+      try {
+        // Force a reflow to trigger style computation in Firefox
+        // This is necessary for sandboxed srcdoc iframes where styles may not be computed until accessed
+        if (element instanceof HTMLElement) {
+          // Accessing offsetHeight forces a layout calculation
+          void element.offsetHeight;
+          // Also try accessing the element's style to trigger computation
+          void element.style;
+        }
+        
+        const computed = win.getComputedStyle(element as HTMLElement);
+        const camelCaseProp = property.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+        let value: string;
+        if (camelCaseProp in computed) {
+          value = (computed as CSSStyleDeclaration & Record<string, string>)[camelCaseProp];
+        } else {
+          value = computed.getPropertyValue(property) || computed.getPropertyValue(camelCaseProp);
+        }
+        
+        // If value is still empty, try waiting a bit and accessing again
+        // (Firefox may need a moment to compute styles in sandboxed iframes)
+        if (!value && property === 'color') {
+          // Force another reflow
+          if (element instanceof HTMLElement) {
+            void element.offsetWidth;
+          }
+          // Try accessing again
+          if (camelCaseProp in computed) {
+            value = (computed as CSSStyleDeclaration & Record<string, string>)[camelCaseProp];
+          } else {
+            value = computed.getPropertyValue(property) || computed.getPropertyValue(camelCaseProp);
+          }
+        }
+        
+        // Normalize color values for cross-browser compatibility
+        if (property === 'color' || property.toLowerCase() === 'color') {
+          return normalizeColor(value || '');
+        }
+        // Return empty string if value is not available (let tests handle it)
+        return value || '';
+      } catch (e) {
+        console.error('[TestRunner] Error getting computed style:', e, 'property:', property);
+        // If we can't access computed styles, return empty string
+        return '';
       }
-      return computed.getPropertyValue(property) || computed.getPropertyValue(camelCaseProp);
     };
 
     // Helper to get property value (supports nested properties and computed styles)
@@ -577,7 +886,18 @@ export class TestRunner {
           }, 1);
         });
       },
-      getComputedStyle: (element: Element, property: string) => {
+      getComputedStyle: (element: Element | null, property: string) => {
+        if (!element) {
+          const errorMsg = `Element is null when getting computed style for property: ${property}`;
+          console.error('[TestRunner] getComputedStyle error:', errorMsg);
+          testResults.push({
+            passed: false,
+            description: errorMsg,
+            error: errorMsg
+          });
+          throw new Error(errorMsg);
+        }
+        // Return computed style value (may be empty string if not computed yet)
         return getComputedStyleValue(element, property);
       },
       setInputValue: (selector: string, value: string) => {
@@ -604,6 +924,8 @@ export class TestRunner {
         return (async function() {
           try {
             ${testCode}
+            // If we get here without any assertions, that's a problem
+            return 'completed';
           } catch (e) {
             // Re-throw to be caught by outer try-catch
             throw e;
@@ -613,14 +935,24 @@ export class TestRunner {
       );
 
       await testFunction(testUtils);
+      
+      // If no test results were generated, the test code might not have run any assertions
+      // This could happen if there was an early error or the code didn't execute
+      if (testResults.length === 0) {
+        testResults.push({
+          passed: false,
+          description: 'No test results generated',
+          error: 'Test code executed but produced no results. The test code may have failed before any assertions were made, or no assertions were executed. Check the browser console for errors.'
+        });
+      }
     } catch (error) {
       // If an assertion failed or there was an error, it's already in testResults
       // But if it's a different error, add it
-      if (testResults.length === 0 || !testResults[testResults.length - 1].error) {
+      if (testResults.length === 0 || !testResults[testResults.length - 1]?.error) {
         testResults.push({
           passed: false,
           description: 'Test execution error',
-          error: error instanceof Error ? error.message : 'Unknown error'
+          error: error instanceof Error ? `${error.message}${error.stack ? '\n' + error.stack : ''}` : String(error)
         });
       }
     }

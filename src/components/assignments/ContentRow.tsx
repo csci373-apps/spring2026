@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useChecklist } from '@/components/schedule-entry/useChecklist';
 import DaysLeft from '@/components/DaysLeft';

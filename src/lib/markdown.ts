@@ -38,6 +38,8 @@ export interface PostData {
   heading_max_level?: number;
   quicklink?: number;
   quizzes?: string[];
+  no_render?: number;
+  hide_from_list?: number;
 }
 
 export function getAllPostIds(subdirectory?: string) {
@@ -123,22 +125,68 @@ export async function getPostData(id: string, subdirectory?: string): Promise<Po
   // The placeholders were inserted before GFM processing to avoid disabled checkboxes
   contentHtml = await postprocessCheckboxes(contentHtml, id);
 
+  // Post-process HTML to add classes to lists based on markdown comments
+  // Look for comments like <!-- list-tight --> or <!-- list-spaced --> before lists
+  // Handle cases where there might be whitespace, <p> tags, or newlines between comment and list
+  const commentRegex = /<!--\s*(list-tight|list-spaced)\s*-->/gi;
+  const matches: Array<{ index: number; className: string; length: number }> = [];
+  let commentMatch;
+  
+  // Collect all matches first
+  while ((commentMatch = commentRegex.exec(contentHtml)) !== null) {
+    matches.push({
+      index: commentMatch.index,
+      className: commentMatch[1],
+      length: commentMatch[0].length
+    });
+  }
+  
+  // Process matches in reverse order to avoid index shifting
+  for (let i = matches.length - 1; i >= 0; i--) {
+    const { index: commentIndex, className, length: commentLength } = matches[i];
+    
+    // Find the next list element after this comment
+    const afterComment = contentHtml.substring(commentIndex + commentLength);
+    const listMatch = afterComment.match(/<[ou]l[^>]*>/);
+    
+    if (listMatch && listMatch.index !== undefined) {
+      const listIndex = commentIndex + commentLength + listMatch.index;
+      const listTag = listMatch[0];
+      
+      // Add the class to the list element
+      let newListTag: string;
+      if (listTag.includes('class=')) {
+        // If class already exists, append to it
+        newListTag = listTag.replace(/class="([^"]*)"/, `class="$1 ${className}"`);
+      } else {
+        // If no class exists, add it
+        newListTag = listTag.replace(/(<[ou]l)([^>]*>)/, `$1 class="${className}"$2`);
+      }
+      
+      // Replace the list tag in the HTML
+      contentHtml = contentHtml.substring(0, listIndex) + newListTag + contentHtml.substring(listIndex + listTag.length);
+      
+      // Remove the comment
+      contentHtml = contentHtml.substring(0, commentIndex) + contentHtml.substring(commentIndex + commentLength);
+    }
+  }
+
   // Wrap each instructor notes section with data attribute for conditional rendering
   // Find all "## Instructor Notes" headings and wrap each section individually
   // Each section includes the heading and everything until the next h2 heading (or end of document)
   const instructorNotesRegex = /<h2[^>]*>Instructor Notes<\/h2>/g;
-  const matches: Array<number> = [];
+  const instructorNotesMatches: Array<number> = [];
   let match;
   
   // Find all "Instructor Notes" heading positions
   while ((match = instructorNotesRegex.exec(contentHtml)) !== null) {
-    matches.push(match.index);
+    instructorNotesMatches.push(match.index);
   }
   
-  if (matches.length > 0) {
+  if (instructorNotesMatches.length > 0) {
     // Process from end to beginning to avoid index shifting issues
-    for (let i = matches.length - 1; i >= 0; i--) {
-      const sectionStart = matches[i];
+    for (let i = instructorNotesMatches.length - 1; i >= 0; i--) {
+      const sectionStart = instructorNotesMatches[i];
       
       // Find the next h2 heading after this one (or end of document)
       const afterStart = contentHtml.substring(sectionStart);

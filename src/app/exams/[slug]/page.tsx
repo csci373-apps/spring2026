@@ -8,19 +8,10 @@ import StyleGuideStyles from '@/components/StyleGuideStyles';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-interface AssignmentPageProps {
+interface ExamPageProps {
   params: Promise<{
     slug: string;
   }>;
-}
-
-// Tell Next.js to only generate routes that are in generateStaticParams()
-// We include ALL posts (including drafts) in generateStaticParams() so they can be pre-generated
-export const dynamicParams = false;
-
-// Generate static params for all activities
-export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
-  return generateStaticParamsForContentType('activities');
 }
 
 function formatDate(dateString: string): string {
@@ -32,19 +23,20 @@ function formatDate(dateString: string): string {
   return `${dayOfWeek}, ${month}/${day}`;
 }
 
-export default async function AssignmentPage({ params }: AssignmentPageProps) {
+export default async function ExamPage({ params }: ExamPageProps) {
   try {
     const { slug } = await params;
-    const postData = await getPostData(slug, 'activities');
+    const postData = await getPostData(slug, 'exams');
     
     // Validate post (handles placeholder slugs and excluded posts)
     // Note: Drafts are allowed to be rendered (accessible via direct URL)
-    if (!validatePostForRender(slug, postData, 'activities')) {
+    if (!validatePostForRender(slug, postData, 'exams')) {
       notFound();
     }
     
     const { heading_max_level } = postData;
     const isStyleGuideDemo = slug === 'style-guide-demo';
+    const isTutorial02 = slug === 'tutorial02';
     
     return (
       <ContentLayout
@@ -53,24 +45,40 @@ export default async function AssignmentPage({ params }: AssignmentPageProps) {
         showToc={postData.toc !== false}
         tocMaxLevel={heading_max_level || 2}
       >
-        <div className="mb-4">
-          <Link href="/" className="text-blue-600 dark:text-blue-400 hover:underline">
-            Schedule
-          </Link>
-          {' > '}
-          <span className="text-gray-900 dark:text-gray-100">{postData.title}</span>
+        <div className={`exam-page${isTutorial02 ? ' exam-page-tutorial02' : ''}`}>
+          <div className="mb-4">
+            <Link href="/exams" className="text-blue-600 dark:text-blue-400 hover:underline">
+              Exams
+            </Link>
+            {' > '}
+            <span className="text-gray-900 dark:text-gray-100">{postData.title}</span>
+          </div>
+          <PageHeader 
+            title={postData.title} 
+            excerpt={postData.excerpt}
+            type={postData.type}
+            num={postData.num}
+          />
+          {postData.due_date && (
+            <p className="mt-2 text-lg font-bold">
+              This exam will take place {formatDate(postData.due_date)} during class.
+            </p>
+          )}
+          {isStyleGuideDemo && <StyleGuideStyles />}
+          <MarkdownContent content={postData.content} />
         </div>
-        <PageHeader 
-          title={postData.title} 
-          excerpt={postData.excerpt}
-          type={postData.type}
-        />
-        { postData.due_date && <p className="mt-2 text-lg font-bold">Due {formatDate(postData.due_date)} at 11:59pm</p> }
-        {isStyleGuideDemo && <StyleGuideStyles />}
-        <MarkdownContent content={postData.content} />
       </ContentLayout>
     );
   } catch {
     notFound();
   }
+}
+
+// Tell Next.js to only generate routes that are in generateStaticParams()
+// We include ALL posts (including drafts) in generateStaticParams() so they can be pre-generated
+export const dynamicParams = false;
+
+// Generate static params for all exams
+export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
+  return generateStaticParamsForContentType('exams');
 } 

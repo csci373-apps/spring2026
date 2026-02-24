@@ -224,12 +224,25 @@ export function useQuizState(quizData: QuizData, resourceSlug: string) {
     // Save to localStorage (but skip during restoration to avoid overwriting saved state)
     if (!isRestoringRef.current) {
       try {
+        // Preserve revealedQuestions from existing saved state
+        let existingRevealedQuestions: string[] | undefined;
+        try {
+          const existing = localStorage.getItem(storageKey);
+          if (existing) {
+            const existingState = JSON.parse(existing);
+            existingRevealedQuestions = existingState.revealedQuestions;
+          }
+        } catch (e) {
+          // Ignore errors reading existing state
+        }
+        
         const state: QuizState = {
           selectedAnswers,
           score: newScore,
           completed: shouldBeCompleted,
           timestamp: Date.now(),
           randomMode,
+          revealedQuestions: existingRevealedQuestions,
         };
         localStorage.setItem(storageKey, JSON.stringify(state));
       } catch (error) {
@@ -405,12 +418,25 @@ export function useQuizState(quizData: QuizData, resourceSlug: string) {
     setCompleted(true);
     // Save to localStorage
     try {
+      // Preserve revealedQuestions from existing saved state
+      let existingRevealedQuestions: string[] | undefined;
+      try {
+        const existing = localStorage.getItem(storageKey);
+        if (existing) {
+          const existingState = JSON.parse(existing);
+          existingRevealedQuestions = existingState.revealedQuestions;
+        }
+      } catch (e) {
+        // Ignore errors reading existing state
+      }
+      
       const state: QuizState = {
         selectedAnswers,
         score,
         completed: true,
         timestamp: Date.now(),
         randomMode,
+        revealedQuestions: existingRevealedQuestions,
       };
       localStorage.setItem(storageKey, JSON.stringify(state));
     } catch (error) {

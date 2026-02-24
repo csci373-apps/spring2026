@@ -19,7 +19,23 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
   const [isDrawerClosing, setIsDrawerClosing] = useState<boolean>(false);
   const [isGeneratingReport, setIsGeneratingReport] = useState<boolean>(false);
   const [isMobile, setIsMobile] = useState<boolean>(false);
-  const [revealedQuestions, setRevealedQuestions] = useState<Set<string>>(new Set());
+  // Initialize revealedQuestions from localStorage
+  const [revealedQuestions, setRevealedQuestions] = useState<Set<string>>(() => {
+    if (typeof window === 'undefined') return new Set();
+    try {
+      const storageKey = `quiz-${resourceSlug}`;
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        const savedState = JSON.parse(saved);
+        if (savedState.revealedQuestions && Array.isArray(savedState.revealedQuestions)) {
+          return new Set(savedState.revealedQuestions);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading revealed questions:', error);
+    }
+    return new Set();
+  });
   const [isReviewMode, setIsReviewMode] = useState<boolean>(false);
   const [showResetMessage, setShowResetMessage] = useState<boolean>(false);
   // Track if we've already auto-entered review mode to prevent re-triggering
@@ -287,7 +303,25 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
   };
 
   const handleRevealAnswer = (questionId: string) => {
-    setRevealedQuestions(prev => new Set([...prev, questionId]));
+    setRevealedQuestions(prev => {
+      const updated = new Set([...prev, questionId]);
+      // Save to localStorage
+      try {
+        const storageKey = `quiz-${resourceSlug}`;
+        const saved = localStorage.getItem(storageKey);
+        if (saved) {
+          const savedState = JSON.parse(saved);
+          const updatedState = {
+            ...savedState,
+            revealedQuestions: Array.from(updated),
+          };
+          localStorage.setItem(storageKey, JSON.stringify(updatedState));
+        }
+      } catch (error) {
+        console.error('Error saving revealed questions:', error);
+      }
+      return updated;
+    });
   };
 
   const handleClearQuizWithReveals = () => {
@@ -326,6 +360,7 @@ export default function ResourceQuiz({ quizData, resourceSlug, variant = 'deskto
           completed: true,
           timestamp: Date.now(),
           randomMode,
+          revealedQuestions: Array.from(allQuestionIds),
         };
         localStorage.setItem(storageKey, JSON.stringify(updatedState));
       }
