@@ -37,19 +37,46 @@ export default function TableOfContents({ maxLevel = 2 }: TableOfContentsProps) 
       
       // Find all heading elements within the search root
       const allHeadings = searchRoot.querySelectorAll(selector);
-      const headings: Element[] = [];
+      const headings: Array<{ element: Element; level: number }> = [];
       
       allHeadings.forEach((heading) => {
         const instructorNotesSection = heading.closest('[data-instructor-notes="true"]');
         if (!instructorNotesSection) {
-          headings.push(heading);
+          const level = parseInt(heading.tagName.charAt(1));
+          headings.push({ element: heading, level });
         }
+      });
+      
+      // Also find collapsible summary elements (h3 headings converted to details/summary)
+      // These are summary tags inside details elements with mb-4 class
+      if (maxLevel >= 3) {
+        const collapsibleSummaries = searchRoot.querySelectorAll('details.mb-4 > summary');
+        collapsibleSummaries.forEach((summary) => {
+          const details = summary.closest('details');
+          const instructorNotesSection = details?.closest('[data-instructor-notes="true"]');
+          if (!instructorNotesSection && details) {
+            headings.push({ element: summary, level: 3 });
+          }
+        });
+      }
+      
+      // Sort headings by their position in the document to maintain correct order
+      const sortedHeadings = headings.sort((a, b) => {
+        const pos = a.element.compareDocumentPosition(b.element);
+        if (pos & Node.DOCUMENT_POSITION_FOLLOWING) {
+          return -1; // a comes before b
+        } else if (pos & Node.DOCUMENT_POSITION_PRECEDING) {
+          return 1; // a comes after b
+        }
+        return 0; // same position (shouldn't happen)
       });
       
       const items: TocItem[] = [];
       const usedIds = new Set<string>();
 
-      headings.forEach((heading, index) => {
+      sortedHeadings.forEach((headingData, index) => {
+        const heading = headingData.element;
+        const level = headingData.level;
         let id = heading.id;
         
         if (!id) {
@@ -69,7 +96,6 @@ export default function TableOfContents({ maxLevel = 2 }: TableOfContentsProps) 
         
         usedIds.add(id);
 
-        const level = parseInt(heading.tagName.charAt(1));
         if (level <= maxLevel) {
           items.push({
             id: heading.id,
@@ -88,7 +114,7 @@ export default function TableOfContents({ maxLevel = 2 }: TableOfContentsProps) 
 
       // Clean up old observer
       if (intersectionObserver) {
-        headings.forEach((heading) => intersectionObserver!.unobserve(heading));
+        sortedHeadings.forEach((headingData) => intersectionObserver!.unobserve(headingData.element));
       }
 
       // Set up new intersection observer
@@ -114,7 +140,7 @@ export default function TableOfContents({ maxLevel = 2 }: TableOfContentsProps) 
         }
       );
 
-      headings.forEach((heading) => intersectionObserver!.observe(heading));
+      sortedHeadings.forEach((headingData) => intersectionObserver!.observe(headingData.element));
     };
     
     // Initial scan
@@ -131,7 +157,7 @@ export default function TableOfContents({ maxLevel = 2 }: TableOfContentsProps) 
       clearInterval(interval);
       if (intersectionObserver) {
         // Clean up observer on unmount
-        const allHeadings = document.querySelectorAll('h2, h3, h4, h5, h6');
+        const allHeadings = document.querySelectorAll('h2, h3, h4, h5, h6, details.mb-4 > summary');
         allHeadings.forEach((heading) => intersectionObserver!.unobserve(heading));
       }
     };

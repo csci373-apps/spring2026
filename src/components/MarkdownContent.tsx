@@ -2,6 +2,7 @@
 
 import { useRef, useEffect } from 'react';
 import { triggerConfetti } from '@/lib/utils';
+import hljs from 'highlight.js';
 
 interface MarkdownContentProps {
   content: string;
@@ -107,6 +108,11 @@ export default function MarkdownContent({ content, className }: MarkdownContentP
     const codeBlocks = contentRef.current.querySelectorAll('pre code');
     
     codeBlocks.forEach((codeElement) => {
+      const codeEl = codeElement as HTMLElement;
+
+      // Allow opting out of the copy button with data-no-copy="true"
+      if (codeEl.getAttribute('data-no-copy') === 'true') return;
+
       const preElement = codeElement.parentElement as HTMLElement;
       
       // Skip if we've already added a copy button
@@ -234,6 +240,139 @@ export default function MarkdownContent({ content, className }: MarkdownContentP
         button.dataset.listenerAdded = '';
       });
     };
+  }, [content]);
+
+  // Handle collapsible details sections with localStorage persistence
+  useEffect(() => {
+    if (!contentRef.current) return;
+
+    const detailsElements = contentRef.current.querySelectorAll<HTMLDetailsElement>('details.mb-4');
+    
+    // Generate a unique key for each details element based on page URL and summary text
+    const getStorageKey = (details: HTMLDetailsElement, index: number): string => {
+      const summary = details.querySelector('summary');
+      const summaryText = summary?.textContent?.trim() || '';
+      // Use page pathname + summary text + index to create unique key
+      const pagePath = typeof window !== 'undefined' ? window.location.pathname : '';
+      const key = `collapsible-${pagePath}-${summaryText}-${index}`;
+      // Sanitize key for localStorage (remove special characters)
+      return key.replace(/[^a-zA-Z0-9-]/g, '-').toLowerCase();
+    };
+
+    // Load saved state from localStorage and apply
+    detailsElements.forEach((details, index) => {
+      const storageKey = getStorageKey(details, index);
+      if (typeof window !== 'undefined') {
+        const savedState = localStorage.getItem(storageKey);
+        if (savedState !== null) {
+          const isOpen = JSON.parse(savedState);
+          if (isOpen) {
+            details.setAttribute('open', '');
+          } else {
+            details.removeAttribute('open');
+          }
+        }
+      }
+    });
+
+    // Add event listeners to save state when toggled
+    const handleToggle = (event: Event) => {
+      const details = event.target as HTMLDetailsElement;
+      if (!details.classList.contains('mb-4')) return;
+      
+      const index = Array.from(detailsElements).indexOf(details);
+      const storageKey = getStorageKey(details, index);
+      const isOpen = details.hasAttribute('open');
+      
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(storageKey, JSON.stringify(isOpen));
+      }
+    };
+
+    detailsElements.forEach((details) => {
+      details.addEventListener('toggle', handleToggle);
+    });
+
+    // Cleanup event listeners
+    return () => {
+      detailsElements.forEach((details) => {
+        details.removeEventListener('toggle', handleToggle);
+      });
+    };
+  }, [content]);
+
+  // Highlight code blocks that weren't processed by remark-highlight.js
+  // (e.g., code blocks inside HTML tables)
+  useEffect(() => {
+    if (!contentRef.current) return;
+
+    // Find all code blocks with language classes
+    const codeBlocks = contentRef.current.querySelectorAll<HTMLElement>(
+      'code[class*="language-"]'
+    );
+
+    codeBlocks.forEach((codeBlock) => {
+      // Check if this code block has already been highlighted
+      // (remark-highlight.js adds spans with hljs classes)
+      const hasHighlighting = codeBlock.querySelector('.hljs-keyword, .hljs-string, .hljs-function, .hljs-number, .hljs-variable');
+      
+      // Only highlight if it hasn't been processed yet
+      if (!hasHighlighting) {
+        // Extract language from class (e.g., "language-javascript" -> "javascript")
+        const classList = Array.from(codeBlock.classList);
+        const languageClass = classList.find((cls) => cls.startsWith('language-'));
+        const language = languageClass ? languageClass.replace('language-', '') : 'javascript';
+
+        try {
+          // Get the raw code text - use data attribute if available to preserve whitespace
+          let code = '';
+          
+          // Check if we have the original code stored in a data attribute
+          const originalCodeAttr = codeBlock.getAttribute('data-original-code');
+          if (originalCodeAttr) {
+            // Decode from URI component to get original code with preserved whitespace
+            try {
+              code = decodeURIComponent(originalCodeAttr);
+            } catch (e) {
+              console.warn('Failed to decode original code from data attribute:', e);
+              // Fallback to textContent if decoding fails
+              code = codeBlock.textContent || '';
+            }
+          } else {
+            // Fallback: try to preserve whitespace from current content
+            const preElement = codeBlock.closest('pre');
+            if (preElement) {
+              // For pre elements, use innerText which better preserves formatting
+              code = codeBlock.innerText || codeBlock.textContent || '';
+            } else {
+              code = codeBlock.textContent || '';
+            }
+          }
+          
+          // Highlight the code - highlight.js should preserve whitespace in the output
+          const highlighted = hljs.highlight(code, {
+            language: language,
+            ignoreIllegals: true,
+          });
+          
+          // Replace the content with highlighted HTML
+          codeBlock.innerHTML = highlighted.value;
+          
+          // Ensure hljs class is present for styling
+          codeBlock.classList.add('hljs');
+          
+          // Ensure the parent pre element preserves whitespace
+          const preElement = codeBlock.closest('pre');
+          if (preElement) {
+            preElement.style.whiteSpace = 'pre';
+          }
+        } catch (error) {
+          console.error('Error highlighting code block:', error);
+          // If highlighting fails, just ensure hljs class is present for styling
+          codeBlock.classList.add('hljs');
+        }
+      }
+    });
   }, [content]);
 
 //   useEffect(() => {

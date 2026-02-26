@@ -111,6 +111,18 @@ export async function getPostData(id: string, subdirectory?: string): Promise<Po
   const { processedMarkdown: markdownWithCheckboxPlaceholders } = preprocessCheckboxes(markdownContent);
   markdownContent = markdownWithCheckboxPlaceholders;
 
+  // Pre-process HTML code blocks: protect them from remark processing
+  // Replace <pre><code> blocks with placeholders to prevent remark from injecting <p> tags
+  const codeBlockPlaceholders: string[] = [];
+  markdownContent = markdownContent.replace(
+    /<pre><code[^>]*>[\s\S]*?<\/code><\/pre>/g,
+    (match) => {
+      const placeholder = `__CODE_BLOCK_PLACEHOLDER_${codeBlockPlaceholders.length}__`;
+      codeBlockPlaceholders.push(match);
+      return placeholder;
+    }
+  );
+
   // Use remark to convert markdown into HTML string with GFM support and syntax highlighting
   const processedContent = await remark()
     .use(gfm)  // Add GitHub Flavored Markdown support
@@ -121,54 +133,180 @@ export async function getPostData(id: string, subdirectory?: string): Promise<Po
     .process(markdownContent);
   let contentHtml = processedContent.toString();
 
+  // Restore the protected code blocks
+  codeBlockPlaceholders.forEach((originalCodeBlock, index) => {
+    const placeholder = `__CODE_BLOCK_PLACEHOLDER_${index}__`;
+    contentHtml = contentHtml.replace(placeholder, originalCodeBlock);
+  });
+
+  // Post-process HTML to preserve whitespace in code blocks inside table cells
+  // Store original code content in data attribute before any processing
+  contentHtml = contentHtml.replace(
+    /(<pre><code[^>]*>)([\s\S]*?)(<\/code><\/pre>)/g,
+    (match, openTag, codeContent, closeTag) => {
+      // Store the original code content in a data attribute, preserving all whitespace
+      // Use a simple encoding: replace spaces with a placeholder, then encode
+      // This preserves the exact whitespace structure
+      const encodedCode = encodeURIComponent(codeContent);
+      // Add data attribute to preserve original code
+      const openTagWithData = openTag.replace(/(<code[^>]*)(>)/, `$1 data-original-code="${encodedCode}"$2`);
+      return openTagWithData + codeContent + closeTag;
+    }
+  );
+
   // Post-process HTML to convert checkbox placeholders to stateful checkboxes
   // The placeholders were inserted before GFM processing to avoid disabled checkboxes
   contentHtml = await postprocessCheckboxes(contentHtml, id);
 
-  // Post-process HTML to add classes to lists based on markdown comments
-  // Look for comments like <!-- list-tight --> or <!-- list-spaced --> before lists
-  // Handle cases where there might be whitespace, <p> tags, or newlines between comment and list
-  const commentRegex = /<!--\s*(list-tight|list-spaced)\s*-->/gi;
-  const matches: Array<{ index: number; className: string; length: number }> = [];
-  let commentMatch;
+  // Post-process HTML to add classes to elements based on markdown comments
+  // Generic handler: any comment like <!-- class-name --> will add that class to the next HTML element
+  // Examples: <!-- list-tight -->, <!-- list-spaced -->, <!-- info -->, etc.
+  // Matches valid CSS class names (alphanumeric, hyphens, underscores)
+  // Excludes "collapsible" which is handled separately
+  const classCommentRegex = /<!--\s*((?!collapsible)[a-zA-Z0-9_-]+)\s*-->/gi;
+  const classMatches: Array<{ index: number; className: string; length: number }> = [];
+  let classCommentMatch;
   
   // Collect all matches first
-  while ((commentMatch = commentRegex.exec(contentHtml)) !== null) {
-    matches.push({
-      index: commentMatch.index,
-      className: commentMatch[1],
-      length: commentMatch[0].length
+  while ((classCommentMatch = classCommentRegex.exec(contentHtml)) !== null) {
+    classMatches.push({
+      index: classCommentMatch.index,
+      className: classCommentMatch[1],
+      length: classCommentMatch[0].length
     });
   }
   
   // Process matches in reverse order to avoid index shifting
-  for (let i = matches.length - 1; i >= 0; i--) {
-    const { index: commentIndex, className, length: commentLength } = matches[i];
+  for (let i = classMatches.length - 1; i >= 0; i--) {
+    const { index: commentIndex, className, length: commentLength } = classMatches[i];
     
-    // Find the next list element after this comment
+    // Find the next HTML element after this comment (any tag)
+    // Skip over whitespace, <p> tags, and other inline elements
     const afterComment = contentHtml.substring(commentIndex + commentLength);
-    const listMatch = afterComment.match(/<[ou]l[^>]*>/);
+    const elementMatch = afterComment.match(/<([a-zA-Z][a-zA-Z0-9]*)[^>]*>/);
     
-    if (listMatch && listMatch.index !== undefined) {
-      const listIndex = commentIndex + commentLength + listMatch.index;
-      const listTag = listMatch[0];
+    if (elementMatch && elementMatch.index !== undefined) {
+      const elementIndex = commentIndex + commentLength + elementMatch.index;
+      const elementTag = elementMatch[0];
+      const tagName = elementMatch[1];
       
-      // Add the class to the list element
-      let newListTag: string;
-      if (listTag.includes('class=')) {
-        // If class already exists, append to it
-        newListTag = listTag.replace(/class="([^"]*)"/, `class="$1 ${className}"`);
+      // Add the class to the element
+      let newElementTag: string;
+      if (elementTag.includes('class=')) {
+        // If class already exists, append to it (avoid duplicates)
+        newElementTag = elementTag.replace(/class="([^"]*)"/, (match, existingClasses) => {
+          const classes = existingClasses.split(/\s+/);
+          if (classes.includes(className)) {
+            return match; // Class already exists, don't add it again
+          }
+          return `class="${existingClasses} ${className}"`;
+        });
       } else {
         // If no class exists, add it
-        newListTag = listTag.replace(/(<[ou]l)([^>]*>)/, `$1 class="${className}"$2`);
+        newElementTag = elementTag.replace(/(<[a-zA-Z][a-zA-Z0-9]*)([^>]*>)/, `$1 class="${className}"$2`);
       }
       
-      // Replace the list tag in the HTML
-      contentHtml = contentHtml.substring(0, listIndex) + newListTag + contentHtml.substring(listIndex + listTag.length);
+      // Replace the element tag in the HTML
+      contentHtml = contentHtml.substring(0, elementIndex) + newElementTag + contentHtml.substring(elementIndex + elementTag.length);
       
       // Remove the comment
       contentHtml = contentHtml.substring(0, commentIndex) + contentHtml.substring(commentIndex + commentLength);
     }
+  }
+
+  // Post-process HTML to make h3 headings collapsible based on <!-- collapsible --> comments
+  // Find all <!-- collapsible --> comments and their associated h3 positions
+  // Support <!-- collapsible --> (open by default) and <!-- collapsible closed --> (closed by default)
+  const collapsibleCommentRegex = /<!--\s*collapsible(\s+closed)?\s*-->/gi;
+  const collapsibleSections: Array<{ 
+    commentIndex: number; 
+    commentLength: number;
+    h3Start: number;
+    h3End: number;
+    h3Content: string;
+    isClosed: boolean;
+  }> = [];
+  let collapsibleMatch;
+  
+  // First pass: collect all collapsible sections with their h3 positions
+  while ((collapsibleMatch = collapsibleCommentRegex.exec(contentHtml)) !== null) {
+    const commentIndex = collapsibleMatch.index;
+    const commentLength = collapsibleMatch[0].length;
+    const isClosed = collapsibleMatch[1] !== undefined; // Check if "closed" was in the comment
+    
+    // Find the next h3 heading after this comment
+    const afterComment = contentHtml.substring(commentIndex + commentLength);
+    const h3Match = afterComment.match(/<h3[^>]*>[\s\S]*?<\/h3>/);
+    
+    if (h3Match && h3Match.index !== undefined) {
+      const h3Start = commentIndex + commentLength + h3Match.index;
+      const h3End = h3Start + h3Match[0].length;
+      
+      // Extract the h3 heading content (without the tags)
+      const h3FullMatch = h3Match[0];
+      const h3ContentMatch = h3FullMatch.match(/<h3[^>]*>([\s\S]*?)<\/h3>/);
+      const h3Content = h3ContentMatch ? h3ContentMatch[1] : '';
+      
+      collapsibleSections.push({
+        commentIndex,
+        commentLength,
+        h3Start,
+        h3End,
+        h3Content,
+        isClosed
+      });
+    }
+  }
+  
+  // Second pass: process in reverse order to avoid index shifting
+  for (let i = collapsibleSections.length - 1; i >= 0; i--) {
+    const { commentIndex, commentLength, h3Start, h3End, h3Content, isClosed } = collapsibleSections[i];
+    
+    // Find the boundary: either the next collapsible section's comment OR the next heading of equal or greater level
+    const afterH3 = contentHtml.substring(h3End);
+    
+    // Look for next collapsible comment position (from original positions)
+    let nextCollapsibleIndex: number | undefined = undefined;
+    for (let j = i + 1; j < collapsibleSections.length; j++) {
+      const nextSection = collapsibleSections[j];
+      if (nextSection.commentIndex > h3End) {
+        nextCollapsibleIndex = nextSection.commentIndex - h3End;
+        break;
+      }
+    }
+    
+    // Look for next heading of equal or greater level (h1, h2, or h3)
+    const nextHeadingMatch = afterH3.match(/<(h[123])[^>]*>/);
+    const nextHeadingIndex = nextHeadingMatch ? nextHeadingMatch.index : undefined;
+    
+    // Use whichever comes first (or the end of document if neither exists)
+    let sectionEnd: number;
+    if (nextCollapsibleIndex !== undefined && nextHeadingIndex !== undefined) {
+      // Use whichever is earlier
+      sectionEnd = h3End + Math.min(nextCollapsibleIndex, nextHeadingIndex);
+    } else if (nextCollapsibleIndex !== undefined) {
+      sectionEnd = h3End + nextCollapsibleIndex;
+    } else if (nextHeadingIndex !== undefined) {
+      sectionEnd = h3End + nextHeadingIndex;
+    } else {
+      sectionEnd = contentHtml.length;
+    }
+    
+    // Extract the section content (everything after the h3 until the boundary)
+    const sectionContent = contentHtml.substring(h3End, sectionEnd);
+    
+      // Create the collapsible details structure
+      // Convert h3 to summary and wrap everything in details
+      // Add mb-4 class for when it's closed (CSS will handle the conditional styling)
+      // Use "open" attribute only if not closed by default
+      const openAttr = isClosed ? '' : ' open';
+      const detailsContent = `<details${openAttr} class="mb-4">
+  <summary>${h3Content}</summary>
+  ${sectionContent}
+</details>`;
+    
+    // Replace the comment, h3, and section content with the details structure
+    contentHtml = contentHtml.substring(0, commentIndex) + detailsContent + contentHtml.substring(sectionEnd);
   }
 
   // Wrap each instructor notes section with data attribute for conditional rendering
