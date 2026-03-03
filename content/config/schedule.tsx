@@ -422,13 +422,21 @@ export const baseTopics = [
           topic: "Human-centered design + low-fi prototyping",
           description: (
             <>
-              <ul>
-                <li>Intro to HCD</li>
-                <li>Heuristic evaluation</li>
-                <li>Practice creating low-fidelity prototypes (paper)</li>
-              </ul>
+              What are we going to build? 
             </>
           ),
+          activities: [
+            {
+              title: "Slides",
+              url: "https://docs.google.com/presentation/d/1Lx50peGbCswvBw_CEfYkp_eae5Sy4e4P/edit?usp=sharing&ouid=113376576186080604800&rtpof=true&sd=true",
+              draft: 0
+            },
+            {
+              title: "Activity: Actions, journeys, and features",
+              url: "https://docs.google.com/document/d/1MxFCfZuecbkuwNTJ2xxR6twCYxhitkUR-zsYpD2-z9k/edit?usp=sharing",
+              draft: 0
+            },
+          ],
           readings: [
             {
               citation: (
