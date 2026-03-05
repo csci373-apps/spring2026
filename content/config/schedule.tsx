@@ -470,12 +470,14 @@ export const baseTopics = [
         },
         {
           date: "Th, Mar 5",
-          topic: "Iterate based on prototype + review focus on assumptions",
-          description: (
-            <>
-              Wireframes and high-fidelity prototypes in Figma.
-            </>
-          ),
+          topic: "Low-fidelity prototyping continued",
+          activities: [
+            {
+              title: "Slides",
+              url: "https://docs.google.com/presentation/d/15hPHaVjmue3pLNzWM23CvLKV9qLYSN9a/edit?usp=sharing&ouid=113376576186080604800&rtpof=true&sd=true",
+              draft: 0
+            },
+          ],
           readings: [
             {
               citation: (
@@ -499,12 +501,6 @@ export const baseTopics = [
               ),
             },
           ],
-          assigned: {
-            titleShort: "HW6",
-            title: "Low-Fi + Hi-Fi Prototypes + UX Implementation",
-            url: "/assignments/hw06-lowfi-prototype",
-            draft: 1,
-          },
         },
       ],
     },

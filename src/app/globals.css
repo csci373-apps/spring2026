@@ -161,6 +161,14 @@ blockquote > *:last-child {
 blockquote.info {
   @apply bg-green-50 p-4 rounded-lg border-green-300 dark:!border-green-500 dark:!bg-green-900;
 }
+
+blockquote.plain {
+    @apply bg-gray-50 p-4 rounded-lg border-gray-300 dark:!border-gray-500 dark:!bg-gray-900;
+}
+
+blockquote.example {
+    @apply bg-blue-50 p-4 rounded-lg border-blue-300 dark:!border-blue-500 dark:!bg-blue-900;
+}
   
 ul + blockquote.info,
 ol + blockquote.info,
@@ -181,6 +189,12 @@ blockquote.info h2 {
 
 blockquote.info > *:last-child {
   @apply !mb-0;
+}
+
+blockquote {
+    .hljs, code {
+        background-color: transparent !important;
+    }
 }
   
 /* Remove bottom margin from nested list items */
