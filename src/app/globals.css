@@ -74,9 +74,14 @@ table {
   box-shadow: 0 0 7px rgba(0, 0, 0, .1);
 }
 
+table.width-auto {
+    width: auto !important;
+}
+
 th,
 td {
   @apply border-b p-2;
+  background: var(--background);
   border-color: var(--border);
   color: var(--foreground);
   word-wrap: break-word;
@@ -151,6 +156,19 @@ blockquote > *:last-child {
   @apply !mb-0;
 }
 
+blockquote {
+    details, .prose details.mb-4 {
+        margin-top: 0 !important;
+        .hljs, code {
+            @apply bg-transparent dark:bg-transparent;
+        }
+    }
+}
+
+blockquote .hljs, blockquote code {
+    @apply bg-white dark:bg-black;
+}
+
 .dark blockquote {
   background-color: #1f2937 !important;
   border-color: #4b5563 !important;
@@ -162,13 +180,9 @@ blockquote.info {
   @apply bg-green-50 p-4 rounded-lg border-green-300 dark:!border-green-500 dark:!bg-green-900;
 }
 
-blockquote.plain {
-    @apply bg-gray-50 p-4 rounded-lg border-gray-300 dark:!border-gray-500 dark:!bg-gray-900;
-}
-
-blockquote.example {
-    @apply bg-blue-50 p-4 rounded-lg border-blue-300 dark:!border-blue-500 dark:!bg-blue-900;
-}
+blockquote.reference {
+    @apply bg-blue-50 p-4 rounded-lg border-blue-300 dark:!border-blue-900 dark:!bg-blue-950;
+  }
   
 ul + blockquote.info,
 ol + blockquote.info,
@@ -190,12 +204,6 @@ blockquote.info h2 {
 blockquote.info > *:last-child {
   @apply !mb-0;
 }
-
-blockquote {
-    .hljs, code {
-        background-color: transparent !important;
-    }
-}
   
 /* Remove bottom margin from nested list items */
 ul ul li,
@@ -203,6 +211,23 @@ ol ol li,
 ul ol li,
 ol ul li {
   @apply !mb-0;
+}
+
+.list-tight li {
+    @apply !mb-0;
+}
+  
+.extra-list-spacing li {
+    @apply mb-12;
+}
+  
+.list-spaced li {
+    @apply mb-4;
+}
+
+.alpha-list {
+    list-style: lower-alpha;
+    padding-left: 1rem;
 }
 
 /* Hide bullets for list items with checkboxes and use flexbox layout */
@@ -265,13 +290,7 @@ li:has(input[type="checkbox"]) {
   }
 }
 
-.list-tight li {
-  @apply !mb-0;
-}
 
-.list-spaced li {
-  @apply mb-4;
-}
 
 /* Tutorial02 specific styles - remove margin from li in blockquotes */
 .assignment-page-tutorial02 blockquote li {
@@ -1048,6 +1067,27 @@ pre code {
   color: var(--foreground);
 }
 
+.answer-sm {
+    @apply mb-4 border border-black dark:border-white p-4 rounded-lg;
+    height: 50px;
+}
+
+.answer-md {
+    @apply mb-4 border border-black dark:border-white p-4 rounded-lg;
+    height: 150px;
+}
+
+.answer-lg {
+    @apply mb-4 border border-black dark:border-white p-4 rounded-lg;
+    height: 300px;
+}
+
+.answer-xl {
+    @apply mb-4 border border-black dark:border-white p-4 rounded-lg;
+    height: 450px;
+}
+
+
 /* Fade in/out animation for reset message */
 @keyframes fade-in-out {
   0% {
@@ -1088,11 +1128,32 @@ pre code {
 }
 
 .prose details > summary {
-    @apply cursor-pointer font-semibold select-none text-xl leading-snug;
+    @apply cursor-pointer font-semibold select-none leading-snug;
     list-style: none;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+}
+
+/* Level-specific sizes matching prose headings */
+.prose details.collapsible-h1 > summary {
+    @apply text-3xl md:text-4xl;
+}
+
+.prose details.collapsible-h2 > summary {
+    @apply text-xl md:text-2xl font-bold;
+}
+
+.prose details.collapsible-h3 > summary {
+    @apply text-lg md:text-xl font-bold;
+}
+
+.prose details.collapsible-h4 > summary {
+    @apply md:text-lg font-bold;
+}
+
+.prose details.collapsible-h5 > summary {
+    /* Base size, no explicit text size needed */
 }
   
 .prose details > summary::-webkit-details-marker {
@@ -1127,3 +1188,34 @@ pre code {
     opacity: 1;
     transform: translateY(0);
 }
+
+
+/* Print stylesheet overrides */
+
+.print-only {
+    display: none;
+}
+@media print {
+    .page-break {
+        break-before: page;          /* modern */
+        page-break-before: always;   /* older browsers */
+    }
+
+    h1 {
+        @apply mt-0 mb-4;
+    }
+
+    /* Hide global navigation and side navigation in print */
+    nav,                       /* all semantic nav regions (breadcrumbs, TOCs, etc.) */
+    #breadcrumbs,             /* breadcrumbs */
+    .quick-links-nav,          /* right-hand quick links */
+    footer, 
+    .resources-nav {           /* resources sidebar nav */
+        display: none !important;
+    }
+
+    .print-only {
+        @apply block mb-12;
+    }
+}
+
