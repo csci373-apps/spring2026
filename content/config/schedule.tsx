@@ -518,41 +518,42 @@ export const baseTopics = [
     },
     {
       id: 10,
-      title: "Phase 2: Agile and Vertical Features",
-      description: "Introduction to Agile. Form vertical teams. Begin feature development in shared repo.",
+      title: "From User Journeys to Figma Wireframes",
+      description:
+        "Share HW6 journeys and wireframes. Begin building token-driven, component-based wireframes in Figma.",
       meetings: [
         {
           date: "Tu, Mar 17",
-          topic: "Agile introduction + vertical team formation",
+          topic: "HW6 presentations: journeys → screens → wireframes",
           description: (
             <>
-              <ul>
-                <li>Agile principles: iterations, user stories, sprints</li>
-                <li>Form vertical teams: backend + web + mobile developers</li>
-                <li>Team working agreement for Phase 2 (collaboration, communication)</li>
-                <li>Discussion: "How is Phase 2 different? What skills do we need?"</li>
-              </ul>
+              Short team presentations: stakeholder, 3-5 user needs, and a
+                  representative user journeys
             </>
           ),
-          readings: [
-            {
-              citation: "Schwaber, K., & Sutherland, J. The Scrum Guide.",
-              url: "https://scrumguides.org/scrum-guide.html",
-            },
-          ],
         },
         {
           date: "Th, Mar 19",
-          topic: "Sprint 1 planning + feature assignment",
+          topic: "HW7 launch: tokens, components, and responsive frames in Figma",
           description: (
             <>
               <ul>
-                <li>Review shared repo structure and workflow</li>
-                <li>Assign features to vertical teams</li>
-                <li>Sprint 1 planning: break features into user stories and tasks</li>
-                <li>Define API contracts (shared types)</li>
-                <li>Set up feature branches</li>
-                <li>Team reflection: "What are our goals? What are we worried about?"</li>
+                <li>
+                  Walk through importing the provided design token JSON files
+                  and switching between themes
+                </li>
+                <li>
+                  Live demo: build a token-driven Button component with
+                  variants (primary, secondary, ghost)
+                </li>
+                <li>
+                  Introduce frames and Auto Layout for desktop and mobile
+                  screens (Dashboard, Activity Detail, Profile)
+                </li>
+                <li>
+                  In-class work: teams start HW7 components and first screens
+                  based on their HW6 wireframes
+                </li>
               </ul>
             </>
           ),
