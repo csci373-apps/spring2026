@@ -557,6 +557,26 @@ export const baseTopics = [
               </ul>
             </>
           ),
+          readings: [
+            {
+              citation:
+                <>
+                  <a href="https://www.youtube.com/watch?v=WxSYc5afjDY" target="_blank" rel="noopener noreferrer">Figma Auto Layout Tutorial for Beginners</a> (Video), Aliena Cai
+                </>
+            },
+            {
+              citation:
+                <>
+                  <a href="https://www.youtube.com/watch?v=HwiHqfax7Uk" target="_blank" rel="noopener noreferrer">Figma tutorial for beginners - auto layout & components</a> (Video), Aliena Cai
+                </>
+            },
+            {
+              citation:
+                <>
+                  <a href="https://www.youtube.com/watch?v=TIWCR3yd8R0" target="_blank" rel="noopener noreferrer">Figma Component Tutorial for Beginners</a> (Video), Aliena Cai
+                </>
+            },
+          ],
         },
       ],
     },
