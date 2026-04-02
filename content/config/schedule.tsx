@@ -630,15 +630,10 @@ export const baseTopics = [
         },
         {
           date: "Th, Apr 2",
-          topic: "Sprint 1 continued: integration and testing",
+          topic: "Making sure everyone has clear tasks and deadlines",
           description: (
             <>
-              <ul>
-                <li>Teams continue feature work</li>
-                <li>Integration testing across components</li>
-                <li>Code review and PR refinement</li>
-                <li>Team reflection: "What's working well? What needs improvement?"</li>
-              </ul>
+              Please do not leave class today until you have a clear plan for what you will deliver and when.
             </>
           ),
         },
