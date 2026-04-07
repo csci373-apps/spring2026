@@ -642,22 +642,13 @@ export const baseTopics = [
   
     {
       id: 12,
-      title: "Feature Development Sprint 2",
-      description: "Continue feature development. Sprint review and retrospective. Plan next sprint.",
+      title: "Wireframe Sprint",
+      description: "Prepping for client feedback session.",
       meetings: [
         {
           date: "Tu, Apr 7",
-          topic: "Sprint 1 review + sprint 2 planning",
-          description: (
-            <>
-              <ul>
-                <li>Sprint 1 demos: teams show what they built</li>
-                <li>Sprint retrospective: what worked, what didn't, what to improve</li>
-                <li>Sprint 2 planning: next features, user stories, tasks</li>
-                <li>Reflection: "How did Sprint 1 go? What did we learn about teamwork?"</li>
-              </ul>
-            </>
-          ),
+          topic: "Wireframe feedback session",
+          description:"Conduct a user testing session on your wireframes and get feedback on your wireframes.",
         },
         {
           date: "Th, Apr 9",
